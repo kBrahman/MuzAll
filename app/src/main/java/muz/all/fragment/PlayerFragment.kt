@@ -84,7 +84,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
             val request = DownloadManager.Request(uri)
             downloadManager.enqueue(request.setDestinationInExternalPublicDir(DIRECTORY_MUSIC, track.name + ".mp3"))
         } else {
-            requestPermissions(arrayOf(WRITE_EXTERNAL_STORAGE), 1)
+            requestPermissions(arrayOf(WRITE_EXTERNAL_STORAGE), 2)
         }
     }
 
