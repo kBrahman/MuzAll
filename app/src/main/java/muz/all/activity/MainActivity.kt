@@ -15,6 +15,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
 import muz.all.R
 import muz.all.adapter.TrackAdapter
@@ -74,6 +76,12 @@ class MainActivity : AppCompatActivity() {
             }
         })
         setSupportActionBar(toolbar)
+        adView.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                adView.visibility = VISIBLE
+            }
+        }
+        adView.loadAd(AdRequest.Builder().build())
     }
 
     private fun getPopular(offset: Int) {
