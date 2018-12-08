@@ -3,16 +3,15 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:minWidth="300dp">
+        android:layout_height="match_parent">
     <com.google.android.gms.ads.AdView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:adUnitId="@string/banner_id"
             app:adSize="MEDIUM_RECTANGLE"
             android:id="@+id/recBanner"
             android:visibility="gone"/>
-    <TextView android:layout_width="match_parent"
+    <TextView android:layout_width="300dp"
               android:layout_height="wrap_content"
               android:id="@+id/name"
               app:layout_constraintTop_toBottomOf="@id/recBanner"/>
