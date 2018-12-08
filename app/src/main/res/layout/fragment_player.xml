@@ -4,11 +4,18 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
-
+    <com.google.android.gms.ads.AdView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:adUnitId="@string/banner_id"
+            app:adSize="MEDIUM_RECTANGLE"
+            android:id="@+id/recBanner"
+            android:visibility="gone"/>
     <TextView android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:id="@+id/name"
-              android:minWidth="300dp"/>
+              android:minWidth="300dp"
+              app:layout_constraintTop_toBottomOf="@id/recBanner"/>
     <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

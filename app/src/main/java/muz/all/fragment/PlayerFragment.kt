@@ -16,10 +16,17 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.SeekBar
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_music.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import muz.all.R
+import muz.all.activity.MainActivity
+import muz.all.activity.MusicActivity
 import muz.all.component.DaggerFragmentComponent
 import muz.all.model.Track
 import muz.all.util.TRACK
@@ -75,6 +82,21 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         download.setOnClickListener {
             download(track as Track)
         }
+        recBanner.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                recBanner.visibility = VISIBLE
+            }
+        }
+        recBanner.loadAd(AdRequest.Builder().build())
+        setVisibility(GONE)
+    }
+
+    private fun setVisibility(visibility: Int) {
+        if (activity is MainActivity) {
+            (activity as MainActivity).adView.visibility = visibility
+        } else if (activity is MusicActivity) {
+            (activity as MusicActivity).adViewMusic.visibility = visibility
+        }
     }
 
     private fun download(track: Track) {
@@ -128,5 +150,6 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         mp.stop()
         mp.release()
         sb.progress = 0
+        setVisibility(VISIBLE)
     }
 }
