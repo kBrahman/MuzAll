@@ -5,17 +5,23 @@ import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.music_item.view.*
 import muz.all.R
+import muz.all.activity.MusicActivity
 import muz.all.fragment.PlayerFragment
 import muz.all.util.TRACK
 import java.io.File
 
 
 class MusicAdapter(private val list: Array<File>) : RecyclerView.Adapter<MusicAdapter.MusicVH>() {
+
+    companion object {
+        private val TAG = MusicAdapter::class.java.simpleName
+    }
 
     private val retriever = MediaMetadataRetriever()
     private val player = PlayerFragment()
@@ -48,7 +54,13 @@ class MusicAdapter(private val list: Array<File>) : RecyclerView.Adapter<MusicAd
                 player.arguments = bundle
                 player.show((it.context as AppCompatActivity).supportFragmentManager, "player")
             }
+
+            item.setOnLongClickListener {
+                val activity = it.context as MusicActivity
+                activity.setFileAndMenuItemVisibility(list[adapterPosition])
+                Log.i(TAG, "on long click")
+                true
+            }
         }
     }
-
 }
