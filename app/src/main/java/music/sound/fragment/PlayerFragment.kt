@@ -1,4 +1,4 @@
-package muz.all.fragment
+package music.sound.fragment
 
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.DownloadManager
@@ -24,12 +24,12 @@ import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_music.*
 import kotlinx.android.synthetic.main.fragment_player.*
-import muz.all.R
-import muz.all.activity.MainActivity
-import muz.all.activity.MusicActivity
-import muz.all.component.DaggerFragmentComponent
-import muz.all.model.Track
-import muz.all.util.TRACK
+import music.sound.R
+import music.sound.activity.MainActivity
+import music.sound.activity.MusicActivity
+import music.sound.component.DaggerFragmentComponent
+import music.sound.model.Track
+import music.sound.util.TRACK
 import java.io.File
 import javax.inject.Inject
 

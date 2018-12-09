@@ -1,4 +1,4 @@
-package muz.all.activity
+package music.sound.activity
 
 import android.content.Context
 import android.os.Build
@@ -16,8 +16,8 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import kotlinx.android.synthetic.main.activity_music.*
-import muz.all.R
-import muz.all.adapter.MusicAdapter
+import music.sound.R
+import music.sound.adapter.MusicAdapter
 import java.io.File
 
 class MusicActivity : AppCompatActivity() {

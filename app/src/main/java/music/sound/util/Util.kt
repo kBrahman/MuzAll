@@ -1,3 +1,3 @@
-package muz.all.util
+package music.sound.util
 
 const val TRACK = "track"

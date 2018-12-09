@@ -18,12 +18,12 @@ android {
     }
     compileSdkVersion 28
     defaultConfig {
-        applicationId "muz.all"
+        applicationId "sound.music"
         minSdkVersion 16
         targetSdkVersion 28
         versionCode 4
         versionName "1.3"
-        buildConfigField "String", "CLIENT_ID", localProperties["client_id"]
+        buildConfigField "String", "SOUND_CLOUD_ID", localProperties["sound_cloud_id"]
     }
     buildTypes {
         release {

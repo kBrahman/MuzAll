@@ -1,6 +1,6 @@
-package muz.all.manager
+package music.sound.manager
 
-import muz.all.model.MuzResponse
+import music.sound.model.MuzResponse
 import retrofit2.Callback
 
 interface ApiManager {

@@ -1,9 +1,9 @@
-package muz.all.module
+package music.sound.module
 
 import dagger.Module
 import dagger.Provides
-import muz.all.manager.ApiManager
-import muz.all.manager.MuzApiManager
+import music.sound.manager.ApiManager
+import music.sound.manager.MuzApiManager
 
 @Module
 class ActivityModule {

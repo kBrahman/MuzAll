@@ -1,4 +1,4 @@
-package muz.all.activity
+package music.sound.activity
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.content.Intent
@@ -18,11 +18,11 @@ import android.view.View.VISIBLE
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
-import muz.all.R
-import muz.all.adapter.TrackAdapter
-import muz.all.component.DaggerActivityComponent
-import muz.all.manager.ApiManager
-import muz.all.model.MuzResponse
+import music.sound.R
+import music.sound.adapter.TrackAdapter
+import music.sound.component.DaggerActivityComponent
+import music.sound.manager.ApiManager
+import music.sound.model.MuzResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

@@ -1,8 +1,8 @@
-package muz.all.component
+package music.sound.component
 
 import dagger.Component
-import muz.all.activity.MainActivity
-import muz.all.module.ActivityModule
+import music.sound.activity.MainActivity
+import music.sound.module.ActivityModule
 
 @Component(modules = [ActivityModule::class])
 interface ActivityComponent {

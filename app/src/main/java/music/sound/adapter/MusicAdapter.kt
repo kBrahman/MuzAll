@@ -1,4 +1,4 @@
-package muz.all.adapter
+package music.sound.adapter
 
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
@@ -10,10 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.music_item.view.*
-import muz.all.R
-import muz.all.activity.MusicActivity
-import muz.all.fragment.PlayerFragment
-import muz.all.util.TRACK
+import music.sound.R
+import music.sound.activity.MusicActivity
+import music.sound.fragment.PlayerFragment
+import music.sound.util.TRACK
 import java.io.File
 
 

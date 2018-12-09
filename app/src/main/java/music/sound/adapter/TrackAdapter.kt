@@ -1,4 +1,4 @@
-package muz.all.adapter
+package music.sound.adapter
 
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
@@ -9,10 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.track_item.view.*
-import muz.all.R
-import muz.all.fragment.PlayerFragment
-import muz.all.model.Track
-import muz.all.util.TRACK
+import music.sound.R
+import music.sound.fragment.PlayerFragment
+import music.sound.model.Track
+import music.sound.util.TRACK
 
 class TrackAdapter(private val results: MutableList<Track>?) : RecyclerView.Adapter<TrackAdapter.VH>() {
 

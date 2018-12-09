@@ -1,4 +1,4 @@
-package muz.all.module
+package music.sound.module
 
 import android.media.MediaPlayer
 import dagger.Module
