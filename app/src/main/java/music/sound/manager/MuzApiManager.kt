@@ -18,8 +18,8 @@ class MuzApiManager @Inject constructor() : ApiManager {
     companion object {
         private val TAG = MuzApiManager::class.java.simpleName
         private const val SERVER =
-            "https://api.jamendo.com/v3.0/"
-        private const val PATH = "tracks/?format=json&limit=25&client_id=${BuildConfig.CLIENT_ID}"
+            "http://api.soundcloud.com/"
+        private const val PATH = "tracks/?limit=25&client_id=${BuildConfig.SOUND_CLOUD_ID}"
     }
 
     private var apiService: APIService
