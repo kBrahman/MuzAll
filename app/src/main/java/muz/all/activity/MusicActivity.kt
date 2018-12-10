@@ -25,7 +25,7 @@ class MusicActivity : AppCompatActivity() {
         private val TAG = MusicActivity::class.java.simpleName
     }
 
-    var menuItemDelete: MenuItem? = null
+    private var menuItemDelete: MenuItem? = null
     private lateinit var fileToDelete: File
 
     var ad: InterstitialAd? = null
@@ -80,10 +80,9 @@ class MusicActivity : AppCompatActivity() {
     private fun vibrate() {
         val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v?.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+            v?.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {
-            //deprecated in API 26
-            v?.vibrate(500)
+            v?.vibrate(50)
         }
     }
 }
