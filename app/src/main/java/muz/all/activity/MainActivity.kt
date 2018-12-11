@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private var loading = false
     private var trackAdapter: TrackAdapter? = null
     private var searching = false
+    private lateinit var q: String
 
     private val callback = object : Callback<MuzResponse> {
         override fun onFailure(call: Call<MuzResponse>, t: Throwable) = t.printStackTrace()
@@ -68,9 +69,10 @@ class MainActivity : AppCompatActivity() {
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
                     if (!loading) {
+                        loading = true
                         pb.visibility = VISIBLE
                         offset += 25
-                        getPopular(offset)
+                        if (searching) search(q, offset) else getPopular(offset)
                     }
                 }
             }
@@ -85,7 +87,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getPopular(offset: Int) {
-        loading = true
         manager.getPopular(offset, callback)
     }
 
@@ -99,6 +100,7 @@ class MainActivity : AppCompatActivity() {
             .setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(q: String): Boolean {
                     if (q.isNotBlank()) {
+                        this@MainActivity.q = q
                         offset = 0
                         trackAdapter = null
                         pb.visibility = VISIBLE
