@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Ұзақтығы: %s</string>
+    <string name="uploaded">Жүктелген күні: %s</string>
+    <string name="folder">Музыка</string>
+    <string name="my_music">Менің музыкам</string>
+</resources>
