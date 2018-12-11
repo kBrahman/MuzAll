@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">MuzAll</string>
     <string name="app_id">ca-app-pub-8761730220693010~3693194663</string>
     <string name="banner_id">ca-app-pub-8761730220693010/6770784149</string>
     <string name="int_id">ca-app-pub-8761730220693010/7789186490</string>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Tagal: %s</string>
+    <string name="released">"Petsa ng Paglabas: %s "</string>
+    <string name="folder">"Folder ng musika "</string>
+    <string name="my_music">"Ang aking Musika "</string>
+</resources>

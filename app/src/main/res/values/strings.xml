@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">MuzAll</string>
     <string name="duration">Duration: %s</string>
     <string name="released">Released: %s</string>
     <string name="folder">Music folder</string>
