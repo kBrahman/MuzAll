@@ -22,7 +22,7 @@ import music.sound.R
 import music.sound.adapter.TrackAdapter
 import music.sound.component.DaggerActivityComponent
 import music.sound.manager.ApiManager
-import music.sound.model.MuzResponse
+import music.sound.model.Track
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,15 +41,15 @@ class MainActivity : AppCompatActivity() {
     private var trackAdapter: TrackAdapter? = null
     private var searching = false
 
-    private val callback = object : Callback<MuzResponse> {
-        override fun onFailure(call: Call<MuzResponse>, t: Throwable) = t.printStackTrace()
+    private val callback = object : Callback<List<Track>> {
+        override fun onFailure(call: Call<List<Track>>, t: Throwable) = t.printStackTrace()
 
-        override fun onResponse(call: Call<MuzResponse>, response: Response<MuzResponse>) {
+        override fun onResponse(call: Call<List<Track>>, response: Response<List<Track>>) {
             if (trackAdapter == null) {
-                trackAdapter = TrackAdapter(response.body()?.results?.toMutableList())
+                trackAdapter = TrackAdapter(response.body()?.toMutableList())
                 rv.adapter = trackAdapter
             } else {
-                trackAdapter?.addData(response.body()?.results)
+                trackAdapter?.addData(response.body())
             }
             pb.visibility = GONE
             loading = false
@@ -70,7 +70,8 @@ class MainActivity : AppCompatActivity() {
                     if (!loading) {
                         pb.visibility = VISIBLE
                         offset += 25
-                        getPopular(offset)
+                        if (!searching) getPopular(offset) else search(q, offset)
+                        loading = true
                     }
                 }
             }
@@ -85,7 +86,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getPopular(offset: Int) {
-        loading = true
         manager.getPopular(offset, callback)
     }
 
@@ -93,12 +93,15 @@ class MainActivity : AppCompatActivity() {
         manager.search(q, offset, callback)
     }
 
+    private lateinit var q: String
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         (menu?.findItem(R.id.action_search)?.actionView as SearchView)
             .setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(q: String): Boolean {
                     if (q.isNotBlank()) {
+                        this@MainActivity.q = q
                         offset = 0
                         trackAdapter = null
                         pb.visibility = VISIBLE

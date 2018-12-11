@@ -13,6 +13,7 @@ import music.sound.R
 import music.sound.fragment.PlayerFragment
 import music.sound.model.Track
 import music.sound.util.TRACK
+import music.sound.util.milliSecondsToTime
 
 class TrackAdapter(private val results: MutableList<Track>?) : RecyclerView.Adapter<TrackAdapter.VH>() {
 
@@ -26,11 +27,10 @@ class TrackAdapter(private val results: MutableList<Track>?) : RecyclerView.Adap
     override fun onBindViewHolder(holder: VH, position: Int) {
         val track = results?.get(position)
         val view = holder.itemView
-        view.name.text = track?.name
-        view.artist.text = track?.artist_name
-        view.duration.text = view.context.getString(R.string.duration, track?.duration)
-        view.releaseDate.text = view.context.getString(R.string.released, track?.releasedate)
-        Picasso.get().load(track?.image).into(view.img)
+        view.name.text = track?.title
+        view.duration.text = view.context.getString(R.string.duration, milliSecondsToTime(track?.duration))
+        view.releaseDate.text = view.context.getString(R.string.uploaded, track?.created_at?.replace("+0000", ""))
+        Picasso.get().load(track?.artwork_url ?: track?.user?.avatar_url).into(view.img)
     }
 
     fun addData(data: List<Track>?) {

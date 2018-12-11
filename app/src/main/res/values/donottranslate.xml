@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">MusicSound</string>
     <string name="app_id">ca-app-pub-8761730220693010~7566621370</string>
     <string name="banner_id">ca-app-pub-8761730220693010/7375049681</string>
     <string name="int_id">ca-app-pub-8761730220693010/9123245620</string>

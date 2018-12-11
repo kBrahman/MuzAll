@@ -32,7 +32,7 @@ android {
             signingConfig signingConfigs.zhet
             applicationVariants.all { variant ->
                 variant.outputs.all {
-                    outputFileName = "MuzAll.apk"
+                    outputFileName = "MusicSound.apk"
                 }
             }
         }

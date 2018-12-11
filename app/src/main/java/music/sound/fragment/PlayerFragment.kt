@@ -24,6 +24,7 @@ import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_music.*
 import kotlinx.android.synthetic.main.fragment_player.*
+import music.sound.BuildConfig
 import music.sound.R
 import music.sound.activity.MainActivity
 import music.sound.activity.MusicActivity
@@ -54,8 +55,9 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         DaggerFragmentComponent.create().inject(this)
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
-            mp.setDataSource(track.audiodownload)
-            name.text = track.name
+            val streamUrl = track.stream_url + "?client_id=" + BuildConfig.SOUND_CLOUD_ID
+            mp.setDataSource(streamUrl)
+            name.text = track.title
 
         } else if (track is File) {
             mp.setDataSource(context, Uri.fromFile(track))
@@ -102,9 +104,9 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     private fun download(track: Track) {
         if (ContextCompat.checkSelfPermission(context!!, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
             val downloadManager = context?.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-            val uri = Uri.parse(track.audiodownload)
+            val uri = Uri.parse(track.stream_url)
             val request = DownloadManager.Request(uri)
-            downloadManager.enqueue(request.setDestinationInExternalPublicDir(DIRECTORY_MUSIC, track.name + ".mp3"))
+            downloadManager.enqueue(request.setDestinationInExternalPublicDir(DIRECTORY_MUSIC, track.title + ".mp3"))
         } else {
             requestPermissions(arrayOf(WRITE_EXTERNAL_STORAGE), 2)
         }

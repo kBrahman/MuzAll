@@ -5,10 +5,10 @@ import java.io.Serializable
 
 @Keep
 data class Track(
-    val name: String,
-    val duration: String,
-    val artist_name: String,
-    val releasedate: String,
-    val audiodownload: String,
-    val image: String
+    val title: String,
+    val duration: Int,
+    val created_at: String,
+    val artwork_url: String,
+    val stream_url: String,
+    val user: User
 ) : Serializable

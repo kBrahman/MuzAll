@@ -10,5 +10,6 @@
           app:showAsAction="ifRoom"
           android:id="@+id/action_folder"
           android:icon="@drawable/ic_folder_black_24dp"
-          android:onClick="openMusic"/>
+          android:onClick="openMusic"
+          android:visible="false"/>
 </menu>
