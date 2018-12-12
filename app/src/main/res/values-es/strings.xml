@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Duración: %s</string>
+    <string name="released">Fecha de lanzamiento: %s</string>
+    <string name="folder">"Carpeta de musica "</string>
+    <string name="my_music">"Mi música "</string>
+</resources>
