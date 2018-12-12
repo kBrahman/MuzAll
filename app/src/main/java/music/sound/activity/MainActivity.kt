@@ -17,6 +17,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
 import kotlinx.android.synthetic.main.activity_main.*
 import music.sound.R
 import music.sound.adapter.TrackAdapter
@@ -33,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private val TAG = MainActivity::class.java.simpleName
     }
+
+    var ad: InterstitialAd? = null
 
     @Inject
     lateinit var manager: ApiManager
@@ -83,6 +86,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
         adView.loadAd(AdRequest.Builder().build())
+        ad = InterstitialAd(this)
+        ad?.adUnitId = getString(R.string.int_id)
+        ad?.loadAd(AdRequest.Builder().build())
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        ad?.show()
     }
 
     private fun getPopular(offset: Int) {
