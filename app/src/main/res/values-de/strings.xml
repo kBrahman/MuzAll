@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Dauer: %s</string>
+    <string name="uploaded">Hochgeladenes Datum: %s</string>
+    <string name="folder">Musikordner</string>
+    <string name="my_music">Meine Musik</string>
+</resources>
