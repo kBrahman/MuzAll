@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Müddəti: %s</string>
+    <string name="released">Buraxılış tarixi: %s</string>
+    <string name="folder">"Musiqi qovluğu "</string>
+    <string name="my_music">Musiqiim</string>
+</resources>
