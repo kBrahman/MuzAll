@@ -21,8 +21,8 @@ android {
         applicationId "sound.music"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 9
-        versionName "1.8"
+        versionCode 19
+        versionName "1.9"
         buildConfigField "String", "SOUND_CLOUD_ID", localProperties["sound_cloud_id"]
     }
     buildTypes {
