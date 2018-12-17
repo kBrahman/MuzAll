@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">持续时间: %s</string>
+    <string name="released">行时间: %s</string>
+    <string name="folder">"音乐文件夹 "</string>
+    <string name="my_music">"我的音乐 "</string>
+</resources>
