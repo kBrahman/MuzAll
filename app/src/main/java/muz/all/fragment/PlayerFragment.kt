@@ -13,6 +13,7 @@ import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -54,7 +55,9 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         DaggerFragmentComponent.create().inject(this)
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
-            mp.setDataSource(track.audiodownload)
+            val audio = track.audio
+            Log.i(TAG, "url=>$audio")
+            mp.setDataSource(audio)
             name.text = track.name
 
         } else if (track is File) {
@@ -102,7 +105,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     private fun download(track: Track) {
         if (ContextCompat.checkSelfPermission(context!!, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
             val downloadManager = context?.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-            val uri = Uri.parse(track.audiodownload)
+            val uri = Uri.parse(track.audio)
             val request = DownloadManager.Request(uri)
             downloadManager.enqueue(request.setDestinationInExternalPublicDir(DIRECTORY_MUSIC, track.name + ".mp3"))
         } else {

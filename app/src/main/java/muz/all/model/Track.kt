@@ -9,6 +9,6 @@ data class Track(
     val duration: String,
     val artist_name: String,
     val releasedate: String,
-    val audiodownload: String,
+    val audio: String,
     val image: String
 ) : Serializable
