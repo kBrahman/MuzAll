@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Doba trvání: %s</string>
+    <string name="released">Datum vydání: %s</string>
+    <string name="folder">Hudební složka</string>
+    <string name="my_music">Moje hudba</string>
+</resources>
