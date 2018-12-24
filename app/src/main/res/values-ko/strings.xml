@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">지속: %s</string>
+    <string name="uploaded">업로드 날짜 : %s</string>
+    <string name="folder">음악 폴더</string>
+    <string name="my_music">내 음악</string>
+</resources>
