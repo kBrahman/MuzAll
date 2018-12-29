@@ -8,7 +8,6 @@ import android.os.Environment.getExternalStoragePublicDirectory
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.VISIBLE
@@ -33,7 +32,6 @@ class MusicActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_music)
         val files = getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles()
-        Log.i(TAG, files.size.toString())
         rvMusic.setHasFixedSize(true)
         rvMusic.adapter = MusicAdapter(files)
         adViewMusic.adListener = object : AdListener() {
