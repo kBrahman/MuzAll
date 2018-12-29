@@ -45,3 +45,4 @@
 }
 -optimizations !class/unboxing/enum
 -keep class com.example.app.json.** { *; }
+-keepattributes LineNumberTable
