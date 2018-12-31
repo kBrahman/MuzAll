@@ -18,8 +18,7 @@
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
- -keepattributes Signature, InnerClasses, EnclosingMethod, Annotation
+-renamesourcefileattribute SourceFile
  -keepclassmembers,allowshrinking,allowobfuscation interface * {
      @retrofit2.http.* <methods>;
  }
@@ -44,4 +43,4 @@
     public <methods>;
 }
 -optimizations !class/unboxing/enum
--keepattributes LineNumberTable
+-keepattributes SourceFile,LineNumberTable
