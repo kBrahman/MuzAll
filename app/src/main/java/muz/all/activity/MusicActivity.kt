@@ -25,7 +25,7 @@ class MusicActivity : AppCompatActivity() {
     }
 
     private var menuItemDelete: MenuItem? = null
-    private lateinit var fileToDelete: File
+    private var fileToDelete: File? = null
 
     var ad: InterstitialAd? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,12 +62,12 @@ class MusicActivity : AppCompatActivity() {
     }
 
     fun delete(item: MenuItem) {
-        fileToDelete.delete()
+        fileToDelete?.delete()
         rvMusic.adapter = MusicAdapter(getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles())
         item.isVisible = false
     }
 
-    fun setFileAndMenuItemVisibility(file: File) {
+    fun setFileAndMenuItemVisibility(file: File?) {
         menuItemDelete.let {
             fileToDelete = file
             it?.isVisible = true

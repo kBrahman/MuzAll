@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">කාල සීමාව: %s</string>
+    <string name="released">නිකුත් කරන ලදි: %s</string>
+    <string name="folder">සංගීත ෆෝල්ඩරය</string>
+    <string name="my_music">මගේ සංගීතය</string>
+</resources>

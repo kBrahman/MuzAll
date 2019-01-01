@@ -17,7 +17,7 @@ import muz.all.util.TRACK
 import java.io.File
 
 
-class MusicAdapter(private val list: Array<File>) : RecyclerView.Adapter<MusicAdapter.MusicVH>() {
+class MusicAdapter(private val list: Array<File>?) : RecyclerView.Adapter<MusicAdapter.MusicVH>() {
 
     companion object {
         private val TAG = MusicAdapter::class.java.simpleName
@@ -29,13 +29,13 @@ class MusicAdapter(private val list: Array<File>) : RecyclerView.Adapter<MusicAd
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int) =
         MusicVH(LayoutInflater.from(p0.context).inflate(R.layout.music_item, p0, false))
 
-    override fun getItemCount() = list.size
+    override fun getItemCount() = list?.size ?: 0
 
     override fun onBindViewHolder(holder: MusicVH, i: Int) {
-        val file = list[i]
-        holder.itemView.musicName.text = file.name
+        val file = list?.get(i)
+        holder.itemView.musicName.text = file?.name
         try {
-            retriever.setDataSource(file.absolutePath)
+            retriever.setDataSource(file?.absolutePath)
         } catch (e: RuntimeException) {
             e.printStackTrace()
         }
@@ -50,14 +50,14 @@ class MusicAdapter(private val list: Array<File>) : RecyclerView.Adapter<MusicAd
         init {
             item.setOnClickListener {
                 val bundle = Bundle()
-                bundle.putSerializable(TRACK, list[adapterPosition])
+                bundle.putSerializable(TRACK, list?.get(adapterPosition))
                 player.arguments = bundle
                 player.show((it.context as AppCompatActivity).supportFragmentManager, "player")
             }
 
             item.setOnLongClickListener {
                 val activity = it.context as MusicActivity
-                activity.setFileAndMenuItemVisibility(list[adapterPosition])
+                activity.setFileAndMenuItemVisibility(list?.get(adapterPosition))
                 Log.i(TAG, "on long click")
                 true
             }
