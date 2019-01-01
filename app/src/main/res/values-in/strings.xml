@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Lamanya: %s</string>
+    <string name="uploaded">Tanggal Pengunggahan: %s</string>
+    <string name="folder">Folder musik</string>
+    <string name="my_music">Lagu saya</string>
+</resources>
