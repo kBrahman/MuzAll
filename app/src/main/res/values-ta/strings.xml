@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">காலம்: %s</string>
+    <string name="released">வெளிவரும் தேதி: %s</string>
+    <string name="folder">இசை கோப்புறை</string>
+    <string name="my_music">என் இசை</string>
+</resources>
