@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
@@ -46,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         override fun onFailure(call: Call<MuzResponse>, t: Throwable) = t.printStackTrace()
 
         override fun onResponse(call: Call<MuzResponse>, response: Response<MuzResponse>) {
+            Log.i(TAG, response.message())
             if (trackAdapter == null) {
                 trackAdapter = TrackAdapter(response.body()?.results?.toMutableList())
                 rv.adapter = trackAdapter

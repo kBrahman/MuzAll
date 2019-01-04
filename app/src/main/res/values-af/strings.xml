@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Duur: %s</string>
+    <string name="released">Releasedatum: %s</string>
+    <string name="folder">Musiek gids</string>
+    <string name="my_music">My musiek</string>
+</resources>

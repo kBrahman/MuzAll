@@ -148,11 +148,11 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 
     override fun onDismiss(dialog: DialogInterface?) {
-        super.onDismiss(dialog)
         handler.removeCallbacks(this)
         mp.stop()
         mp.release()
         sb.progress = 0
         setVisibility(VISIBLE)
+        super.onDismiss(dialog)
     }
 }
