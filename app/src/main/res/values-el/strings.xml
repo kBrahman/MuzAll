@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Διάρκεια: %s</string>
+    <string name="released">Ημερομηνία κυκλοφορίας: %s</string>
+    <string name="folder">Φάκελος μουσικής</string>
+    <string name="my_music">Η μουσική μου</string>
+</resources>

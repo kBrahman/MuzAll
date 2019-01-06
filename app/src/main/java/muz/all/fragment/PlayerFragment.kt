@@ -43,6 +43,8 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     @Inject
     lateinit var mp: MediaPlayer
     private val handler = Handler()
+    private var isPrepared = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
@@ -121,6 +123,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
+        isPrepared = true
         mp?.start()
         pbPlayer.visibility = GONE
         startSeekBar()
@@ -149,10 +152,12 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
 
     override fun onDismiss(dialog: DialogInterface?) {
         handler.removeCallbacks(this)
-        mp.stop()
+        if (isPrepared) mp.stop()
         mp.release()
         sb.progress = 0
         setVisibility(VISIBLE)
+        isPrepared = false
         super.onDismiss(dialog)
     }
 }
+
