@@ -72,9 +72,9 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         mp.setOnCompletionListener {
             play.setImageResource(android.R.drawable.ic_media_play)
             handler.removeCallbacks(this)
-            sb.progress = 0
+            seekBar.progress = 0
         }
-        sb.setOnSeekBarChangeListener(this)
+        seekBar.setOnSeekBarChangeListener(this)
         play.setOnClickListener {
             if (mp.isPlaying) {
                 mp.pause()
@@ -89,7 +89,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         }
         recBanner.adListener = object : AdListener() {
             override fun onAdLoaded() {
-                recBanner.visibility = VISIBLE
+                recBanner?.visibility = VISIBLE
             }
         }
         recBanner.loadAd(AdRequest.Builder().build())
@@ -135,7 +135,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
 
     override fun run() {
         val currentPosition = mp.currentPosition
-        sb?.progress = currentPosition.times(100).div(mp.duration)
+        seekBar?.progress = currentPosition.times(100).div(mp.duration)
         startSeekBar()
     }
 
@@ -154,7 +154,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         handler.removeCallbacks(this)
         if (isPrepared) mp.stop()
         mp.release()
-        sb.progress = 0
+        seekBar.progress = 0
         setVisibility(VISIBLE)
         isPrepared = false
         super.onDismiss(dialog)

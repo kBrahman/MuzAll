@@ -23,7 +23,7 @@
             app:layout_constraintTop_toBottomOf="@id/name"/>
     <SeekBar android:layout_width="0dp"
              android:layout_height="wrap_content"
-             android:id="@+id/sb"
+             android:id="@+id/seekBar"
              app:layout_constraintStart_toEndOf="@id/play"
              app:layout_constraintTop_toTopOf="@id/play"
              app:layout_constraintBottom_toBottomOf="@id/play"
