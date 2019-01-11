@@ -19,6 +19,7 @@ import android.view.View.VISIBLE
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
+import muz.all.BuildConfig
 import muz.all.R
 import muz.all.adapter.TrackAdapter
 import muz.all.component.DaggerActivityComponent
@@ -47,8 +48,11 @@ class MainActivity : AppCompatActivity() {
         override fun onFailure(call: Call<MuzResponse>, t: Throwable) = t.printStackTrace()
 
         override fun onResponse(call: Call<MuzResponse>, response: Response<MuzResponse>) {
-            Log.i(TAG, response.message())
-            if (trackAdapter == null) {
+            Log.i(TAG, response.body().toString())
+            if (response.body()?.results?.isEmpty() == true && trackAdapter == null) {
+                manager.clientId = BuildConfig.CLIENT_ID_2
+                manager.getPopular(offset, this)
+            } else if (trackAdapter == null) {
                 trackAdapter = TrackAdapter(response.body()?.results?.toMutableList())
                 rv.adapter = trackAdapter
             } else {

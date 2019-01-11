@@ -19,10 +19,11 @@ class MuzApiManager @Inject constructor() : ApiManager {
         private val TAG = MuzApiManager::class.java.simpleName
         private const val SERVER =
             "https://api.jamendo.com/v3.0/"
-        private const val PATH = "tracks/?format=json&limit=25&client_id=${BuildConfig.CLIENT_ID}"
+        private const val PATH = "tracks/?format=json&limit=25"
     }
 
     private var apiService: APIService
+    override var clientId = BuildConfig.CLIENT_ID_1
 
     init {
         apiService = Retrofit.Builder()
@@ -33,17 +34,24 @@ class MuzApiManager @Inject constructor() : ApiManager {
     }
 
     override fun search(q: String, offset: Int, callback: Callback<MuzResponse>) =
-        apiService.search(q, offset).enqueue(callback)
+        apiService.search(q, offset, clientId).enqueue(callback)
 
     override fun getPopular(offset: Int, callback: Callback<MuzResponse>) =
-        apiService.getPopular(offset).enqueue(callback)
+        apiService.getPopular(offset, clientId).enqueue(callback)
 
     private interface APIService {
 
         @GET(PATH)
-        fun search(@Query("search") q: String, @Query("offset") offset: Int): Call<MuzResponse>
+        fun search(
+            @Query("search") q: String,
+            @Query("offset") offset: Int,
+            @Query("client_id") id: String
+        ): Call<MuzResponse>
 
         @GET("$PATH&order=popularity_month")
-        fun getPopular(@Query("offset") offset: Int): Call<MuzResponse>
+        fun getPopular(
+            @Query("offset") offset: Int,
+            @Query("client_id") id: String
+        ): Call<MuzResponse>
     }
 }
