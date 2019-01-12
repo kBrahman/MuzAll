@@ -49,7 +49,9 @@ class MainActivity : AppCompatActivity() {
 
         override fun onResponse(call: Call<MuzResponse>, response: Response<MuzResponse>) {
             Log.i(TAG, response.body().toString())
+            pb.visibility = GONE
             if (response.body()?.results?.isEmpty() == true && trackAdapter == null) {
+                pb.visibility = VISIBLE
                 manager.clientId = BuildConfig.CLIENT_ID_2
                 manager.getPopular(offset, this)
             } else if (trackAdapter == null) {
@@ -58,7 +60,6 @@ class MainActivity : AppCompatActivity() {
             } else {
                 trackAdapter?.addData(response.body()?.results)
             }
-            pb.visibility = GONE
             loading = false
         }
     }
