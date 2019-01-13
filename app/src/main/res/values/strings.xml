@@ -3,4 +3,6 @@
     <string name="released">Released: %s</string>
     <string name="folder">Music folder</string>
     <string name="my_music">My music</string>
+    <string name="could_not_play_file">Could not play the track, sorry</string>
+    <string name="service_unavailable">Service unavailable, try again later please</string>
 </resources>

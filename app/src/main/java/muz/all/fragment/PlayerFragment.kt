@@ -20,6 +20,8 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.SeekBar
+import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
@@ -61,11 +63,12 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
             Log.i(TAG, "url=>$audio")
             mp.setDataSource(audio)
             name.text = track.name
-
-        } else if (track is File) {
-            mp.setDataSource(context, Uri.fromFile(track))
+        } else if (track is File && track.exists()) {
+            mp.setDataSource(context!!, Uri.fromFile(track))
             download.visibility = GONE
             name.text = track.name
+        } else {
+            Toast.makeText(context, R.string.could_not_play_file, LENGTH_LONG).show()
         }
         mp.setOnPreparedListener(this)
         mp.prepareAsync()

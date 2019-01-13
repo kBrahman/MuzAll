@@ -16,6 +16,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
@@ -43,21 +45,25 @@ class MainActivity : AppCompatActivity() {
     private var trackAdapter: TrackAdapter? = null
     private var searching = false
     private lateinit var q: String
-
+    private val idIterator = listOf(BuildConfig.CLIENT_ID_2, BuildConfig.CLIENT_ID_3).iterator()
     private val callback = object : Callback<MuzResponse> {
         override fun onFailure(call: Call<MuzResponse>, t: Throwable) = t.printStackTrace()
 
         override fun onResponse(call: Call<MuzResponse>, response: Response<MuzResponse>) {
             Log.i(TAG, response.body().toString())
-            pb.visibility = GONE
-            if (response.body()?.results?.isEmpty() == true && trackAdapter == null) {
+            if (response.body()?.results?.isEmpty() == true && !searching && idIterator.hasNext()) {
                 pb.visibility = VISIBLE
-                manager.clientId = BuildConfig.CLIENT_ID_2
+                manager.clientId = idIterator.next()
                 manager.getPopular(offset, this)
+            } else if (response.body()?.results?.isEmpty() == true && !searching) {
+                pb.visibility = GONE
+                Toast.makeText(this@MainActivity, R.string.service_unavailable, LENGTH_LONG).show()
             } else if (trackAdapter == null) {
+                pb.visibility = GONE
                 trackAdapter = TrackAdapter(response.body()?.results?.toMutableList())
                 rv.adapter = trackAdapter
             } else {
+                pb.visibility = GONE
                 trackAdapter?.addData(response.body()?.results)
             }
             loading = false
