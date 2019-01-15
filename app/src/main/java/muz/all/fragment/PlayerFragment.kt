@@ -128,7 +128,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     override fun onPrepared(mp: MediaPlayer?) {
         isPrepared = true
         mp?.start()
-        pbPlayer.visibility = GONE
+        pbPlayer?.visibility = GONE
         startSeekBar()
     }
 

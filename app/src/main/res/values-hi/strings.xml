@@ -4,4 +4,6 @@
     <string name="released">रिलीज़ की तारीख: %s</string>
     <string name="folder">संगीत फ़ोल्डर</string>
     <string name="my_music">मेरा संगीत</string>
+    <string name="could_not_play_file">ट्रैक नहीं चला सका, क्षमा करें</string>
+    <string name="service_unavailable">सेवा अनुपलब्ध है, कृपया बाद में पुनः प्रयास करें</string>
 </resources>
