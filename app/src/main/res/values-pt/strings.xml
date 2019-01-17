@@ -4,4 +4,6 @@
     <string name="released">Data de lançamento: %s</string>
     <string name="folder">Pasta de música </string>
     <string name="my_music">Minha música </string>
+    <string name="could_not_play_file">"Não foi possível reproduzir a faixa, desculpe "</string>
+    <string name="service_unavailable">"Serviço indisponível, tente novamente mais tarde por favor "</string>
 </resources>

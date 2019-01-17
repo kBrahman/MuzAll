@@ -64,7 +64,9 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
             mp.setDataSource(audio)
             name.text = track.name
         } else if (track is File && track.exists()) {
-            mp.setDataSource(context!!, Uri.fromFile(track))
+            context.let {
+                mp.setDataSource(it, Uri.fromFile(track))
+            }
             download.visibility = GONE
             name.text = track.name
         } else {
