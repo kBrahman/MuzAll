@@ -45,7 +45,8 @@ class MainActivity : AppCompatActivity() {
     private var trackAdapter: TrackAdapter? = null
     private var searching = false
     private lateinit var q: String
-    private val idIterator = listOf(BuildConfig.CLIENT_ID_2, BuildConfig.CLIENT_ID_3).iterator()
+    private val idIterator =
+        listOf(BuildConfig.CLIENT_ID_2, BuildConfig.CLIENT_ID_3, BuildConfig.CLIENT_ID_4).iterator()
     private val callback = object : Callback<MuzResponse> {
         override fun onFailure(call: Call<MuzResponse>, t: Throwable) = t.printStackTrace()
 
