@@ -13,7 +13,7 @@ import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
-import android.util.Log
+import android.system.ErrnoException
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -34,6 +34,7 @@ import muz.all.component.DaggerFragmentComponent
 import muz.all.model.Track
 import muz.all.util.TRACK
 import java.io.File
+import java.io.FileNotFoundException
 import javax.inject.Inject
 
 class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar.OnSeekBarChangeListener, Runnable {
@@ -60,12 +61,13 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
             val audio = track.audio
-            Log.i(TAG, "url=>$audio")
             mp.setDataSource(audio)
             name.text = track.name
         } else if (track is File && track.exists()) {
-            context.let {
-                mp.setDataSource(it, Uri.fromFile(track))
+            try {
+                mp.setDataSource(context, Uri.fromFile(track))
+            } catch (ex: FileNotFoundException) {
+
             }
             download.visibility = GONE
             name.text = track.name
