@@ -1,5 +1,6 @@
 package muz.all.adapter
 
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
@@ -18,8 +19,11 @@ class TrackAdapter(private val results: MutableList<Track>?) : RecyclerView.Adap
 
     private val player: DialogFragment = PlayerFragment()
 
-    override fun onCreateViewHolder(p0: ViewGroup, p1: Int) =
-        VH(LayoutInflater.from(p0.context).inflate(R.layout.track_item, p0, false))
+    override fun onCreateViewHolder(group: ViewGroup, p1: Int) =
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN)
+            VH(LayoutInflater.from(group.context).inflate(R.layout.track_item, group, false))
+        else VH(LayoutInflater.from(group.context).inflate(R.layout.track_item_api_16, group, false))
+
 
     override fun getItemCount() = results?.size ?: 0
 

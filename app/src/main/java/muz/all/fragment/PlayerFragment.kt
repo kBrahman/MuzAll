@@ -13,7 +13,6 @@ import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
-import android.system.ErrnoException
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -67,12 +66,14 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
             try {
                 mp.setDataSource(context, Uri.fromFile(track))
             } catch (ex: FileNotFoundException) {
-
+                Toast.makeText(context, R.string.could_not_play_file, LENGTH_LONG).show()
+                return
             }
             download.visibility = GONE
             name.text = track.name
         } else {
             Toast.makeText(context, R.string.could_not_play_file, LENGTH_LONG).show()
+            return
         }
         mp.setOnPreparedListener(this)
         mp.prepareAsync()
