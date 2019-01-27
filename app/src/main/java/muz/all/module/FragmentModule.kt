@@ -12,7 +12,7 @@ import dagger.Provides
 @Module
 class FragmentModule {
     @Provides
-    fun provideMediaPlayer(): MediaPlayer {
+    fun provideMediaPlayer(): MediaPlayer? {
         val mp = MediaPlayer()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mp.setAudioAttributes(AudioAttributes.Builder().setContentType(CONTENT_TYPE_MUSIC).setUsage(USAGE_MEDIA).build())

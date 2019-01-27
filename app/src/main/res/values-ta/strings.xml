@@ -4,6 +4,6 @@
     <string name="released">வெளிவரும் தேதி: %s</string>
     <string name="folder">இசை கோப்புறை</string>
     <string name="my_music">என் இசை</string>
-    <string name="could_not_play_file">ไม่สามารถเล่นแทร็กได้ขออภัย</string>
-    <string name="service_unavailable">ไม่สามารถใช้บริการได้โปรดลองอีกครั้งในภายหลัง</string>
+    <string name="could_not_play_file">"பாதையை இயக்க முடியவில்லை, மன்னிக்கவும் "</string>
+    <string name="service_unavailable">"சேவை கிடைக்கவில்லை, பிறகு மீண்டும் முயற்சிக்கவும் "</string>
 </resources>

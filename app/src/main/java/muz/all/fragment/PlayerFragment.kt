@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
@@ -42,29 +43,36 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         private val TAG = PlayerFragment::class.java.simpleName
     }
 
-    @Inject
-    lateinit var mp: MediaPlayer
+    @set:Inject
+    var mp: MediaPlayer? = null
+
     private val handler = Handler()
     private var isPrepared = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
+        setStyle(STYLE_NO_TITLE, theme)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-        inflater.inflate(R.layout.fragment_player, container, false)
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN)
+            inflater.inflate(
+                R.layout.fragment_player,
+                container,
+                false
+            ) else inflater.inflate(R.layout.fragment_player_api_16, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         DaggerFragmentComponent.create().inject(this)
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
             val audio = track.audio
-            mp.setDataSource(audio)
+            mp?.setDataSource(audio)
             name.text = track.name
         } else if (track is File && track.exists()) {
             try {
-                mp.setDataSource(context, Uri.fromFile(track))
+                mp?.setDataSource(context, Uri.fromFile(track))
             } catch (ex: FileNotFoundException) {
                 Toast.makeText(context, R.string.could_not_play_file, LENGTH_LONG).show()
                 return
@@ -75,20 +83,20 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
             Toast.makeText(context, R.string.could_not_play_file, LENGTH_LONG).show()
             return
         }
-        mp.setOnPreparedListener(this)
-        mp.prepareAsync()
-        mp.setOnCompletionListener {
+        mp?.setOnPreparedListener(this)
+        mp?.prepareAsync()
+        mp?.setOnCompletionListener {
             play.setImageResource(android.R.drawable.ic_media_play)
             handler.removeCallbacks(this)
             seekBar.progress = 0
         }
         seekBar.setOnSeekBarChangeListener(this)
         play.setOnClickListener {
-            if (mp.isPlaying) {
-                mp.pause()
+            if (mp?.isPlaying == true) {
+                mp?.pause()
                 play.setImageResource(android.R.drawable.ic_media_play)
             } else {
-                mp.start()
+                mp?.start()
                 play.setImageResource(android.R.drawable.ic_media_pause)
             }
         }
@@ -142,15 +150,15 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     }
 
     override fun run() {
-        val currentPosition = mp.currentPosition
-        seekBar?.progress = currentPosition.times(100).div(mp.duration)
+        val currentPosition = mp?.currentPosition ?: 0
+        seekBar?.progress = currentPosition.times(100).div(mp?.duration ?: 1)
         startSeekBar()
     }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         if (fromUser) {
             seekBar?.progress = progress
-            mp.seekTo(progress.times(mp.duration).div(100))
+            mp?.seekTo(progress.times(mp?.duration ?: 0).div(100))
         }
     }
 
@@ -160,8 +168,8 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
 
     override fun onDismiss(dialog: DialogInterface?) {
         handler.removeCallbacks(this)
-        if (isPrepared) mp.stop()
-        mp.release()
+        if (isPrepared) mp?.stop()
+        mp?.release()
         seekBar.progress = 0
         setVisibility(VISIBLE)
         isPrepared = false
