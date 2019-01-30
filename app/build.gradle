@@ -21,14 +21,15 @@ android {
         applicationId "muz.all"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 29
-        versionName "1.28"
+        versionCode 30
+        versionName "1.29"
         buildConfigField "String", "CLIENT_ID_1", localProperties["client_id_1"]
         buildConfigField "String", "CLIENT_ID_2", localProperties["client_id_2"]
         buildConfigField "String", "CLIENT_ID_3", localProperties["client_id_3"]
         buildConfigField "String", "CLIENT_ID_4", localProperties["client_id_4"]
         buildConfigField "String", "CLIENT_ID_5", localProperties["client_id_5"]
         buildConfigField "String", "CLIENT_ID_6", localProperties["client_id_6"]
+        buildConfigField "String", "CLIENT_ID_7", localProperties["client_id_7"]
     }
     buildTypes {
         release {
