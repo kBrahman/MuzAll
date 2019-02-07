@@ -13,21 +13,16 @@ import android.view.MenuItem
 import android.view.View.VISIBLE
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
 import kotlinx.android.synthetic.main.activity_music.*
 import muz.all.R
 import muz.all.adapter.MusicAdapter
 import java.io.File
 
 class MusicActivity : AppCompatActivity() {
-    companion object {
-        private val TAG = MusicActivity::class.java.simpleName
-    }
 
     private var menuItemDelete: MenuItem? = null
     private var fileToDelete: File? = null
 
-    var ad: InterstitialAd? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_music)
@@ -40,9 +35,6 @@ class MusicActivity : AppCompatActivity() {
             }
         }
         adViewMusic.loadAd(AdRequest.Builder().build())
-        ad = InterstitialAd(this)
-        ad?.adUnitId = getString(R.string.int_id)
-        ad?.loadAd(AdRequest.Builder().build())
         setSupportActionBar(toolbar)
     }
 
@@ -51,7 +43,6 @@ class MusicActivity : AppCompatActivity() {
             menuItemDelete!!.isVisible = false
         } else {
             super.onBackPressed()
-            ad?.show()
         }
     }
 

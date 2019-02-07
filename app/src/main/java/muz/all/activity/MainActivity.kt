@@ -20,6 +20,7 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
 import kotlinx.android.synthetic.main.activity_main.*
 import muz.all.BuildConfig
 import muz.all.R
@@ -45,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private var trackAdapter: TrackAdapter? = null
     private var searching = false
     private lateinit var q: String
+    var ad: InterstitialAd? = null
     private val idIterator = listOf(
         BuildConfig.CLIENT_ID_2,
         BuildConfig.CLIENT_ID_3,
@@ -104,6 +106,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
         adView.loadAd(AdRequest.Builder().build())
+        ad = InterstitialAd(this)
+        ad?.adUnitId = getString(R.string.int_id)
+        ad?.loadAd(AdRequest.Builder().build())
     }
 
     private fun getPopular(offset: Int) {
@@ -149,5 +154,10 @@ class MainActivity : AppCompatActivity() {
             openMusic(null)
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onBackPressed() {
+        ad?.show()
+        super.onBackPressed()
     }
 }
