@@ -9,5 +9,5 @@ import muz.all.manager.MuzApiManager
 class ActivityModule {
 
     @Provides
-    fun provideMuzApiManager(): ApiManager = MuzApiManager()
+    fun provideMuzApiManager(manager: MuzApiManager): ApiManager = manager
 }

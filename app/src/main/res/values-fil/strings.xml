@@ -4,4 +4,6 @@
     <string name="released">Petsa ng Paglabas: %s</string>
     <string name="folder">"Folder ng musika "</string>
     <string name="my_music">"Ang aking Musika "</string>
+    <string name="could_not_play_file">"Hindi ma-play ang track, sorry "</string>
+    <string name="service_unavailable">"Hindi magagamit ang serbisyo, subukang muli ulit mamaya "</string>
 </resources>

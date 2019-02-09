@@ -59,7 +59,6 @@ class MainActivity : AppCompatActivity() {
         override fun onFailure(call: Call<MuzResponse>, t: Throwable) = t.printStackTrace()
 
         override fun onResponse(call: Call<MuzResponse>, response: Response<MuzResponse>) {
-            Log.i(TAG, response.body().toString())
             if (response.body()?.results?.isEmpty() == true && !searching && idIterator.hasNext()) {
                 pb.visibility = VISIBLE
                 manager.clientId = idIterator.next()

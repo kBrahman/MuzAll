@@ -151,7 +151,9 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
 
     override fun run() {
         val currentPosition = mp?.currentPosition ?: 0
-        seekBar?.progress = currentPosition.times(100).div(mp?.duration ?: 1)
+        var dur = mp?.duration ?: 1
+        if (dur != 0) dur = currentPosition.times(100).div(dur)
+        seekBar?.progress = dur
         startSeekBar()
     }
 
