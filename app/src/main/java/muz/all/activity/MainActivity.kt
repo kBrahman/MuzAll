@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
@@ -70,6 +69,9 @@ class MainActivity : AppCompatActivity() {
                 pb.visibility = GONE
                 trackAdapter = TrackAdapter(response.body()?.results?.toMutableList())
                 rv.adapter = trackAdapter
+                if (!searching) {
+                    ad?.show()
+                }
             } else {
                 pb.visibility = GONE
                 trackAdapter?.addData(response.body()?.results)
@@ -153,10 +155,5 @@ class MainActivity : AppCompatActivity() {
             openMusic(null)
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    override fun onBackPressed() {
-        ad?.show()
-        super.onBackPressed()
     }
 }
