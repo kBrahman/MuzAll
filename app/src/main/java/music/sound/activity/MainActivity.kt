@@ -91,11 +91,6 @@ class MainActivity : AppCompatActivity() {
         ad?.loadAd(AdRequest.Builder().build())
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        ad?.show()
-    }
-
     private fun getPopular(offset: Int) {
         manager.getPopular(offset, callback)
     }
