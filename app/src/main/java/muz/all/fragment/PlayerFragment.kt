@@ -22,10 +22,7 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_music.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import muz.all.R
 import muz.all.activity.MainActivity
@@ -103,20 +100,14 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         download.setOnClickListener {
             download(track as Track)
         }
-        recBanner.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                recBanner?.visibility = VISIBLE
-            }
-        }
-        recBanner.loadAd(AdRequest.Builder().build())
         setVisibility(GONE)
     }
 
     private fun setVisibility(visibility: Int) {
         if (activity is MainActivity) {
-            (activity as MainActivity).adView.visibility = visibility
+            (activity as MainActivity).adViewLayout.visibility = visibility
         } else if (activity is MusicActivity) {
-            (activity as MusicActivity).adViewMusic.visibility = visibility
+//            (activity as MusicActivity).adViewMusic.visibility = visibility
         }
     }
 

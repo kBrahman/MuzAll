@@ -11,15 +11,17 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
+import com.startapp.android.publish.ads.banner.BannerListener
+import com.startapp.android.publish.adsCommon.StartAppAd
+import com.startapp.android.publish.adsCommon.StartAppSDK
 import kotlinx.android.synthetic.main.activity_main.*
 import muz.all.BuildConfig
 import muz.all.R
@@ -45,7 +47,8 @@ class MainActivity : AppCompatActivity() {
     private var trackAdapter: TrackAdapter? = null
     private var searching = false
     private lateinit var q: String
-    var ad: InterstitialAd? = null
+    private var bannerAdReceived = false
+    private var isPaused = false
     private val idIterator = listOf(
         BuildConfig.CLIENT_ID_2,
         BuildConfig.CLIENT_ID_3,
@@ -69,9 +72,6 @@ class MainActivity : AppCompatActivity() {
                 pb.visibility = GONE
                 trackAdapter = TrackAdapter(response.body()?.results?.toMutableList())
                 rv.adapter = trackAdapter
-                if (!searching) {
-                    ad?.show()
-                }
             } else {
                 pb.visibility = GONE
                 trackAdapter?.addData(response.body()?.results)
@@ -101,15 +101,51 @@ class MainActivity : AppCompatActivity() {
             }
         })
         setSupportActionBar(toolbar)
-        adView.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                adView.visibility = VISIBLE
+        StartAppSDK.init(this, getString(R.string.app_id), true)
+        StartAppSDK.setUserConsent(
+            this,
+            "pas",
+            System.currentTimeMillis(),
+            true
+        )
+        adView.setBannerListener(object : BannerListener {
+            override fun onClick(p0: View?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
+
+            override fun onFailedToReceiveAd(p0: View?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onReceiveAd(view: View?) {
+                Log.i(TAG, "onReceiveAd, isPaused=>$isPaused")
+                if (!isPaused) {
+                    adViewLayout.visibility = VISIBLE
+                }
+                bannerAdReceived = true
+            }
+        })
+    }
+
+    override fun onPause() {
+        Log.i(TAG, "onPause")
+        adViewLayout.visibility = GONE
+        isPaused = true
+        super.onPause()
+    }
+
+    override fun onResume() {
+        Log.i(TAG, "onResume, bannerAdReceived=>$bannerAdReceived")
+        super.onResume()
+        if (bannerAdReceived) {
+            adViewLayout.visibility = VISIBLE
         }
-        adView.loadAd(AdRequest.Builder().build())
-        ad = InterstitialAd(this)
-        ad?.adUnitId = getString(R.string.int_id)
-        ad?.loadAd(AdRequest.Builder().build())
+        isPaused = false
+    }
+
+    override fun onBackPressed() {
+        StartAppAd.onBackPressed(this);
+        super.onBackPressed()
     }
 
     private fun getPopular(offset: Int) {

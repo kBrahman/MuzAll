@@ -10,9 +10,6 @@ import android.os.Vibrator
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View.VISIBLE
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_music.*
 import muz.all.R
 import muz.all.adapter.MusicAdapter
@@ -29,12 +26,6 @@ class MusicActivity : AppCompatActivity() {
         val files = getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles()
         rvMusic.setHasFixedSize(true)
         rvMusic.adapter = MusicAdapter(files)
-        adViewMusic.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                adViewMusic.visibility = VISIBLE
-            }
-        }
-        adViewMusic.loadAd(AdRequest.Builder().build())
         setSupportActionBar(toolbar)
     }
 
