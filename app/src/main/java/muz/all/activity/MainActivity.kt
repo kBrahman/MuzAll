@@ -109,12 +109,11 @@ class MainActivity : AppCompatActivity() {
             true
         )
         adView.setBannerListener(object : BannerListener {
-            override fun onClick(p0: View?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
+            override fun onClick(p0: View?) {}
 
-            override fun onFailedToReceiveAd(p0: View?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            override fun onFailedToReceiveAd(view: View?) {
+                view?.visibility= GONE
+                Log.i(TAG,"failed to receive banner ad")
             }
 
             override fun onReceiveAd(view: View?) {
