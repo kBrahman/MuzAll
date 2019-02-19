@@ -55,7 +55,8 @@ class MainActivity : AppCompatActivity() {
         BuildConfig.CLIENT_ID_4,
         BuildConfig.CLIENT_ID_5,
         BuildConfig.CLIENT_ID_6,
-        BuildConfig.CLIENT_ID_7
+        BuildConfig.CLIENT_ID_7,
+        BuildConfig.CLIENT_ID_8
     ).iterator()
     private val callback = object : Callback<MuzResponse> {
         override fun onFailure(call: Call<MuzResponse>, t: Throwable) = t.printStackTrace()
@@ -112,8 +113,8 @@ class MainActivity : AppCompatActivity() {
             override fun onClick(p0: View?) {}
 
             override fun onFailedToReceiveAd(view: View?) {
-                view?.visibility= GONE
-                Log.i(TAG,"failed to receive banner ad")
+                view?.visibility = GONE
+                Log.i(TAG, "failed to receive banner ad")
             }
 
             override fun onReceiveAd(view: View?) {
