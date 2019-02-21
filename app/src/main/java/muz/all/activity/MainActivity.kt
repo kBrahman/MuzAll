@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var manager: ApiManager
-    private var offset: Int = 0
+    var offset: Int = 0
     private var loading = false
     private var trackAdapter: TrackAdapter? = null
     private var searching = false
@@ -56,11 +56,11 @@ class MainActivity : AppCompatActivity() {
         BuildConfig.CLIENT_ID_5,
         BuildConfig.CLIENT_ID_6,
         BuildConfig.CLIENT_ID_7,
-        BuildConfig.CLIENT_ID_8
+        BuildConfig.CLIENT_ID_8,
+        BuildConfig.CLIENT_ID_9
     ).iterator()
     private val callback = object : Callback<MuzResponse> {
         override fun onFailure(call: Call<MuzResponse>, t: Throwable) = t.printStackTrace()
-
         override fun onResponse(call: Call<MuzResponse>, response: Response<MuzResponse>) {
             if (response.body()?.results?.isEmpty() == true && !searching && idIterator.hasNext()) {
                 pb.visibility = VISIBLE
