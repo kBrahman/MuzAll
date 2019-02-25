@@ -57,7 +57,9 @@ class MainActivity : AppCompatActivity() {
         BuildConfig.CLIENT_ID_6,
         BuildConfig.CLIENT_ID_7,
         BuildConfig.CLIENT_ID_8,
-        BuildConfig.CLIENT_ID_9
+        BuildConfig.CLIENT_ID_9,
+        BuildConfig.CLIENT_ID_10,
+        BuildConfig.CLIENT_ID_11
     ).iterator()
     private val callback = object : Callback<MuzResponse> {
         override fun onFailure(call: Call<MuzResponse>, t: Throwable) = t.printStackTrace()
