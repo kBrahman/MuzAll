@@ -6,6 +6,5 @@ import muz.all.module.ActivityModule
 
 @Component(modules = [ActivityModule::class])
 interface ActivityComponent {
-
     fun inject(activity: MainActivity)
 }

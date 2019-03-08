@@ -18,23 +18,20 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
-import android.widget.Toast.LENGTH_LONG
 import com.startapp.android.publish.ads.banner.BannerListener
 import com.startapp.android.publish.adsCommon.StartAppAd
 import com.startapp.android.publish.adsCommon.StartAppSDK
 import kotlinx.android.synthetic.main.activity_main.*
-import muz.all.BuildConfig
 import muz.all.R
 import muz.all.adapter.TrackAdapter
 import muz.all.component.DaggerActivityComponent
 import muz.all.manager.ApiManager
-import muz.all.model.MuzResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import muz.all.model.Track
+import muz.all.mvp.presenter.MainPresenter
+import muz.all.mvp.view.MainView
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainView {
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
@@ -42,64 +39,29 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var manager: ApiManager
-    var offset: Int = 0
-    private var loading = false
-    private var trackAdapter: TrackAdapter? = null
-    private var searching = false
+    @Inject
+    lateinit var presenter: MainPresenter
     private lateinit var q: String
     private var bannerAdReceived = false
     private var isPaused = false
-    private val idIterator = listOf(
-        BuildConfig.CLIENT_ID_2,
-        BuildConfig.CLIENT_ID_3,
-        BuildConfig.CLIENT_ID_4,
-        BuildConfig.CLIENT_ID_5,
-        BuildConfig.CLIENT_ID_6,
-        BuildConfig.CLIENT_ID_7,
-        BuildConfig.CLIENT_ID_8,
-        BuildConfig.CLIENT_ID_9,
-        BuildConfig.CLIENT_ID_10,
-        BuildConfig.CLIENT_ID_11
-    ).iterator()
-    private val callback = object : Callback<MuzResponse> {
-        override fun onFailure(call: Call<MuzResponse>, t: Throwable) = t.printStackTrace()
-        override fun onResponse(call: Call<MuzResponse>, response: Response<MuzResponse>) {
-            if (response.body()?.results?.isEmpty() == true && !searching && idIterator.hasNext()) {
-                pb.visibility = VISIBLE
-                manager.clientId = idIterator.next()
-                manager.getPopular(offset, this)
-            } else if (response.body()?.results?.isEmpty() == true && !searching) {
-                pb.visibility = GONE
-                Toast.makeText(this@MainActivity, R.string.service_unavailable, LENGTH_LONG).show()
-            } else if (trackAdapter == null) {
-                pb.visibility = GONE
-                trackAdapter = TrackAdapter(response.body()?.results?.toMutableList())
-                rv.adapter = trackAdapter
-            } else {
-                pb.visibility = GONE
-                trackAdapter?.addData(response.body()?.results)
-            }
-            loading = false
-        }
-    }
+    override var trackAdapter: TrackAdapter? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val component = DaggerActivityComponent.create()
         component.inject(this)
-        getPopular(offset)
+        if (lastCustomNonConfigurationInstance != null) {
+            presenter = lastCustomNonConfigurationInstance as MainPresenter
+        }
+        presenter.view = this
         rv.setHasFixedSize(true)
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
-                    if (!loading) {
-                        loading = true
-                        pb.visibility = VISIBLE
-                        offset += 25
-                        if (searching) search(q, offset) else getPopular(offset)
-                    }
+                    presenter.onScrolled()
                 }
             }
         })
@@ -129,6 +91,9 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    override fun onRetainCustomNonConfigurationInstance() = presenter
+
+
     override fun onPause() {
         Log.i(TAG, "onPause")
         adViewLayout.visibility = GONE
@@ -150,12 +115,25 @@ class MainActivity : AppCompatActivity() {
         super.onBackPressed()
     }
 
-    private fun getPopular(offset: Int) {
-        manager.getPopular(offset, callback)
+    override fun show(tracks: MutableList<Track>?) {
+        trackAdapter = TrackAdapter(tracks)
+        rv.adapter = trackAdapter
     }
 
-    private fun search(q: String, offset: Int) {
-        manager.search(q, offset, callback)
+    override fun addAndShow(tracks: List<Track>?) {
+        trackAdapter?.addData(tracks)
+    }
+
+    override fun showLoading() {
+        pb.visibility = VISIBLE
+    }
+
+    override fun hideLoading() {
+        pb.visibility = View.GONE
+    }
+
+    override fun showServiceUnavailable() {
+        Toast.makeText(this, R.string.service_unavailable, Toast.LENGTH_LONG).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -164,12 +142,8 @@ class MainActivity : AppCompatActivity() {
             .setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(q: String): Boolean {
                     if (q.isNotBlank()) {
-                        this@MainActivity.q = q
-                        offset = 0
+                        presenter.onQueryTextSubmit(q)
                         trackAdapter = null
-                        pb.visibility = VISIBLE
-                        search(q, offset)
-                        searching = true
                     }
                     return true
                 }

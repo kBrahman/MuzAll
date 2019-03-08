@@ -45,6 +45,8 @@ class TrackAdapter(private val results: MutableList<Track>?) : RecyclerView.Adap
         }
     }
 
+    fun getAll() = results
+
     inner class VH(item: View) : RecyclerView.ViewHolder(item) {
         init {
             item.setOnClickListener {
