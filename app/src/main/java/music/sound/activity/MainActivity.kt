@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     var ad: InterstitialAd? = null
+    private lateinit var q: String
 
     @Inject
     lateinit var manager: ApiManager
@@ -48,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         override fun onFailure(call: Call<List<Track>>, t: Throwable) = t.printStackTrace()
 
         override fun onResponse(call: Call<List<Track>>, response: Response<List<Track>>) {
+            Log.i(TAG, "response=>$response")
             if (trackAdapter == null) {
                 trackAdapter = TrackAdapter(response.body()?.toMutableList())
                 rv.adapter = trackAdapter
@@ -64,7 +67,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val component = DaggerActivityComponent.create()
         component.inject(this)
-        getPopular(offset)
         rv.setHasFixedSize(true)
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -88,6 +90,16 @@ class MainActivity : AppCompatActivity() {
         adView.loadAd(AdRequest.Builder().build())
         ad = InterstitialAd(this)
         ad?.adUnitId = getString(R.string.int_id)
+        ad?.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                ad?.show()
+                getPopular(offset)
+            }
+
+            override fun onAdFailedToLoad(p0: Int) {
+                getPopular(offset)
+            }
+        }
         ad?.loadAd(AdRequest.Builder().build())
     }
 
@@ -98,8 +110,6 @@ class MainActivity : AppCompatActivity() {
     private fun search(q: String, offset: Int) {
         manager.search(q, offset, callback)
     }
-
-    private lateinit var q: String
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)

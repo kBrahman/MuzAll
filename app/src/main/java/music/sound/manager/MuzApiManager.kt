@@ -16,8 +16,8 @@ class MuzApiManager : ApiManager {
 
     companion object {
         private val TAG = MuzApiManager::class.java.simpleName
-        private const val SERVER =
-            "http://api.soundcloud.com/"
+        private const val SERVER = BuildConfig.SERVER
+
         private const val PATH = "tracks/?limit=25&client_id=${BuildConfig.SOUND_CLOUD_ID}"
     }
 
