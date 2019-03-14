@@ -1,9 +1,12 @@
 package muz.all.activity
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -17,6 +20,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import com.startapp.android.publish.ads.banner.BannerListener
 import com.startapp.android.publish.adsCommon.StartAppAd
@@ -31,10 +36,12 @@ import muz.all.mvp.presenter.MainPresenter
 import muz.all.mvp.view.MainView
 import javax.inject.Inject
 
+
 class MainActivity : AppCompatActivity(), MainView {
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
+        private const val SHARED_PREFS_GDPR_SHOWN = "gdpr_shown"
     }
 
     @Inject
@@ -66,13 +73,6 @@ class MainActivity : AppCompatActivity(), MainView {
             }
         })
         setSupportActionBar(toolbar)
-        StartAppSDK.init(this, getString(R.string.app_id), true)
-        StartAppSDK.setUserConsent(
-            this,
-            "pas",
-            System.currentTimeMillis(),
-            true
-        )
         adView.setBannerListener(object : BannerListener {
             override fun onClick(p0: View?) {}
 
@@ -89,6 +89,65 @@ class MainActivity : AppCompatActivity(), MainView {
                 bannerAdReceived = true
             }
         })
+        initStartAppSdkAccordingToConsent()
+    }
+
+    private fun showGdprDialog(callback: Runnable?) {
+        val view = layoutInflater.inflate(muz.all.R.layout.dialog_gdpr, null)
+        val dialog = Dialog(this, android.R.style.Theme_Light_NoTitleBar)
+        dialog.setContentView(view)
+
+        val medium = Typeface.createFromAsset(assets, "gotham_medium.ttf")
+        val book = Typeface.createFromAsset(assets, "gotham_book.ttf")
+        (view.findViewById(muz.all.R.id.title) as TextView).typeface = medium
+        (view.findViewById(muz.all.R.id.body) as TextView).typeface = book
+
+        val okBtn = view.findViewById<Button>(muz.all.R.id.okBtn)
+        okBtn.typeface = medium
+        okBtn.setOnClickListener {
+            writePersonalizedAdsConsent(true)
+            callback?.run()
+            dialog.dismiss()
+        }
+
+        val cancelBtn = view.findViewById<Button>(muz.all.R.id.cancelBtn)
+        cancelBtn.typeface = medium
+        cancelBtn.setOnClickListener {
+            writePersonalizedAdsConsent(false)
+            callback?.run()
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun initStartAppSdkAccordingToConsent() {
+        if (getPreferences(Context.MODE_PRIVATE).getBoolean(SHARED_PREFS_GDPR_SHOWN, false)) {
+            initStartAppSdk()
+            return
+        }
+
+        showGdprDialog(Runnable {
+            initStartAppSdk();
+        })
+    }
+
+    private fun initStartAppSdk() {
+        StartAppSDK.init(this, getString(R.string.app_id), true)
+    }
+
+    private fun writePersonalizedAdsConsent(isGranted: Boolean) {
+        StartAppSDK.setUserConsent(
+            this,
+            "pas",
+            System.currentTimeMillis(),
+            isGranted
+        )
+
+        getPreferences(Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(SHARED_PREFS_GDPR_SHOWN, true)
+            .apply()
     }
 
     override fun onRetainCustomNonConfigurationInstance() = presenter
