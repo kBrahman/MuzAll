@@ -18,7 +18,7 @@ class MuzApiManager : ApiManager {
         private val TAG = MuzApiManager::class.java.simpleName
         private const val SERVER = BuildConfig.SERVER
 
-        private const val PATH = "tracks/?limit=25&client_id=${BuildConfig.SOUND_CLOUD_ID}"
+        private const val PATH = "tracks/?limit=25&client_id=${BuildConfig.ClIENT_ID}"
     }
 
     private var apiService: APIService

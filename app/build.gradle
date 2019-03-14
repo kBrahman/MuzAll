@@ -23,7 +23,7 @@ android {
         targetSdkVersion 28
         versionCode 31
         versionName "1.21"
-        buildConfigField "String", "SOUND_CLOUD_ID", localProperties["sound_cloud_id"]
+        buildConfigField "String", "ClIENT_ID", localProperties["sound_cloud_id"]
         buildConfigField "String", "SERVER", localProperties["s"]
     }
     buildTypes {
