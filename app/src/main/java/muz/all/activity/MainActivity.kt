@@ -27,6 +27,8 @@ import com.startapp.android.publish.ads.banner.BannerListener
 import com.startapp.android.publish.adsCommon.StartAppAd
 import com.startapp.android.publish.adsCommon.StartAppSDK
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.ad_view.*
+import kotlinx.android.synthetic.main.ad_view.view.*
 import muz.all.R
 import muz.all.adapter.TrackAdapter
 import muz.all.component.DaggerActivityComponent
@@ -48,7 +50,6 @@ class MainActivity : AppCompatActivity(), MainView {
     lateinit var manager: ApiManager
     @Inject
     lateinit var presenter: MainPresenter
-    private lateinit var q: String
     private var bannerAdReceived = false
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
@@ -73,26 +74,10 @@ class MainActivity : AppCompatActivity(), MainView {
             }
         })
         setSupportActionBar(toolbar)
-        adView.setBannerListener(object : BannerListener {
-            override fun onClick(p0: View?) {}
-
-            override fun onFailedToReceiveAd(view: View?) {
-                view?.visibility = GONE
-                Log.i(TAG, "failed to receive banner ad")
-            }
-
-            override fun onReceiveAd(view: View?) {
-                Log.i(TAG, "onReceiveAd, isPaused=>$isPaused")
-                if (!isPaused) {
-                    adViewLayout.visibility = VISIBLE
-                }
-                bannerAdReceived = true
-            }
-        })
         initStartAppSdkAccordingToConsent()
     }
 
-    private fun showGdprDialog(callback: Runnable?) {
+    private fun showGdprDialog() {
         val view = layoutInflater.inflate(muz.all.R.layout.dialog_gdpr, null)
         val dialog = Dialog(this, android.R.style.Theme_Light_NoTitleBar)
         dialog.setContentView(view)
@@ -106,7 +91,7 @@ class MainActivity : AppCompatActivity(), MainView {
         okBtn.typeface = medium
         okBtn.setOnClickListener {
             writePersonalizedAdsConsent(true)
-            callback?.run()
+            initStartAppSdk()
             dialog.dismiss()
         }
 
@@ -114,7 +99,7 @@ class MainActivity : AppCompatActivity(), MainView {
         cancelBtn.typeface = medium
         cancelBtn.setOnClickListener {
             writePersonalizedAdsConsent(false)
-            callback?.run()
+            initStartAppSdk()
             dialog.dismiss()
         }
 
@@ -127,13 +112,29 @@ class MainActivity : AppCompatActivity(), MainView {
             return
         }
 
-        showGdprDialog(Runnable {
-            initStartAppSdk();
-        })
+        showGdprDialog()
     }
 
     private fun initStartAppSdk() {
+        Log.i(TAG, "initStartAppSdk")
         StartAppSDK.init(this, getString(R.string.app_id), true)
+
+        adViewStub.inflate().ad.setBannerListener(object : BannerListener {
+            override fun onClick(p0: View?) {}
+
+            override fun onFailedToReceiveAd(view: View?) {
+                view?.visibility = GONE
+                Log.i(TAG, "failed to receive banner ad")
+            }
+
+            override fun onReceiveAd(view: View?) {
+                Log.i(TAG, "onReceiveAd, isPaused=>$isPaused")
+                if (!isPaused) {
+                    adView.visibility = VISIBLE
+                }
+                bannerAdReceived = true
+            }
+        })
     }
 
     private fun writePersonalizedAdsConsent(isGranted: Boolean) {
@@ -152,21 +153,20 @@ class MainActivity : AppCompatActivity(), MainView {
 
     override fun onRetainCustomNonConfigurationInstance() = presenter
 
-
     override fun onPause() {
-        Log.i(TAG, "onPause")
-        adViewLayout.visibility = GONE
+        adView?.visibility = GONE
         isPaused = true
+        Log.i(TAG, "onPause, bannerAdReceived=>$bannerAdReceived, isPaused=>$isPaused, adView=>$adView")
         super.onPause()
     }
 
     override fun onResume() {
-        Log.i(TAG, "onResume, bannerAdReceived=>$bannerAdReceived")
         super.onResume()
         if (bannerAdReceived) {
-            adViewLayout.visibility = VISIBLE
+            adView?.visibility = VISIBLE
         }
         isPaused = false
+        Log.i(TAG, "onResume, bannerAdReceived=>$bannerAdReceived, isPaused=>$isPaused, adView=>$adView")
     }
 
     override fun onBackPressed() {

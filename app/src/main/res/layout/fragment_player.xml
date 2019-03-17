@@ -15,7 +15,8 @@
     <!--app:layout_constraintEnd_toEndOf="parent"/>-->
     <com.startapp.android.publish.ads.banner.Mrec
             android:id="@+id/recBanner"
-            android:layout_width="match_parent"
+            android:minWidth="300dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"

@@ -22,7 +22,7 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.ad_view.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import muz.all.R
 import muz.all.activity.MainActivity
@@ -105,7 +105,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
 
     private fun setVisibility(visibility: Int) {
         if (activity is MainActivity) {
-            (activity as MainActivity).adViewLayout.visibility = visibility
+            (activity as MainActivity).adView?.visibility = visibility
         } else if (activity is MusicActivity) {
 //            (activity as MusicActivity).adViewMusic.visibility = visibility
         }
