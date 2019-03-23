@@ -48,6 +48,7 @@ class ActivityModule {
         BuildConfig.CLIENT_ID_8,
         BuildConfig.CLIENT_ID_9,
         BuildConfig.CLIENT_ID_10,
-        BuildConfig.CLIENT_ID_11
+        BuildConfig.CLIENT_ID_11,
+        BuildConfig.CLIENT_ID_12
     ).iterator()
 }
