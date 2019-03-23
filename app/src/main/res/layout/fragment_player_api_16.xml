@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    <com.google.android.gms.ads.AdView
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            app:adUnitId="@string/banner_id"
+            app:adSize="MEDIUM_RECTANGLE"
+            android:id="@+id/recBanner"
+            android:visibility="gone"
+            android:layout_centerHorizontal="true"/>
+    <!--<com.startapp.android.publish.ads.banner.Mrec-->
+    <!--android:id="@+id/recBanner"-->
+    <!--android:minWidth="300dp"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:visibility="gone"-->
+    <!--android:layout_alignParentStart="true"-->
+    <!--android:layout_alignParentEnd="true"-->
+    <!--android:layout_alignParentLeft="true"-->
+    <!--android:layout_alignParentRight="true"/>-->
+    <TextView android:layout_width="300dp"
+              android:layout_height="wrap_content"
+              android:id="@+id/name"
+              android:layout_below="@id/recBanner"/>
+    <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_media_pause"
+            android:id="@+id/play"
+            android:layout_below="@id/name"/>
+    <SeekBar android:layout_width="0dp"
+             android:layout_height="wrap_content"
+             android:id="@+id/sb"
+             android:layout_below="@id/name"
+             android:layout_toEndOf="@id/play"
+             android:layout_toRightOf="@id/play"
+             android:layout_toStartOf="@id/download"
+             android:layout_toLeftOf="@id/download"/>
+    <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_file_download_black_24dp"
+            android:id="@+id/download"
+            android:layout_below="@id/name"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"/>
+    <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pbPlayer"
+            android:layout_centerInParent="true"/>
+</RelativeLayout>

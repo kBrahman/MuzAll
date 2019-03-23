@@ -41,11 +41,10 @@
         <TextView android:layout_width="0dp"
                   android:layout_height="wrap_content"
                   android:id="@+id/releaseDate"
-                  app:layout_constraintStart_toEndOf="@id/duration"
+                  app:layout_constraintStart_toEndOf="@id/img"
                   android:layout_marginStart="4dp"
                   android:layout_marginLeft="4dp"
-                  app:layout_constraintBottom_toBottomOf="parent"
-                  app:layout_constraintTop_toBottomOf="@id/name"
+                  app:layout_constraintBottom_toTopOf="@id/duration"
                   app:layout_constraintEnd_toEndOf="parent"
                   android:textSize="12sp"/>
     </android.support.constraint.ConstraintLayout>

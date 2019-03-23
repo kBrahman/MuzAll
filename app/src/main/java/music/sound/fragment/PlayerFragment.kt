@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
@@ -42,7 +43,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
 
     @Inject
     lateinit var mp: MediaPlayer
-    private val handler = Handler()
+    private val handler: Handler? = Handler()
     private var isPrepared = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,13 +51,18 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-        inflater.inflate(R.layout.fragment_player, container, false)
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN)
+            inflater.inflate(
+                R.layout.fragment_player,
+                container,
+                false
+            ) else inflater.inflate(R.layout.fragment_player_api_16, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         DaggerFragmentComponent.create().inject(this)
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
-            val streamUrl = track.stream_url + "?client_id=" + BuildConfig.SOUND_CLOUD_ID
+            val streamUrl = track.stream_url + "?client_id=" + BuildConfig.ClIENT_ID
             mp.setDataSource(streamUrl)
             name.text = track.title
 
@@ -69,7 +75,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         mp.prepareAsync()
         mp.setOnCompletionListener {
             play.setImageResource(android.R.drawable.ic_media_play)
-            handler.removeCallbacks(this)
+            handler?.removeCallbacks(this)
             sb.progress = 0
         }
         sb.setOnSeekBarChangeListener(this)
@@ -85,7 +91,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         download.setOnClickListener {
             download(track as Track)
         }
-        recBanner.adListener = object : AdListener() {
+        recBanner?.adListener = object : AdListener() {
             override fun onAdLoaded() {
                 recBanner.visibility = VISIBLE
             }
@@ -128,7 +134,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     }
 
     private fun startSeekBar() {
-        handler.postDelayed(this, 1000)
+        handler?.postDelayed(this, 1000)
     }
 
     override fun run() {
@@ -150,7 +156,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
 
     override fun onDismiss(dialog: DialogInterface?) {
         super.onDismiss(dialog)
-        handler.removeCallbacks(this)
+        handler?.removeCallbacks(this)
         if (isPrepared) mp.stop()
         mp.release()
         sb.progress = 0
