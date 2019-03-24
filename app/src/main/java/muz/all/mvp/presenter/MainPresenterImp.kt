@@ -1,6 +1,5 @@
 package muz.all.mvp.presenter
 
-import android.util.Log
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import muz.all.manager.ApiManager
@@ -64,8 +63,6 @@ class MainPresenterImp @Inject constructor(
     }
 
     private fun onContentFetched(response: MuzResponse?) {
-        Log.i(TAG, "on content fetched=>$response")
-
         if (response?.results?.isEmpty() == true && !searching && idIterator.hasNext()) {
             showLoading()
             manager.clientId = idIterator.next()
