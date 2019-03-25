@@ -47,7 +47,7 @@
 
     <TextView android:layout_width="0dp"
               android:layout_height="wrap_content"
-              android:id="@+id/releaseDate"
+              android:id="@+id/uploadDate"
               app:layout_constraintStart_toEndOf="@id/duration"
               android:layout_marginStart="4dp"
               android:layout_marginLeft="4dp"

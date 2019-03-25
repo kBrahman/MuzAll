@@ -32,7 +32,7 @@ class TrackAdapter(private val results: MutableList<Track>?) : RecyclerView.Adap
         val view = holder.itemView
         view.name.text = track?.title
         view.duration.text = view.context.getString(R.string.duration, milliSecondsToTime(track?.duration))
-        view.releaseDate.text = view.context.getString(R.string.uploaded, track?.created_at?.replace("+0000", ""))
+        view.uploadDate.text = view.context.getString(R.string.uploaded, track?.created_at?.replace("+0000", ""))
         Picasso.get().load(track?.artwork_url ?: track?.user?.avatar_url).into(view.img)
     }
 
