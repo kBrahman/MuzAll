@@ -5,17 +5,22 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
-    <FrameLayout
-            android:id="@+id/recBannerContainer"
+    <LinearLayout
+            android:id="@+id/bannerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:gravity="center"
+            android:paddingEnd="4dp"
+            android:paddingRight="4dp"/>
 
-    <TextView android:layout_width="300dp"
+    <TextView android:layout_width="0dp"
               android:layout_height="wrap_content"
               android:id="@+id/name"
-              app:layout_constraintTop_toBottomOf="@id/recBanner"
+              app:layout_constraintTop_toBottomOf="@id/bannerContainer"
               app:layout_constraintStart_toStartOf="parent"
               app:layout_constraintLeft_toLeftOf="parent"/>
     <ImageButton

@@ -16,13 +16,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.VISIBLE
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.Toast
-import com.ironsource.mediationsdk.ISBannerSize
-import com.ironsource.mediationsdk.IronSource
-import com.ironsource.mediationsdk.IronSourceBannerLayout
-import com.ironsource.mediationsdk.logger.IronSourceError
-import com.ironsource.mediationsdk.sdk.InterstitialListener
+import com.facebook.ads.*
+import com.facebook.ads.AdSize
 import kotlinx.android.synthetic.main.activity_main.*
 import muz.all.R
 import muz.all.adapter.TrackAdapter
@@ -33,8 +30,7 @@ import muz.all.mvp.presenter.MainPresenter
 import muz.all.mvp.view.MainView
 import javax.inject.Inject
 
-
-class MainActivity : AppCompatActivity(), MainView, InterstitialListener {
+class MainActivity : AppCompatActivity(), MainView {
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
@@ -46,7 +42,6 @@ class MainActivity : AppCompatActivity(), MainView, InterstitialListener {
     lateinit var presenter: MainPresenter
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
-    internal lateinit var banner: IronSourceBannerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,54 +62,64 @@ class MainActivity : AppCompatActivity(), MainView, InterstitialListener {
             }
         })
         setSupportActionBar(toolbar)
-        IronSource.init(this, "8cf4e74d")
-        IronSource.loadInterstitial();
-        IronSource.setInterstitialListener(this)
-        val layoutParams = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
-        )
-        banner = IronSource.createBanner(this, ISBannerSize.BANNER)
-        IronSource.loadBanner(banner)
-        bannerContainer.addView(banner, 0, layoutParams)
+        AudienceNetworkAds.initialize(this)
+        val interstitialAd = InterstitialAd(this, getString(R.string.fb_int_id))
+        val l = object : InterstitialAdListener {
+            override fun onInterstitialDisplayed(ad: Ad) {
+                Log.e(TAG, "Interstitial ad displayed.")
+            }
+
+            override fun onInterstitialDismissed(ad: Ad) {
+                ad.destroy()
+                Log.e(TAG, "Interstitial ad dismissed.")
+            }
+
+            override fun onError(ad: Ad, adError: AdError) {
+                ad.destroy()
+                Log.e(TAG, "Interstitial ad failed to load: " + adError.errorMessage)
+            }
+
+            override fun onAdLoaded(ad: Ad) {
+                Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!")
+                hideLoading()
+                interstitialAd.show()
+            }
+
+            override fun onAdClicked(ad: Ad) {
+                // Ad clicked callback
+                Log.d(TAG, "Interstitial ad clicked!")
+            }
+
+            override fun onLoggingImpression(ad: Ad) {
+                // Ad impression logged callback
+                Log.d(TAG, "Interstitial ad impression logged!")
+            }
+        }
+        interstitialAd.setAdListener(l)
+        interstitialAd.loadAd()
+        val adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
+
+        // Find the Ad Container
+        val adContainer = findViewById<LinearLayout>(R.id.bannerContainer)
+
+        // Add the ad view to your activity layout
+        adContainer.addView(adView)
+
+        // Request an ad
+        adView.setAdListener(l)
+        adView.loadAd()
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        IronSource.destroyBanner(banner)
-    }
-
-    override fun onInterstitialAdLoadFailed(p0: IronSourceError?) {
-        Log.i(TAG, p0.toString())
-    }
-
-    override fun onInterstitialAdClosed() {}
-
-    override fun onInterstitialAdShowFailed(p0: IronSourceError?) {}
-
-    override fun onInterstitialAdClicked() {}
-
-    override fun onInterstitialAdReady() = IronSource.showInterstitial()
-
-
-    override fun onInterstitialAdOpened() {
-        Log.i(TAG, "int should have opened")
-    }
-
-    override fun onInterstitialAdShowSucceeded() {}
 
     override fun onRetainCustomNonConfigurationInstance() = presenter
 
     override fun onPause() {
         isPaused = true
         super.onPause()
-        IronSource.onPause(this)
     }
 
     override fun onResume() {
         super.onResume()
         isPaused = false
-        IronSource.onResume(this)
     }
 
     override fun show(tracks: MutableList<Track>?) {

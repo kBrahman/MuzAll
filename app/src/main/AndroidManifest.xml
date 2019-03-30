@@ -14,7 +14,8 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
-            android:networkSecurityConfig="@xml/network_security_config">
+            android:networkSecurityConfig="@xml/network_security_config"
+            android:hardwareAccelerated="true">
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -23,22 +24,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.MusicActivity"/>
-        <activity
-                android:name="com.ironsource.sdk.controller.ControllerActivity"
-                android:configChanges="orientation|screenSize"
-                android:hardwareAccelerated="true"/>
-        <activity
-                android:name="com.ironsource.sdk.controller.InterstitialActivity"
-                android:configChanges="orientation|screenSize"
-                android:hardwareAccelerated="true"
-                android:theme="@android:style/Theme.Translucent"/>
-        <activity
-                android:name="com.ironsource.sdk.controller.OpenUrlActivity"
-                android:configChanges="orientation|screenSize"
-                android:hardwareAccelerated="true"
-                android:theme="@android:style/Theme.Translucent"/>
-        <meta-data android:name="com.google.android.gms.version"
-                   android:value="@integer/google_play_services_version"/>
         <!--<meta-data-->
         <!--android:name="com.google.android.gms.ads.APPLICATION_ID"-->
         <!--android:value="@string/app_id"/>-->

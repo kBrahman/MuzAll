@@ -28,19 +28,13 @@
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             android:id="@+id/rv"/>
 
-    <FrameLayout
+    <LinearLayout
             android:id="@+id/bannerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"/>
-    <!--<ViewStub-->
-    <!--android:id="@+id/adViewStub"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--android:layout="@layout/ad_view"-->
-    <!--android:inflatedId="@+id/adView">-->
-    <!--</ViewStub>-->
+
     <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

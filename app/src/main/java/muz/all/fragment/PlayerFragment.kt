@@ -14,18 +14,17 @@ import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
-import com.ironsource.mediationsdk.ISBannerSize
-import com.ironsource.mediationsdk.IronSource
-import com.ironsource.mediationsdk.IronSourceBannerLayout
+import com.facebook.ads.*
 import kotlinx.android.synthetic.main.ad_view.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import muz.all.R
@@ -49,7 +48,6 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
 
     private val handler = Handler()
     private var isPrepared = false
-    private lateinit var banner: IronSourceBannerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,14 +105,46 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
             download(track as Track)
         }
         setVisibility(GONE)
-        val layoutParams = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
-        )
-        banner = IronSource.createBanner(activity, ISBannerSize.RECTANGLE)
-        banner.size      = ISBannerSize.RECTANGLE
-        IronSource.loadBanner(banner,"player_fragment")
-        recBannerContainer.addView(banner, 0, layoutParams)
+        val adView = AdView(context, getString(R.string.fb_rec_banner_id), AdSize.RECTANGLE_HEIGHT_250)
+
+        // Find the Ad Container
+        val adContainer = view.findViewById<LinearLayout>(R.id.bannerContainer)
+
+        // Add the ad view to your activity layout
+        adContainer.addView(adView)
+
+        // Request an ad
+        adView.setAdListener(object : InterstitialAdListener {
+            override fun onInterstitialDisplayed(ad: Ad) {
+                Log.e(TAG, "Interstitial ad displayed.")
+            }
+
+            override fun onInterstitialDismissed(ad: Ad) {
+                ad.destroy()
+                Log.e(TAG, "Interstitial ad dismissed.")
+            }
+
+            override fun onError(ad: Ad, adError: AdError) {
+                ad.destroy()
+                Log.e(TAG, "Interstitial ad failed to load: " + adError.errorMessage)
+            }
+
+            override fun onAdLoaded(ad: Ad) {
+                Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!")
+
+            }
+
+            override fun onAdClicked(ad: Ad) {
+                // Ad clicked callback
+                Log.d(TAG, "Interstitial ad clicked!")
+            }
+
+            override fun onLoggingImpression(ad: Ad) {
+                // Ad impression logged callback
+                Log.d(TAG, "Interstitial ad impression logged!")
+            }
+        })
+        adView.loadAd()
     }
 
     private fun setVisibility(visibility: Int) {
