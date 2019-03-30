@@ -19,9 +19,13 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.SeekBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import com.ironsource.mediationsdk.ISBannerSize
+import com.ironsource.mediationsdk.IronSource
+import com.ironsource.mediationsdk.IronSourceBannerLayout
 import kotlinx.android.synthetic.main.ad_view.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import muz.all.R
@@ -45,6 +49,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
 
     private val handler = Handler()
     private var isPrepared = false
+    private lateinit var banner: IronSourceBannerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +64,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
                 container,
                 false
             ) else inflater.inflate(R.layout.fragment_player_api_16, container, false)
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         DaggerFragmentComponent.create().inject(this)
@@ -101,6 +107,14 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
             download(track as Track)
         }
         setVisibility(GONE)
+        val layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+        banner = IronSource.createBanner(activity, ISBannerSize.RECTANGLE)
+        banner.size      = ISBannerSize.RECTANGLE
+        IronSource.loadBanner(banner,"player_fragment")
+        recBannerContainer.addView(banner, 0, layoutParams)
     }
 
     private fun setVisibility(visibility: Int) {

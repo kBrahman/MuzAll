@@ -1,12 +1,9 @@
 package muz.all.activity
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -18,17 +15,15 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.widget.Button
-import android.widget.TextView
+import android.widget.FrameLayout
 import android.widget.Toast
-import com.startapp.android.publish.ads.banner.BannerListener
-import com.startapp.android.publish.adsCommon.StartAppAd
-import com.startapp.android.publish.adsCommon.StartAppSDK
+import com.ironsource.mediationsdk.ISBannerSize
+import com.ironsource.mediationsdk.IronSource
+import com.ironsource.mediationsdk.IronSourceBannerLayout
+import com.ironsource.mediationsdk.logger.IronSourceError
+import com.ironsource.mediationsdk.sdk.InterstitialListener
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.ad_view.*
-import kotlinx.android.synthetic.main.ad_view.view.*
 import muz.all.R
 import muz.all.adapter.TrackAdapter
 import muz.all.component.DaggerActivityComponent
@@ -39,21 +34,19 @@ import muz.all.mvp.view.MainView
 import javax.inject.Inject
 
 
-class MainActivity : AppCompatActivity(), MainView {
+class MainActivity : AppCompatActivity(), MainView, InterstitialListener {
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
-        private const val SHARED_PREFS_GDPR_SHOWN = "gdpr_shown"
     }
 
     @Inject
     lateinit var manager: ApiManager
     @Inject
     lateinit var presenter: MainPresenter
-    private var bannerAdReceived = false
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
-
+    internal lateinit var banner: IronSourceBannerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,104 +67,54 @@ class MainActivity : AppCompatActivity(), MainView {
             }
         })
         setSupportActionBar(toolbar)
-        initStartAppSdkAccordingToConsent()
-    }
-
-    private fun showGdprDialog() {
-        val view = layoutInflater.inflate(muz.all.R.layout.dialog_gdpr, null)
-        val dialog = Dialog(this, android.R.style.Theme_Light_NoTitleBar)
-        dialog.setContentView(view)
-
-        val medium = Typeface.createFromAsset(assets, "gotham_medium.ttf")
-        val book = Typeface.createFromAsset(assets, "gotham_book.ttf")
-        (view.findViewById(muz.all.R.id.title) as TextView).typeface = medium
-        (view.findViewById(muz.all.R.id.body) as TextView).typeface = book
-
-        val okBtn = view.findViewById<Button>(muz.all.R.id.okBtn)
-        okBtn.typeface = medium
-        okBtn.setOnClickListener {
-            writePersonalizedAdsConsent(true)
-            initStartAppSdk()
-            dialog.dismiss()
-        }
-
-        val cancelBtn = view.findViewById<Button>(muz.all.R.id.cancelBtn)
-        cancelBtn.typeface = medium
-        cancelBtn.setOnClickListener {
-            writePersonalizedAdsConsent(false)
-            initStartAppSdk()
-            dialog.dismiss()
-        }
-
-        dialog.show()
-    }
-
-    private fun initStartAppSdkAccordingToConsent() {
-        if (getPreferences(Context.MODE_PRIVATE).getBoolean(SHARED_PREFS_GDPR_SHOWN, false)) {
-            initStartAppSdk()
-            return
-        }
-
-        showGdprDialog()
-    }
-
-    private fun initStartAppSdk() {
-        Log.i(TAG, "initStartAppSdk")
-        StartAppSDK.init(this, getString(R.string.app_id), true)
-
-        adViewStub.inflate().ad.setBannerListener(object : BannerListener {
-            override fun onClick(p0: View?) {}
-
-            override fun onFailedToReceiveAd(view: View?) {
-                view?.visibility = GONE
-                Log.i(TAG, "failed to receive banner ad")
-            }
-
-            override fun onReceiveAd(view: View?) {
-                Log.i(TAG, "onReceiveAd, isPaused=>$isPaused")
-                if (!isPaused) {
-                    adView.visibility = VISIBLE
-                }
-                bannerAdReceived = true
-            }
-        })
-    }
-
-    private fun writePersonalizedAdsConsent(isGranted: Boolean) {
-        StartAppSDK.setUserConsent(
-            this,
-            "pas",
-            System.currentTimeMillis(),
-            isGranted
+        IronSource.init(this, "8cf4e74d")
+        IronSource.loadInterstitial();
+        IronSource.setInterstitialListener(this)
+        val layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
         )
-
-        getPreferences(Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean(SHARED_PREFS_GDPR_SHOWN, true)
-            .apply()
+        banner = IronSource.createBanner(this, ISBannerSize.BANNER)
+        IronSource.loadBanner(banner)
+        bannerContainer.addView(banner, 0, layoutParams)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        IronSource.destroyBanner(banner)
+    }
+
+    override fun onInterstitialAdLoadFailed(p0: IronSourceError?) {
+        Log.i(TAG, p0.toString())
+    }
+
+    override fun onInterstitialAdClosed() {}
+
+    override fun onInterstitialAdShowFailed(p0: IronSourceError?) {}
+
+    override fun onInterstitialAdClicked() {}
+
+    override fun onInterstitialAdReady() = IronSource.showInterstitial()
+
+
+    override fun onInterstitialAdOpened() {
+        Log.i(TAG, "int should have opened")
+    }
+
+    override fun onInterstitialAdShowSucceeded() {}
 
     override fun onRetainCustomNonConfigurationInstance() = presenter
 
     override fun onPause() {
-        adView?.visibility = GONE
         isPaused = true
-        Log.i(TAG, "onPause, bannerAdReceived=>$bannerAdReceived, isPaused=>$isPaused, adView=>$adView")
         super.onPause()
+        IronSource.onPause(this)
     }
 
     override fun onResume() {
         super.onResume()
-        if (bannerAdReceived) {
-            adView?.visibility = VISIBLE
-        }
         isPaused = false
-        Log.i(TAG, "onResume, bannerAdReceived=>$bannerAdReceived, isPaused=>$isPaused, adView=>$adView")
-    }
-
-    override fun onBackPressed() {
-        StartAppAd.onBackPressed(this);
-        super.onBackPressed()
+        IronSource.onResume(this)
     }
 
     override fun show(tracks: MutableList<Track>?) {
