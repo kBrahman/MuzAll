@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
@@ -25,7 +24,7 @@ import android.widget.SeekBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import com.facebook.ads.*
-import kotlinx.android.synthetic.main.ad_view.*
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import muz.all.R
 import muz.all.activity.MainActivity
@@ -56,12 +55,11 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN)
-            inflater.inflate(
-                R.layout.fragment_player,
-                container,
-                false
-            ) else inflater.inflate(R.layout.fragment_player_api_16, container, false)
+        inflater.inflate(
+            R.layout.fragment_player,
+            container,
+            false
+        )
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -108,7 +106,8 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         val adView = AdView(context, getString(R.string.fb_rec_banner_id), AdSize.RECTANGLE_HEIGHT_250)
 
         // Find the Ad Container
-        val adContainer = view.findViewById<LinearLayout>(R.id.bannerContainer)
+        val adContainer = view.findViewById<LinearLayout>(R.id.recBannerContainer)
+        adContainer.layoutParams.width = (320F.times(context?.resources?.displayMetrics?.density ?: 1.1F)).toInt()
 
         // Add the ad view to your activity layout
         adContainer.addView(adView)
@@ -149,9 +148,9 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
 
     private fun setVisibility(visibility: Int) {
         if (activity is MainActivity) {
-            (activity as MainActivity).adView?.visibility = visibility
+            (activity as MainActivity).bannerContainer.visibility = visibility
         } else if (activity is MusicActivity) {
-//            (activity as MusicActivity).adViewMusic.visibility = visibility
+            (activity as MusicActivity).bannerContainer.visibility = visibility
         }
     }
 
