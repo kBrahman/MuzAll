@@ -10,6 +10,9 @@ import android.os.Vibrator
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.LinearLayout
+import com.facebook.ads.AdSize
+import com.facebook.ads.AdView
 import kotlinx.android.synthetic.main.activity_music.*
 import muz.all.R
 import muz.all.adapter.MusicAdapter
@@ -27,6 +30,11 @@ class MusicActivity : AppCompatActivity() {
         rvMusic.setHasFixedSize(true)
         rvMusic.adapter = MusicAdapter(files)
         setSupportActionBar(toolbar)
+        val banner = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
+        val adContainer = findViewById<LinearLayout>(R.id.bannerContainer)
+        // Add the ad view to your activity layout
+        adContainer.addView(banner)
+        banner.loadAd()
     }
 
     override fun onBackPressed() {

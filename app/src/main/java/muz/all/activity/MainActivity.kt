@@ -43,6 +43,8 @@ class MainActivity : AppCompatActivity(), MainView {
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
 
+    private lateinit var l: InterstitialAdListener
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -64,10 +66,9 @@ class MainActivity : AppCompatActivity(), MainView {
         setSupportActionBar(toolbar)
         AudienceNetworkAds.initialize(this)
         AdSettings.addTestDevice("a2c33a3e-3951-4284-a25a-c55e513a3e3d");
-        val interstitialAd = InterstitialAd(this, getString(R.string.fb_int_id))
         val banner = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
 
-        val l = object : InterstitialAdListener {
+        l = object : InterstitialAdListener {
             override fun onInterstitialDisplayed(ad: Ad) {
                 Log.e(TAG, "Interstitial ad displayed.")
             }
@@ -91,7 +92,9 @@ class MainActivity : AppCompatActivity(), MainView {
             override fun onAdLoaded(ad: Ad) {
                 Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!")
                 hideLoading()
-                interstitialAd.show()
+                if (ad is InterstitialAd) {
+                    ad.show()
+                }
             }
 
             override fun onAdClicked(ad: Ad) {
@@ -104,8 +107,7 @@ class MainActivity : AppCompatActivity(), MainView {
                 Log.d(TAG, "Interstitial ad impression logged!")
             }
         }
-        interstitialAd.setAdListener(l)
-        interstitialAd.loadAd()
+
 
         // Find the Ad Container
         val adContainer = findViewById<LinearLayout>(R.id.bannerContainer)
@@ -132,6 +134,10 @@ class MainActivity : AppCompatActivity(), MainView {
     override fun show(tracks: MutableList<Track>?) {
         trackAdapter = TrackAdapter(tracks)
         rv.adapter = trackAdapter
+        val interstitialAd = InterstitialAd(this, getString(R.string.fb_int_id))
+        interstitialAd.loadAd()
+        interstitialAd.setAdListener(l)
+
     }
 
     override fun addAndShow(tracks: List<Track>?) {
