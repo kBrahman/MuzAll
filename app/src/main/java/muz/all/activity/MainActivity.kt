@@ -43,7 +43,43 @@ class MainActivity : AppCompatActivity(), MainView {
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
 
-    private lateinit var l: InterstitialAdListener
+    private var banner: AdView? = null
+    private var l = object : InterstitialAdListener {
+        override fun onInterstitialDisplayed(ad: Ad) {
+            Log.e(TAG, "Interstitial ad displayed.")
+        }
+
+        override fun onInterstitialDismissed(ad: Ad) {
+            if (ad is InterstitialAd) {
+                banner?.loadAd()
+                ad.destroy()
+            }
+            Log.e(TAG, "Interstitial ad dismissed.")
+        }
+
+        override fun onError(ad: Ad, adError: AdError) {
+            if (ad is InterstitialAd) {
+                banner?.loadAd()
+                ad.destroy()
+            }
+            Log.e(TAG, "Interstitial ad failed to load: " + adError.errorMessage)
+        }
+
+        override fun onAdLoaded(ad: Ad) {
+            Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!")
+            hideLoading()
+            (ad as InterstitialAd).show()
+        }
+
+        override fun onAdClicked(ad: Ad) {
+            // Ad clicked callback
+            Log.d(TAG, "Interstitial ad clicked!")
+        }
+
+        override fun onLoggingImpression(ad: Ad) {
+            Log.d(TAG, "Interstitial ad impression logged!")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,58 +101,12 @@ class MainActivity : AppCompatActivity(), MainView {
         })
         setSupportActionBar(toolbar)
         AudienceNetworkAds.initialize(this)
-        AdSettings.addTestDevice("a2c33a3e-3951-4284-a25a-c55e513a3e3d");
-        val banner = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
-
-        l = object : InterstitialAdListener {
-            override fun onInterstitialDisplayed(ad: Ad) {
-                Log.e(TAG, "Interstitial ad displayed.")
-            }
-
-            override fun onInterstitialDismissed(ad: Ad) {
-                if (ad is InterstitialAd) {
-                    banner.loadAd()
-                    ad.destroy()
-                }
-                Log.e(TAG, "Interstitial ad dismissed.")
-            }
-
-            override fun onError(ad: Ad, adError: AdError) {
-                if (ad is InterstitialAd) {
-                    banner.loadAd()
-                    ad.destroy()
-                }
-                Log.e(TAG, "Interstitial ad failed to load: " + adError.errorMessage)
-            }
-
-            override fun onAdLoaded(ad: Ad) {
-                Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!")
-                hideLoading()
-                if (ad is InterstitialAd) {
-                    ad.show()
-                }
-            }
-
-            override fun onAdClicked(ad: Ad) {
-                // Ad clicked callback
-                Log.d(TAG, "Interstitial ad clicked!")
-            }
-
-            override fun onLoggingImpression(ad: Ad) {
-                // Ad impression logged callback
-                Log.d(TAG, "Interstitial ad impression logged!")
-            }
-        }
-
-
+        banner = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
         // Find the Ad Container
         val adContainer = findViewById<LinearLayout>(R.id.bannerContainer)
 
         // Add the ad view to your activity layout
         adContainer.addView(banner)
-
-        // Request an ad
-        banner.setAdListener(l)
     }
 
     override fun onRetainCustomNonConfigurationInstance() = presenter
