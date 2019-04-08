@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(), MainView {
     lateinit var presenter: MainPresenter
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
-
+    private var adAlreadyShown = false
     private var banner: AdView? = null
     private var l = object : InterstitialAdListener {
         override fun onInterstitialDisplayed(ad: Ad) {
@@ -124,9 +124,12 @@ class MainActivity : AppCompatActivity(), MainView {
     override fun show(tracks: MutableList<Track>?) {
         trackAdapter = TrackAdapter(tracks)
         rv.adapter = trackAdapter
-        val interstitialAd = InterstitialAd(this, getString(R.string.fb_int_id))
-        interstitialAd.loadAd()
-        interstitialAd.setAdListener(l)
+        if (!adAlreadyShown) {
+            val interstitialAd = InterstitialAd(this, getString(R.string.fb_int_id))
+            interstitialAd.loadAd()
+            interstitialAd.setAdListener(l)
+            adAlreadyShown = true
+        }
 
     }
 
