@@ -4,3 +4,7 @@
 /build
 /.idea/
 /app/build/
+/app/google-services.json
+.DS_Store
+app/zhet.keystore
+keystore.properties
