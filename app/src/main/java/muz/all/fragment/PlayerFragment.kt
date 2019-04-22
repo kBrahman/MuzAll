@@ -33,6 +33,7 @@ import muz.all.component.DaggerFragmentComponent
 import muz.all.model.Track
 import muz.all.util.TRACK
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileNotFoundException
 import javax.inject.Inject
 
@@ -71,7 +72,8 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
             name.text = track.name
         } else if (track is File && track.exists()) {
             try {
-                mp?.setDataSource(context, Uri.fromFile(track))
+                val fos = FileInputStream(track)
+                mp?.setDataSource(fos.fd)
             } catch (ex: FileNotFoundException) {
                 Toast.makeText(context, R.string.could_not_play_file, LENGTH_LONG).show()
                 return
