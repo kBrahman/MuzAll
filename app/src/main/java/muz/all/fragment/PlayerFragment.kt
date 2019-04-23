@@ -73,7 +73,8 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         } else if (track is File && track.exists()) {
             try {
                 val fos = FileInputStream(track)
-                mp?.setDataSource(fos.fd)
+                mp?.setDataSource(fos.fd, 0, track.length())
+                fos.close()
             } catch (ex: FileNotFoundException) {
                 Toast.makeText(context, R.string.could_not_play_file, LENGTH_LONG).show()
                 return
@@ -116,18 +117,14 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
 
         // Request an ad
         adView.setAdListener(object : InterstitialAdListener {
-            override fun onInterstitialDisplayed(ad: Ad) {
-                Log.e(TAG, "Interstitial ad displayed.")
-            }
+            override fun onInterstitialDisplayed(ad: Ad) {}
 
             override fun onInterstitialDismissed(ad: Ad) {
                 ad.destroy()
-                Log.e(TAG, "Interstitial ad dismissed.")
             }
 
             override fun onError(ad: Ad, adError: AdError) {
                 ad.destroy()
-                Log.e(TAG, "Interstitial ad failed to load: " + adError.errorMessage)
             }
 
             override fun onAdLoaded(ad: Ad) {
