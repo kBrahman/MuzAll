@@ -1,6 +1,7 @@
 package muz.all.adapter
 
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -41,8 +42,10 @@ class MusicAdapter(private val list: Array<File>?) : RecyclerView.Adapter<MusicA
         }
         val data = retriever.embeddedPicture;
         if (data != null) {
-            val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size);
-            holder.itemView.musicImg.setImageBitmap(bitmap)
+            val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
+            holder.itemView.imgMusicItem.setImageBitmap(bitmap)
+//            holder.itemView.imgMusicItem.bitmap = bitmap
+//            holder.itemView.imgMusicItem.draw(Canvas())
         }
     }
 
