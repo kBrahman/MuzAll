@@ -23,6 +23,7 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import com.crashlytics.android.Crashlytics
 import com.facebook.ads.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_player.*
@@ -73,6 +74,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         } else if (track is File && track.exists()) {
             try {
                 val fos = FileInputStream(track)
+                Crashlytics.setString("file_name", track.name)
                 mp?.setDataSource(fos.fd, 0, track.length())
                 fos.close()
             } catch (ex: FileNotFoundException) {
