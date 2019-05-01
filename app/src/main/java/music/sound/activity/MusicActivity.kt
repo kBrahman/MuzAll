@@ -1,6 +1,8 @@
 package music.sound.activity
 
 import android.content.Context
+import android.media.MediaCodecList
+import android.media.MediaCodecList.ALL_CODECS
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
@@ -33,8 +35,8 @@ class MusicActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_music)
         val files = getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles()
-        Log.i(TAG, files.size.toString())
         rvMusic.setHasFixedSize(true)
+      
         rvMusic.adapter = MusicAdapter(files)
         adViewMusic.adListener = object : AdListener() {
             override fun onAdLoaded() {
