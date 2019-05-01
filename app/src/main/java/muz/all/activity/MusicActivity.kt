@@ -19,6 +19,9 @@ import muz.all.adapter.MusicAdapter
 import java.io.File
 
 class MusicActivity : AppCompatActivity() {
+    companion object {
+        private val TAG = MusicActivity::class.java.simpleName
+    }
 
     private var menuItemDelete: MenuItem? = null
     private var fileToDelete: File? = null
@@ -27,8 +30,13 @@ class MusicActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_music)
         val files = getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles()
+            .filter {
+                !it.name.startsWith(".") && it.name != "jrdonlinemusic.db" && !it.name.endsWith(".pls")
+                        && it.name != "jrdonlinemusic.db-journal"
+            }
+
         rvMusic.setHasFixedSize(true)
-        rvMusic.adapter = MusicAdapter(files)
+        rvMusic.adapter = MusicAdapter(files.toTypedArray())
         setSupportActionBar(toolbar)
         val banner = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
         val adContainer = findViewById<LinearLayout>(R.id.bannerContainer)
