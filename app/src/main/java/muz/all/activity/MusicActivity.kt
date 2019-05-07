@@ -29,7 +29,11 @@ class MusicActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_music)
-        val files = getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles()
+        val directory = getExternalStoragePublicDirectory(DIRECTORY_MUSIC)
+        if (!directory.exists()) {
+            directory.mkdirs()
+        }
+        val files = directory.listFiles()
             .filter {
                 !it.name.startsWith(".") && it.name != "jrdonlinemusic.db" && !it.name.endsWith(".pls")
                         && it.name != "jrdonlinemusic.db-journal"
