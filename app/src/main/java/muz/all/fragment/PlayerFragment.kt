@@ -4,7 +4,6 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.DownloadManager
 import android.content.Context.DOWNLOAD_SERVICE
 import android.content.DialogInterface
-import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.media.MediaPlayer
 import android.net.Uri
@@ -23,7 +22,6 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
-import com.crashlytics.android.Crashlytics
 import com.facebook.ads.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_player.*
@@ -74,7 +72,6 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         } else if (track is File && track.exists()) {
             try {
                 val fos = FileInputStream(track)
-                Crashlytics.setString("file_name", track.name)
                 mp?.setDataSource(fos.fd, 0, track.length())
                 fos.close()
             } catch (ex: FileNotFoundException) {
@@ -166,9 +163,8 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         }
     }
 
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+        if ((grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED)) {
             download(arguments?.getSerializable(TRACK) as Track)
         }
     }
@@ -185,6 +181,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     }
 
     override fun run() {
+        if (!isPrepared) return
         val currentPosition = mp?.currentPosition ?: 0
         var dur = mp?.duration ?: 1
         if (dur != 0) dur = currentPosition.times(100).div(dur)
@@ -207,7 +204,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         handler.removeCallbacks(this)
         if (isPrepared) mp?.stop()
         mp?.release()
-        seekBar.progress = 0
+        seekBar?.progress = 0
         setVisibility(VISIBLE)
         isPrepared = false
         super.onDismiss(dialog)
