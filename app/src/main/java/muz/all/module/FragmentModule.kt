@@ -8,6 +8,8 @@ import android.media.MediaPlayer
 import android.os.Build
 import dagger.Module
 import dagger.Provides
+import muz.all.mvp.presenter.PlayerPresenter
+import muz.all.mvp.presenter.PlayerPresenterImpl
 
 @Module
 class FragmentModule {
@@ -19,6 +21,9 @@ class FragmentModule {
         } else {
             mp.setAudioStreamType(STREAM_MUSIC)
         }
-        return mp;
+        return mp
     }
+
+    @Provides
+    fun providePlayerPresenter(presenter: PlayerPresenterImpl): PlayerPresenter = presenter
 }

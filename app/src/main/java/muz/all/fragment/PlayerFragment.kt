@@ -30,23 +30,36 @@ import muz.all.activity.MainActivity
 import muz.all.activity.MusicActivity
 import muz.all.component.DaggerFragmentComponent
 import muz.all.model.Track
+import muz.all.mvp.presenter.PlayerPresenter
+import muz.all.mvp.view.PlayerView
 import muz.all.util.TRACK
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import javax.inject.Inject
 
-class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar.OnSeekBarChangeListener, Runnable {
+class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListener, SeekBar.OnSeekBarChangeListener,
+    Runnable {
 
     companion object {
         private val TAG = PlayerFragment::class.java.simpleName
     }
 
+    @Inject
+    lateinit var playerPresenter: PlayerPresenter
+
     @set:Inject
     var mp: MediaPlayer? = null
-
     private val handler = Handler()
     private var isPrepared = false
+
+    override fun showLoading() {
+        pbPlayer?.visibility = VISIBLE
+    }
+
+    override fun hideLoading() {
+        pbPlayer?.visibility = GONE
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,7 +185,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     override fun onPrepared(mp: MediaPlayer?) {
         isPrepared = true
         mp?.start()
-        pbPlayer?.visibility = GONE
+        hideLoading()
         startSeekBar()
     }
 
