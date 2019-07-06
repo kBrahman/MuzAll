@@ -5,4 +5,5 @@
     <string name="banner_id">ca-app-pub-8761730220693010/7375049681</string>
     <string name="int_id">ca-app-pub-8761730220693010/9123245620</string>
     <string name="action_delete">Delete</string>
+    <string name="folder">Music folder</string>
 </resources>

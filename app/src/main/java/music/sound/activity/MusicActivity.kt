@@ -9,7 +9,7 @@ import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Environment.getExternalStoragePublicDirectory
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
