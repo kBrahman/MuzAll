@@ -1,26 +1,24 @@
 package muz.all.activity
 
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.SearchView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.VISIBLE
-import android.widget.LinearLayout
 import android.widget.Toast
-import com.facebook.ads.*
-import com.facebook.ads.AdSize
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
 import kotlinx.android.synthetic.main.activity_main.*
 import muz.all.R
 import muz.all.adapter.TrackAdapter
@@ -29,6 +27,7 @@ import muz.all.manager.ApiManager
 import muz.all.model.Track
 import muz.all.mvp.presenter.MainPresenter
 import muz.all.mvp.view.MainView
+import java.util.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), MainView {
@@ -37,6 +36,7 @@ class MainActivity : AppCompatActivity(), MainView {
         private val TAG = MainActivity::class.java.simpleName
     }
 
+    private var timeOut = false
     @Inject
     lateinit var manager: ApiManager
     @Inject
@@ -44,70 +44,56 @@ class MainActivity : AppCompatActivity(), MainView {
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
     private var adAlreadyShown = false
-    private var banner: AdView? = null
-    private var l = object : InterstitialAdListener {
-        override fun onInterstitialDisplayed(ad: Ad) {
-            Log.e(TAG, "Interstitial ad displayed.")
-        }
 
-        override fun onInterstitialDismissed(ad: Ad) {
-            if (ad is InterstitialAd) {
-                banner?.loadAd()
-                ad.destroy()
-            }
-            Log.e(TAG, "Interstitial ad dismissed.")
-        }
-
-        override fun onError(ad: Ad, adError: AdError) {
-            if (ad is InterstitialAd) {
-                banner?.loadAd()
-                ad.destroy()
-            }
-            Log.e(TAG, "Interstitial ad failed to load: " + adError.errorMessage)
-        }
-
-        override fun onAdLoaded(ad: Ad) {
-            Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!")
-            hideLoading()
-            (ad as InterstitialAd).show()
-        }
-
-        override fun onAdClicked(ad: Ad) {
-            // Ad clicked callback
-            Log.d(TAG, "Interstitial ad clicked!")
-        }
-
-        override fun onLoggingImpression(ad: Ad) {
-            Log.d(TAG, "Interstitial ad impression logged!")
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val component = DaggerActivityComponent.create()
         component.inject(this)
+
+        setSupportActionBar(toolbar)
+        val ad = InterstitialAd(this)
+        ad.adUnitId = getString(R.string.int_id)
+        ad.loadAd(AdRequest.Builder().build())
+        ad.adListener = object : AdListener() {
+            override fun onAdFailedToLoad(p0: Int) {
+                Log.i(TAG, "ad failed=>$p0")
+            }
+
+            override fun onAdLoaded() {
+                if (!timeOut) ad.show()
+            }
+        }
         if (lastCustomNonConfigurationInstance != null) {
             presenter = lastCustomNonConfigurationInstance as MainPresenter
+            timeOut = true
+        } else {
+            setTimer()
         }
         presenter.view = this
         rv.setHasFixedSize(true)
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+            override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
+                val layoutManager = recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
                     presenter.onScrolled()
                 }
             }
         })
-        setSupportActionBar(toolbar)
-        AudienceNetworkAds.initialize(this)
-        banner = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
-        // Find the Ad Container
-        val adContainer = findViewById<LinearLayout>(R.id.bannerContainer)
 
-        // Add the ad view to your activity layout
-        adContainer.addView(banner)
+    }
+
+    private fun setTimer() {
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                timeOut = true
+                if (trackAdapter != null) {
+                    runOnUiThread { setAdapter() }
+                }
+                Log.i(TAG, "time out")
+            }
+        }, 5000L)
     }
 
     override fun onRetainCustomNonConfigurationInstance() = presenter
@@ -124,14 +110,14 @@ class MainActivity : AppCompatActivity(), MainView {
 
     override fun show(tracks: MutableList<Track>?) {
         trackAdapter = TrackAdapter(tracks)
-        rv.adapter = trackAdapter
-        if (!adAlreadyShown) {
-            val interstitialAd = InterstitialAd(this, getString(R.string.fb_int_id))
-            interstitialAd.loadAd()
-            interstitialAd.setAdListener(l)
-            adAlreadyShown = true
+        if (timeOut) {
+            setAdapter()
         }
+    }
 
+    private fun setAdapter() {
+        hideLoading()
+        rv.adapter = trackAdapter
     }
 
     override fun addAndShow(tracks: List<Track>?) {

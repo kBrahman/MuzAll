@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MuzAll</string>
-    <string name="app_id">201992312</string>
+    <string name="app_id">ca-app-pub-8761730220693010~3693194663</string>
+    <string name="banner_id">ca-app-pub-8761730220693010/6770784149</string>
     <string name="int_id">ca-app-pub-8761730220693010/7789186490</string>
     <string name="action_delete">Delete</string>
-    <string name="fb_int_id">2277322472588056_2277325449254425</string>
-    <string name="fb_banner_id">2277322472588056_2277939875859649</string>
-    <string name="fb_rec_banner_id">2277322472588056_2277960979190872</string>
 </resources>

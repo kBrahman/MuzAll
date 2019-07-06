@@ -1,5 +1,6 @@
 package muz.all.mvp.presenter
 
+import android.util.Log
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import muz.all.manager.ApiManager
@@ -37,7 +38,7 @@ class MainPresenterImp @Inject constructor(
             .subscribe(::onContentFetched, ::onError)
     }
 
-    fun getPopular(offset: Int) {
+    private fun getPopular(offset: Int) {
         disposable += manager.getPopular(offset)
             .subscribe(::onContentFetched, ::onError)
     }
@@ -65,13 +66,13 @@ class MainPresenterImp @Inject constructor(
     private fun onContentFetched(response: MuzResponse?) {
         if (response?.results?.isEmpty() == true && !searching && idIterator.hasNext()) {
             showLoading()
+            Log.i(TAG, "empty")
             manager.clientId = idIterator.next()
             getPopular(offset)
         } else if (response?.results?.isEmpty() == true && !searching) {
             hideLoading()
             view?.showServiceUnavailable()
         } else if (view?.trackAdapter == null) {
-            hideLoading()
             view?.show(response?.results?.toMutableList())
         } else {
             hideLoading()

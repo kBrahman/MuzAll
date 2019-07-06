@@ -1,6 +1,6 @@
 package muz.all.model
 
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 
 @Keep
 data class MuzResponse(val results: List<Track>)

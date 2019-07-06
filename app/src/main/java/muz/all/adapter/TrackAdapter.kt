@@ -1,9 +1,9 @@
 package muz.all.adapter
 
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.DialogFragment
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +14,7 @@ import muz.all.fragment.PlayerFragment
 import muz.all.model.Track
 import muz.all.util.TRACK
 
-class TrackAdapter(private val results: MutableList<Track>?) : RecyclerView.Adapter<TrackAdapter.VH>() {
+class TrackAdapter(private val results: MutableList<Track>?) : androidx.recyclerview.widget.RecyclerView.Adapter<TrackAdapter.VH>() {
 
     private val player: DialogFragment = PlayerFragment()
 
@@ -43,7 +43,7 @@ class TrackAdapter(private val results: MutableList<Track>?) : RecyclerView.Adap
 
     fun getAll() = results
 
-    inner class VH(item: View) : RecyclerView.ViewHolder(item) {
+    inner class VH(item: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(item) {
         init {
             item.setOnClickListener {
                 if (player.fragmentManager != null && player.showsDialog) {

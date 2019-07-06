@@ -10,19 +10,18 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
-import android.support.v4.app.DialogFragment
-import android.support.v4.content.ContextCompat
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
-import com.facebook.ads.*
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import muz.all.R
@@ -117,44 +116,14 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         download.setOnClickListener {
             download(track as Track)
         }
+        recBanner.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                recBanner.visibility = VISIBLE
+            }
+        }
+        recBanner.loadAd(AdRequest.Builder().build())
         setVisibility(GONE)
-        val adView = AdView(context, getString(R.string.fb_rec_banner_id), AdSize.RECTANGLE_HEIGHT_250)
 
-        // Find the Ad Container
-        val adContainer = view.findViewById<LinearLayout>(R.id.recBannerContainer)
-        adContainer.layoutParams.width = (320F.times(context?.resources?.displayMetrics?.density ?: 1.1F)).toInt()
-
-        // Add the ad view to your activity layout
-        adContainer.addView(adView)
-
-        // Request an ad
-        adView.setAdListener(object : InterstitialAdListener {
-            override fun onInterstitialDisplayed(ad: Ad) {}
-
-            override fun onInterstitialDismissed(ad: Ad) {
-                ad.destroy()
-            }
-
-            override fun onError(ad: Ad, adError: AdError) {
-                ad.destroy()
-            }
-
-            override fun onAdLoaded(ad: Ad) {
-                Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!")
-
-            }
-
-            override fun onAdClicked(ad: Ad) {
-                // Ad clicked callback
-                Log.d(TAG, "Interstitial ad clicked!")
-            }
-
-            override fun onLoggingImpression(ad: Ad) {
-                // Ad impression logged callback
-                Log.d(TAG, "Interstitial ad impression logged!")
-            }
-        })
-        adView.loadAd()
     }
 
     private fun setVisibility(visibility: Int) {

@@ -3,7 +3,6 @@ package muz.all.manager
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import muz.all.BuildConfig
 import muz.all.model.MuzResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -11,7 +10,8 @@ import javax.inject.Inject
 
 
 class MuzApiManager @Inject constructor(
-    private val apiService: APIService
+    private val apiService: APIService,
+    override var clientId: String
 ) : ApiManager {
 
     companion object {
@@ -19,7 +19,6 @@ class MuzApiManager @Inject constructor(
         private const val PATH = "tracks/?format=json&limit=25"
     }
 
-    override var clientId = BuildConfig.CLIENT_ID_1
 
     override fun search(q: String, offset: Int) =
         apiService.search(q, offset, clientId)

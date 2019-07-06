@@ -1,5 +1,6 @@
 package muz.all.module
 
+import android.util.Log
 import dagger.Module
 import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable
@@ -18,7 +19,10 @@ import java.util.concurrent.TimeUnit
 class ActivityModule {
     companion object {
         private const val SERVER = BuildConfig.SERVER
+        private val TAG = ActivityModule::class.java.simpleName
     }
+
+    private var iterator: Iterator<String>? = null
 
     @Provides
     fun provideMuzApiManager(manager: MuzApiManager): ApiManager = manager
@@ -38,21 +42,32 @@ class ActivityModule {
     fun provideDisposable() = CompositeDisposable()
 
     @Provides
-    fun provideIdIterator() = listOf(
-        BuildConfig.CLIENT_ID_2,
-        BuildConfig.CLIENT_ID_3,
-        BuildConfig.CLIENT_ID_4,
-        BuildConfig.CLIENT_ID_5,
-        BuildConfig.CLIENT_ID_6,
-        BuildConfig.CLIENT_ID_7,
-        BuildConfig.CLIENT_ID_8,
-        BuildConfig.CLIENT_ID_9,
-        BuildConfig.CLIENT_ID_10,
-        BuildConfig.CLIENT_ID_11,
-        BuildConfig.CLIENT_ID_12,
-        BuildConfig.CLIENT_ID_13,
-        BuildConfig.CLIENT_ID_14,
-        BuildConfig.CLIENT_ID_15,
-        BuildConfig.CLIENT_ID_16
-    ).iterator()
+    fun provideIdIterator(): Iterator<String> {
+        if (iterator == null) {
+            val shuffled = listOf(
+                BuildConfig.CLIENT_ID_1,
+                BuildConfig.CLIENT_ID_2,
+                BuildConfig.CLIENT_ID_3,
+                BuildConfig.CLIENT_ID_4,
+                BuildConfig.CLIENT_ID_5,
+                BuildConfig.CLIENT_ID_6,
+                BuildConfig.CLIENT_ID_7,
+                BuildConfig.CLIENT_ID_8,
+                BuildConfig.CLIENT_ID_9,
+                BuildConfig.CLIENT_ID_10,
+                BuildConfig.CLIENT_ID_11,
+                BuildConfig.CLIENT_ID_12,
+                BuildConfig.CLIENT_ID_13,
+                BuildConfig.CLIENT_ID_14,
+                BuildConfig.CLIENT_ID_15,
+                BuildConfig.CLIENT_ID_16
+            ).shuffled()
+            iterator = shuffled.iterator()
+            Log.i(TAG, "$shuffled")
+        }
+        return iterator!!
+    }
+
+    @Provides
+    fun provideClientId(idIterator: Iterator<String>) = idIterator.next()
 }
