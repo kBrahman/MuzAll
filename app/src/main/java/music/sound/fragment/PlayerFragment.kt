@@ -93,7 +93,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         }
         recBanner?.adListener = object : AdListener() {
             override fun onAdLoaded() {
-                recBanner.visibility = VISIBLE
+                recBanner?.visibility = VISIBLE
             }
         }
         recBanner.loadAd(AdRequest.Builder().build())
