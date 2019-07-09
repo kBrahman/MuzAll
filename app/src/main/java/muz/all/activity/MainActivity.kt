@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity(), MainView {
     lateinit var presenter: MainPresenter
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
-    private var adAlreadyShown = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +58,11 @@ class MainActivity : AppCompatActivity(), MainView {
         ad.adListener = object : AdListener() {
             override fun onAdFailedToLoad(p0: Int) {
                 Log.i(TAG, "ad failed=>$p0")
+                timeOut = true
+            }
+
+            override fun onAdClosed() {
+                timeOut = true
             }
 
             override fun onAdLoaded() {
@@ -93,7 +97,7 @@ class MainActivity : AppCompatActivity(), MainView {
                 }
                 Log.i(TAG, "time out")
             }
-        }, 5000L)
+        }, 6000L)
     }
 
     override fun onRetainCustomNonConfigurationInstance() = presenter
@@ -118,6 +122,12 @@ class MainActivity : AppCompatActivity(), MainView {
     private fun setAdapter() {
         hideLoading()
         rv.adapter = trackAdapter
+        adView.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                adView.visibility = VISIBLE
+            }
+        }
+        adView.loadAd(AdRequest.Builder().build())
     }
 
     override fun addAndShow(tracks: List<Track>?) {

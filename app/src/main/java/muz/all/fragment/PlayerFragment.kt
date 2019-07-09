@@ -23,6 +23,7 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_music.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import muz.all.R
 import muz.all.activity.MainActivity
@@ -118,7 +119,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         }
         recBanner.adListener = object : AdListener() {
             override fun onAdLoaded() {
-                recBanner.visibility = VISIBLE
+                recBanner?.visibility = VISIBLE
             }
         }
         recBanner.loadAd(AdRequest.Builder().build())
@@ -128,9 +129,9 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
 
     private fun setVisibility(visibility: Int) {
         if (activity is MainActivity) {
-            (activity as MainActivity).bannerContainer.visibility = visibility
+            (activity as MainActivity).adView.visibility = visibility
         } else if (activity is MusicActivity) {
-            (activity as MusicActivity).bannerContainer.visibility = visibility
+            (activity as MusicActivity).adViewMusic.visibility = visibility
         }
     }
 

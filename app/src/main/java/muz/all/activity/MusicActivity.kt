@@ -9,8 +9,10 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.LinearLayout
+import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_music.*
 import muz.all.R
 import muz.all.adapter.MusicAdapter
@@ -40,6 +42,12 @@ class MusicActivity : AppCompatActivity() {
         rvMusic.setHasFixedSize(true)
         rvMusic.adapter = MusicAdapter(files.toTypedArray())
         setSupportActionBar(toolbar)
+        adViewMusic.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                adViewMusic.visibility = VISIBLE
+            }
+        }
+        adViewMusic.loadAd(AdRequest.Builder().build())
     }
 
     override fun onBackPressed() {
