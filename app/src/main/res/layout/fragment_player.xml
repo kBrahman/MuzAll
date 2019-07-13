@@ -2,19 +2,24 @@
 <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
     <com.google.android.gms.ads.AdView
-            android:layout_width="match_parent"
+            android:layout_width="300dp"
             android:layout_height="match_parent"
             app:adUnitId="@string/banner_id"
             app:adSize="MEDIUM_RECTANGLE"
             android:id="@+id/recBanner"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
     <TextView android:layout_width="300dp"
               android:layout_height="wrap_content"
               android:id="@+id/name"
-              app:layout_constraintTop_toBottomOf="@id/recBanner"/>
+              app:layout_constraintTop_toBottomOf="@id/recBanner"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              android:paddingStart="4dp"/>
     <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,7 +47,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/pbPlayer"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recBanner"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

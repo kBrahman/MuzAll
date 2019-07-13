@@ -4,7 +4,6 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.DownloadManager
 import android.content.Context.DOWNLOAD_SERVICE
 import android.content.DialogInterface
-import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.media.MediaPlayer
 import android.net.Uri
@@ -119,9 +118,8 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         }
     }
 
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+        if ((grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED)) {
             download(arguments?.getSerializable(TRACK) as Track)
         }
     }
