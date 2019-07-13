@@ -22,8 +22,8 @@ android {
         applicationId "sound.music"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 35
-        versionName "1.25"
+        versionCode 36
+        versionName "1.26"
         multiDexEnabled true
         buildConfigField "String", "ClIENT_ID", localProperties["sound_cloud_id"]
         buildConfigField "String", "SERVER", localProperties["s"]
