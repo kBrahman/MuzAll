@@ -71,3 +71,14 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
 }
 apply plugin: 'com.google.gms.google-services'
+
+task copyFile(type: Copy) {
+    from(rootProject.file('crashlytics/google-services_music_sound.json')) {
+        rename 'google-services_music_sound.json', 'google-services.json'
+    }
+    into(rootProject.file('app'))
+}
+
+gradle.projectsEvaluated {
+    preBuild.dependsOn(copyFile)
+}
