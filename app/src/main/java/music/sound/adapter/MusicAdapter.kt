@@ -3,12 +3,12 @@ package music.sound.adapter
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.music_item.view.*
 import music.sound.R
 import music.sound.activity.MusicActivity
@@ -17,7 +17,7 @@ import music.sound.util.TRACK
 import java.io.File
 
 
-class MusicAdapter(private val list: Array<File>) : androidx.recyclerview.widget.RecyclerView.Adapter<MusicAdapter.MusicVH>() {
+class MusicAdapter(private val list: Array<File>) : RecyclerView.Adapter<MusicAdapter.MusicVH>() {
 
     companion object {
         private val TAG = MusicAdapter::class.java.simpleName
@@ -46,7 +46,7 @@ class MusicAdapter(private val list: Array<File>) : androidx.recyclerview.widget
         }
     }
 
-    inner class MusicVH(item: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(item) {
+    inner class MusicVH(item: View) : RecyclerView.ViewHolder(item) {
         init {
             item.setOnClickListener {
                 val bundle = Bundle()
