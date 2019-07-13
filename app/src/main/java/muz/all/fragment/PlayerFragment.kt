@@ -164,7 +164,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
     }
 
     override fun run() {
-        if (!isPrepared) return
+        if (mp == null || !isPrepared) return
         val currentPosition = mp?.currentPosition ?: 0
         var dur = mp?.duration ?: 1
         if (dur != 0) dur = currentPosition.times(100).div(dur)
