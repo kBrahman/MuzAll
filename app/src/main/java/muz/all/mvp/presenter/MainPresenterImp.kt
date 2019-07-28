@@ -17,6 +17,8 @@ class MainPresenterImp @Inject constructor(
         private val TAG = MainPresenterImp::class.java.simpleName
     }
 
+
+
     private var offset = 0
     private var searching = false
     private lateinit var q: String
@@ -39,6 +41,7 @@ class MainPresenterImp @Inject constructor(
     }
 
     private fun getPopular(offset: Int) {
+        Log.d(TAG, "getPopular id=>${manager.clientId}")
         disposable += manager.getPopular(offset)
             .subscribe(::onContentFetched, ::onError)
     }
@@ -64,9 +67,10 @@ class MainPresenterImp @Inject constructor(
     }
 
     private fun onContentFetched(response: MuzResponse?) {
+        Log.d(TAG, "onContentFetched=>$searching")
         if (response?.results?.isEmpty() == true && !searching && idIterator.hasNext()) {
             showLoading()
-            Log.i(TAG, "empty")
+            Log.i(TAG, "empty key=>${manager.clientId}")
             manager.clientId = idIterator.next()
             getPopular(offset)
         } else if (response?.results?.isEmpty() == true && !searching) {

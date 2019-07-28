@@ -23,7 +23,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import muz.all.R
 import muz.all.adapter.TrackAdapter
 import muz.all.component.DaggerActivityComponent
-import muz.all.manager.ApiManager
 import muz.all.model.Track
 import muz.all.mvp.presenter.MainPresenter
 import muz.all.mvp.view.MainView
@@ -37,8 +36,6 @@ class MainActivity : AppCompatActivity(), MainView {
     }
 
     private var timeOut = false
-    @Inject
-    lateinit var manager: ApiManager
     @Inject
     lateinit var presenter: MainPresenter
     private var isPaused = false

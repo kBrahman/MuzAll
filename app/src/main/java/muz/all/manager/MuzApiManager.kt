@@ -1,5 +1,6 @@
 package muz.all.manager
 
+import android.util.Log
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -19,6 +20,9 @@ class MuzApiManager @Inject constructor(
         private const val PATH = "tracks/?format=json&limit=25"
     }
 
+    init {
+        Log.d(TAG, "id=>$clientId")
+    }
 
     override fun search(q: String, offset: Int) =
         apiService.search(q, offset, clientId)

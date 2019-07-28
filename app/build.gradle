@@ -41,6 +41,7 @@ android {
         buildConfigField "String", "CLIENT_ID_14", localProperties["client_id_14"]
         buildConfigField "String", "CLIENT_ID_15", localProperties["client_id_15"]
         buildConfigField "String", "CLIENT_ID_16", localProperties["client_id_16"]
+        buildConfigField "String", "CLIENT_ID_17", localProperties["client_id_17"]
         buildConfigField "String", "SERVER", localProperties["server"]
     }
     buildTypes {
@@ -77,10 +78,10 @@ dependencies {
     implementation 'com.google.dagger:dagger:2.19'
     kapt 'com.google.dagger:dagger-compiler:2.19'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.gms:play-services-ads:18.1.0'
+    implementation 'com.google.android.gms:play-services-ads:18.1.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
 //    implementation 'com.facebook.android:audience-network-sdk:5.3.0-beta2'
-    implementation 'com.google.firebase:firebase-core:17.0.0'
+    implementation 'com.google.firebase:firebase-core:17.0.1'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     implementation 'com.android.support:multidex:1.0.3'
 }

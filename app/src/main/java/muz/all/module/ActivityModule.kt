@@ -15,6 +15,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
+
 @Module
 class ActivityModule {
     companion object {
@@ -44,7 +45,7 @@ class ActivityModule {
     @Provides
     fun provideIdIterator(): Iterator<String> {
         if (iterator == null) {
-            val shuffled = listOf(
+            val list = listOf(
                 BuildConfig.CLIENT_ID_1,
                 BuildConfig.CLIENT_ID_2,
                 BuildConfig.CLIENT_ID_3,
@@ -60,10 +61,11 @@ class ActivityModule {
                 BuildConfig.CLIENT_ID_13,
                 BuildConfig.CLIENT_ID_14,
                 BuildConfig.CLIENT_ID_15,
-                BuildConfig.CLIENT_ID_16
-            ).shuffled()
-            iterator = shuffled.iterator()
-            Log.i(TAG, "$shuffled")
+                BuildConfig.CLIENT_ID_16,
+                BuildConfig.CLIENT_ID_17
+            )
+            iterator = list.iterator()
+            Log.i(TAG, "$list")
         }
         return iterator!!
     }
