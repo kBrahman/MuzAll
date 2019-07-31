@@ -62,10 +62,10 @@ class ActivityModule {
                 BuildConfig.CLIENT_ID_14,
                 BuildConfig.CLIENT_ID_15,
                 BuildConfig.CLIENT_ID_16,
-                BuildConfig.CLIENT_ID_17
+                BuildConfig.CLIENT_ID_17,
+                BuildConfig.CLIENT_ID_18
             )
             iterator = list.iterator()
-            Log.i(TAG, "$list")
         }
         return iterator!!
     }

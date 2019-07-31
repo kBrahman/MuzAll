@@ -42,6 +42,7 @@ android {
         buildConfigField "String", "CLIENT_ID_15", localProperties["client_id_15"]
         buildConfigField "String", "CLIENT_ID_16", localProperties["client_id_16"]
         buildConfigField "String", "CLIENT_ID_17", localProperties["client_id_17"]
+        buildConfigField "String", "CLIENT_ID_18", localProperties["client_id_18"]
         buildConfigField "String", "SERVER", localProperties["server"]
     }
     buildTypes {
