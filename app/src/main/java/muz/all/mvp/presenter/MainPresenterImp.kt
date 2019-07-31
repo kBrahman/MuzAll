@@ -18,7 +18,6 @@ class MainPresenterImp @Inject constructor(
     }
 
 
-
     private var offset = 0
     private var searching = false
     private lateinit var q: String
