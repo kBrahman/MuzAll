@@ -26,6 +26,7 @@ import music.sound.model.Track
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         private val TAG = MainActivity::class.java.simpleName
     }
 
+    private var timeOut = false
     var ad: InterstitialAd? = null
     private lateinit var q: String
 
@@ -49,13 +51,16 @@ class MainActivity : AppCompatActivity() {
 
         override fun onResponse(call: Call<List<Track>>, response: Response<List<Track>>) {
             Log.i(TAG, "response=>$response")
-            if (trackAdapter == null) {
+            if (trackAdapter == null && timeOut) {
                 trackAdapter = TrackAdapter(response.body()?.toMutableList())
                 rv.adapter = trackAdapter
+                pb.visibility = GONE
+                initBanner()
+            } else if (trackAdapter == null) {
+                trackAdapter = TrackAdapter(response.body()?.toMutableList())
             } else {
                 trackAdapter?.addData(response.body())
             }
-            pb.visibility = GONE
             loading = false
         }
     }
@@ -66,9 +71,15 @@ class MainActivity : AppCompatActivity() {
         val component = DaggerActivityComponent.create()
         component.inject(this)
         rv.setHasFixedSize(true)
-        rv.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
-                val layoutManager = recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
+        rv.addOnScrollListener(object :
+            androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+            override fun onScrolled(
+                recyclerView: androidx.recyclerview.widget.RecyclerView,
+                dx: Int,
+                dy: Int
+            ) {
+                val layoutManager =
+                    recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
                     if (!loading) {
                         pb.visibility = VISIBLE
@@ -80,25 +91,51 @@ class MainActivity : AppCompatActivity() {
             }
         })
         setSupportActionBar(toolbar)
-        adView.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                adView.visibility = VISIBLE
-            }
-        }
         adView.loadAd(AdRequest.Builder().build())
         ad = InterstitialAd(this)
         ad?.adUnitId = getString(R.string.int_id)
         ad?.adListener = object : AdListener() {
             override fun onAdLoaded() {
                 ad?.show()
-                getPopular(offset)
+                timeOut = true
             }
 
             override fun onAdFailedToLoad(p0: Int) {
-                getPopular(offset)
+                timeOut = true
+            }
+
+            override fun onAdClosed() {
+                timeOut = true
+                initBanner()
             }
         }
         ad?.loadAd(AdRequest.Builder().build())
+        getPopular(offset)
+        setTimer()
+    }
+
+    private fun initBanner() {
+        adView.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                adView.visibility = VISIBLE
+            }
+        }
+    }
+
+    private fun setTimer() {
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                timeOut = true
+                if (trackAdapter != null) {
+                    runOnUiThread {
+                        rv.adapter = trackAdapter
+                        pb.visibility = GONE
+                        ad = null
+                    }
+                }
+                Log.i(TAG, "time out")
+            }
+        }, 6000L)
     }
 
     private fun getPopular(offset: Int) {
@@ -139,7 +176,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         if (requestCode == 1 && (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             openMusic(null)
         }
