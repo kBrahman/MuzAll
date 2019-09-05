@@ -20,6 +20,7 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import com.crashlytics.android.Crashlytics
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
@@ -38,7 +39,8 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 import javax.inject.Inject
 
-class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListener, SeekBar.OnSeekBarChangeListener,
+class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListener,
+    SeekBar.OnSeekBarChangeListener,
     Runnable {
 
     companion object {
@@ -67,7 +69,11 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         setStyle(STYLE_NO_TITLE, theme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
         inflater.inflate(
             R.layout.fragment_player,
             container,
@@ -136,17 +142,30 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
     }
 
     private fun download(track: Track) {
-        if (ContextCompat.checkSelfPermission(context!!, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                context!!,
+                WRITE_EXTERNAL_STORAGE
+            ) == PERMISSION_GRANTED
+        ) {
             val downloadManager = context?.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
             val uri = Uri.parse(track.audio)
             val request = DownloadManager.Request(uri)
-            downloadManager.enqueue(request.setDestinationInExternalPublicDir(DIRECTORY_MUSIC, track.name + ".mp3"))
+            downloadManager.enqueue(
+                request.setDestinationInExternalPublicDir(
+                    DIRECTORY_MUSIC,
+                    track.name + ".mp3"
+                )
+            )
         } else {
             requestPermissions(arrayOf(WRITE_EXTERNAL_STORAGE), 2)
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         if ((grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED)) {
             download(arguments?.getSerializable(TRACK) as Track)
         }
@@ -165,6 +184,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
 
     override fun run() {
         if (mp == null || !isPrepared) return
+        Crashlytics.setString("trash_track", (arguments?.getSerializable(TRACK) as Track).name)
         val currentPosition = mp?.currentPosition ?: 0
         var dur = mp?.duration ?: 1
         if (dur != 0) dur = currentPosition.times(100).div(dur)

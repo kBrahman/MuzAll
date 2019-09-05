@@ -10,7 +10,7 @@ import android.widget.ImageView
 
 class CircularImgView(ctx: Context, attributeSet: AttributeSet) : ImageView(ctx, attributeSet) {
 
-    val path = Path()
+    private val path = Path()
     private val rect = RectF()
 
     override fun onDraw(canvas: Canvas) {
