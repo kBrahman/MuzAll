@@ -203,7 +203,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
 
     override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 
-    override fun onDismiss(dialog: DialogInterface?) {
+    override fun onDismiss(dialog: DialogInterface) {
         handler.removeCallbacks(this)
         if (isPrepared) mp?.stop()
         mp?.release()

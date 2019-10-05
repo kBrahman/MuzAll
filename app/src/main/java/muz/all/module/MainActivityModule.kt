@@ -1,6 +1,5 @@
 package muz.all.module
 
-import android.util.Log
 import dagger.Module
 import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable
@@ -17,10 +16,10 @@ import java.util.concurrent.TimeUnit
 
 
 @Module
-class ActivityModule {
+class MainActivityModule {
     companion object {
         private const val SERVER = BuildConfig.SERVER
-        private val TAG = ActivityModule::class.java.simpleName
+        private val TAG = MainActivityModule::class.java.simpleName
     }
 
     private var iterator: Iterator<String>? = null

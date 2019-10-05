@@ -10,15 +10,15 @@ import android.os.Vibrator
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.VISIBLE
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_music.*
 import muz.all.R
 import muz.all.adapter.MusicAdapter
 import java.io.File
 
-class MusicActivity : AppCompatActivity() {
+class MusicActivity : DaggerAppCompatActivity() {
     companion object {
         private val TAG = MusicActivity::class.java.simpleName
     }
@@ -66,7 +66,8 @@ class MusicActivity : AppCompatActivity() {
 
     fun delete(item: MenuItem) {
         fileToDelete?.delete()
-        rvMusic.adapter = MusicAdapter(getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles())
+        rvMusic.adapter =
+            MusicAdapter(getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles())
         item.isVisible = false
     }
 

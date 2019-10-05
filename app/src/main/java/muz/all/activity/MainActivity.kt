@@ -11,7 +11,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.VISIBLE
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -19,17 +18,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import muz.all.R
 import muz.all.adapter.TrackAdapter
-import muz.all.component.DaggerActivityComponent
 import muz.all.model.Track
 import muz.all.mvp.presenter.MainPresenter
 import muz.all.mvp.view.MainView
 import java.util.*
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), MainView {
+class MainActivity : DaggerAppCompatActivity(), MainView {
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
@@ -45,9 +44,6 @@ class MainActivity : AppCompatActivity(), MainView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val component = DaggerActivityComponent.create()
-        component.inject(this)
-
         setSupportActionBar(toolbar)
         val ad = InterstitialAd(this)
         ad.adUnitId = getString(R.string.int_id)
@@ -75,8 +71,13 @@ class MainActivity : AppCompatActivity(), MainView {
         presenter.view = this
         rv.setHasFixedSize(true)
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
-                val layoutManager = recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
+            override fun onScrolled(
+                recyclerView: androidx.recyclerview.widget.RecyclerView,
+                dx: Int,
+                dy: Int
+            ) {
+                val layoutManager =
+                    recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
                     presenter.onScrolled()
                 }
@@ -169,7 +170,11 @@ class MainActivity : AppCompatActivity(), MainView {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         if (requestCode == 1 && (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             openMusic(null)
         }
