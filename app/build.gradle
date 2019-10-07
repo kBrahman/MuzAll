@@ -22,8 +22,8 @@ android {
         applicationId "muz.all"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 68
-        versionName "1.67"
+        versionCode 69
+        versionName "1.68"
         multiDexEnabled true
         buildConfigField "String", "CLIENT_ID_1", localProperties["client_id_1"]
         buildConfigField "String", "CLIENT_ID_2", localProperties["client_id_2"]
