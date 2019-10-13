@@ -62,7 +62,8 @@ class MainActivityModule {
                 BuildConfig.CLIENT_ID_15,
                 BuildConfig.CLIENT_ID_16,
                 BuildConfig.CLIENT_ID_17,
-                BuildConfig.CLIENT_ID_18
+                BuildConfig.CLIENT_ID_18,
+                BuildConfig.CLIENT_ID_19
             )
             iterator = list.iterator()
         }
