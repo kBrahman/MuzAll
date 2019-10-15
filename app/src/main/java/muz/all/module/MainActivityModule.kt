@@ -45,6 +45,7 @@ class MainActivityModule {
     fun provideIdIterator(): Iterator<String> {
         if (iterator == null) {
             val list = listOf(
+                BuildConfig.CLIENT_ID_20,
                 BuildConfig.CLIENT_ID_1,
                 BuildConfig.CLIENT_ID_2,
                 BuildConfig.CLIENT_ID_3,

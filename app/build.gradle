@@ -22,8 +22,8 @@ android {
         applicationId "muz.all"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 70
-        versionName "1.69"
+        versionCode 71
+        versionName "1.70"
         multiDexEnabled true
         buildConfigField "String", "CLIENT_ID_1", localProperties["client_id_1"]
         buildConfigField "String", "CLIENT_ID_2", localProperties["client_id_2"]
@@ -44,6 +44,7 @@ android {
         buildConfigField "String", "CLIENT_ID_17", localProperties["client_id_17"]
         buildConfigField "String", "CLIENT_ID_18", localProperties["client_id_18"]
         buildConfigField "String", "CLIENT_ID_19", localProperties["client_id_19"]
+        buildConfigField "String", "CLIENT_ID_20", localProperties["client_id_20"]
         buildConfigField "String", "SERVER", localProperties["server"]
     }
     buildTypes {

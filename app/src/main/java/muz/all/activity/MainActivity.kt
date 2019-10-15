@@ -72,7 +72,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         rv.setHasFixedSize(true)
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(
-                recyclerView: androidx.recyclerview.widget.RecyclerView,
+                recyclerView: RecyclerView,
                 dx: Int,
                 dy: Int
             ) {
