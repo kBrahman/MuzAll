@@ -184,7 +184,11 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
 
     override fun run() {
         if (mp == null || !isPrepared) return
-        Crashlytics.setString("trash_track", (arguments?.getSerializable(TRACK) as Track).name)
+        val serializable = arguments?.getSerializable(TRACK)
+        Crashlytics.setString(
+            "crash_track",
+            if (serializable is Track) serializable.name else (serializable as File).name
+        )
         val currentPosition = mp?.currentPosition ?: 0
         var dur = mp?.duration ?: 1
         if (dur != 0) dur = currentPosition.times(100).div(dur)

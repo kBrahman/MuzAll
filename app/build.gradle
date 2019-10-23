@@ -22,8 +22,8 @@ android {
         applicationId "muz.all"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 76
-        versionName "1.75"
+        versionCode 77
+        versionName "1.76"
         multiDexEnabled true
         buildConfigField "String", "CLIENT_ID_1", localProperties["client_id_1"]
         buildConfigField "String", "CLIENT_ID_2", localProperties["client_id_2"]
@@ -50,6 +50,7 @@ android {
         buildConfigField "String", "CLIENT_ID_23", localProperties["client_id_23"]
         buildConfigField "String", "CLIENT_ID_24", localProperties["client_id_24"]
         buildConfigField "String", "CLIENT_ID_25", localProperties["client_id_25"]
+        buildConfigField "String", "CLIENT_ID_26", localProperties["client_id_26"]
         buildConfigField "String", "SERVER", localProperties["server"]
     }
     buildTypes {
@@ -83,9 +84,9 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.6.2'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.2'
     implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
-    implementation 'com.google.dagger:dagger-android-support:2.24'
-    kapt 'com.google.dagger:dagger-compiler:2.24'
-    kapt 'com.google.dagger:dagger-android-processor:2.24'
+    implementation 'com.google.dagger:dagger-android-support:2.25.2'
+    kapt 'com.google.dagger:dagger-compiler:2.25.2'
+    kapt 'com.google.dagger:dagger-android-processor:2.25.2'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.gms:play-services-ads:18.2.0'
     implementation 'com.squareup.picasso:picasso:2.71828'

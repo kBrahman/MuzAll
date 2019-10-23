@@ -43,6 +43,7 @@ class MainActivityModule {
 
     @Provides
     fun provideIdIterator() = listOf(
+        BuildConfig.CLIENT_ID_26,
         BuildConfig.CLIENT_ID_25,
         BuildConfig.CLIENT_ID_24,
         BuildConfig.CLIENT_ID_23,
