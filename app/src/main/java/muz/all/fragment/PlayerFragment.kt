@@ -91,6 +91,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         } else if (track is File && track.exists()) {
             try {
                 val fos = FileInputStream(track)
+                Crashlytics.setString("crash_track", track.name)
                 mp?.setDataSource(fos.fd, 0, track.length())
                 fos.close()
             } catch (ex: FileNotFoundException) {
@@ -184,11 +185,6 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
 
     override fun run() {
         if (mp == null || !isPrepared) return
-        val serializable = arguments?.getSerializable(TRACK)
-        Crashlytics.setString(
-            "crash_track",
-            if (serializable is Track) serializable.name else (serializable as File).name
-        )
         val currentPosition = mp?.currentPosition ?: 0
         var dur = mp?.duration ?: 1
         if (dur != 0) dur = currentPosition.times(100).div(dur)

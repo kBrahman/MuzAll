@@ -5,10 +5,5 @@
     <string name="my_music">My music</string>
     <string name="could_not_play_file">Could not play the track, sorry</string>
     <string name="service_unavailable">Service unavailable, try again later please</string>
-    <string name="gdpr_body">This app uses StartApp to enable/provide you with a personalized advertising experience. By
-        clicking, ‘continue’ you agree to share your personal data on StartApp’s Network and its Business Partners and
-        agree to the StartApp privacy policy in order to allow StartApp and its Partners to provide you with relevant
-        ads.
-    </string>
-    <string name="gdpr_title">Would like us to present you with personalized ads?</string>
+    <string name="err_dir_create">Could not create directory for music</string>
 </resources>

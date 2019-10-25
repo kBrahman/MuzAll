@@ -1,0 +1,7 @@
+def localProperties = new Properties()
+localProperties.load(rootProject.file('local.properties').newDataInputStream())
+
+ext {
+    ids = "${localProperties["client_id_1"]},${localProperties["client_id_2"]},${localProperties["client_id_3"]},${localProperties["client_id_4"]},${localProperties["client_id_5"]},${localProperties["client_id_6"]},${localProperties["client_id_7"]},${localProperties["client_id_8"]},${localProperties["client_id_9"]},${localProperties["client_id_10"]},${localProperties["client_id_11"]},${localProperties["client_id_12"]},${localProperties["client_id_13"]},${localProperties["client_id_14"]},${localProperties["client_id_15"]},${localProperties["client_id_16"]},${localProperties["client_id_17"]},${localProperties["client_id_18"]},${localProperties["client_id_19"]},${localProperties["client_id_20"]},${localProperties["client_id_21"]},${localProperties["client_id_22"]},${localProperties["client_id_23"]},${localProperties["client_id_24"]},${localProperties["client_id_25"]},${localProperties["client_id_26"]}"
+
+}

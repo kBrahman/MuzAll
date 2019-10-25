@@ -42,34 +42,7 @@ class MainActivityModule {
     fun provideDisposable() = CompositeDisposable()
 
     @Provides
-    fun provideIdIterator() = listOf(
-        BuildConfig.CLIENT_ID_26,
-        BuildConfig.CLIENT_ID_25,
-        BuildConfig.CLIENT_ID_24,
-        BuildConfig.CLIENT_ID_23,
-        BuildConfig.CLIENT_ID_22,
-        BuildConfig.CLIENT_ID_21,
-        BuildConfig.CLIENT_ID_20,
-        BuildConfig.CLIENT_ID_1,
-        BuildConfig.CLIENT_ID_2,
-        BuildConfig.CLIENT_ID_3,
-        BuildConfig.CLIENT_ID_4,
-        BuildConfig.CLIENT_ID_5,
-        BuildConfig.CLIENT_ID_6,
-        BuildConfig.CLIENT_ID_7,
-        BuildConfig.CLIENT_ID_8,
-        BuildConfig.CLIENT_ID_9,
-        BuildConfig.CLIENT_ID_10,
-        BuildConfig.CLIENT_ID_11,
-        BuildConfig.CLIENT_ID_12,
-        BuildConfig.CLIENT_ID_13,
-        BuildConfig.CLIENT_ID_14,
-        BuildConfig.CLIENT_ID_15,
-        BuildConfig.CLIENT_ID_16,
-        BuildConfig.CLIENT_ID_17,
-        BuildConfig.CLIENT_ID_18,
-        BuildConfig.CLIENT_ID_19
-    ).iterator()
+    fun provideIdIterator() = BuildConfig.IDS.iterator()
 
     @Provides
     fun provideClientId(idIterator: Iterator<String>) = idIterator.next()

@@ -10,6 +10,8 @@ import android.os.Vibrator
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.VISIBLE
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import dagger.android.support.DaggerAppCompatActivity
@@ -30,15 +32,15 @@ class MusicActivity : DaggerAppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_music)
         val directory = getExternalStoragePublicDirectory(DIRECTORY_MUSIC)
-        if (!directory.exists()) {
-            directory.mkdirs()
+        if (!(if (!directory.exists()) directory.mkdirs() else true)) {
+            Toast.makeText(this, R.string.err_dir_create, LENGTH_SHORT).show()
+            finish()
         }
         val files = directory.listFiles()
             .filter {
                 !it.name.startsWith(".") && it.name != "jrdonlinemusic.db" && !it.name.endsWith(".pls")
                         && it.name != "jrdonlinemusic.db-journal"
             }
-
         rvMusic.setHasFixedSize(true)
         rvMusic.adapter = MusicAdapter(files.toTypedArray())
         setSupportActionBar(toolbar)

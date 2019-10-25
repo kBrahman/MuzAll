@@ -3,7 +3,7 @@ apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-
+apply from: "id.gradle"
 def localProperties = new Properties()
 localProperties.load(rootProject.file('local.properties').newDataInputStream())
 def keystoreProperties = new Properties()
@@ -22,35 +22,10 @@ android {
         applicationId "muz.all"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 77
-        versionName "1.76"
+        versionCode 78
+        versionName "1.77"
+        buildConfigField "String[]", "IDS", "{$ids}"
         multiDexEnabled true
-        buildConfigField "String", "CLIENT_ID_1", localProperties["client_id_1"]
-        buildConfigField "String", "CLIENT_ID_2", localProperties["client_id_2"]
-        buildConfigField "String", "CLIENT_ID_3", localProperties["client_id_3"]
-        buildConfigField "String", "CLIENT_ID_4", localProperties["client_id_4"]
-        buildConfigField "String", "CLIENT_ID_5", localProperties["client_id_5"]
-        buildConfigField "String", "CLIENT_ID_6", localProperties["client_id_6"]
-        buildConfigField "String", "CLIENT_ID_7", localProperties["client_id_7"]
-        buildConfigField "String", "CLIENT_ID_8", localProperties["client_id_8"]
-        buildConfigField "String", "CLIENT_ID_9", localProperties["client_id_9"]
-        buildConfigField "String", "CLIENT_ID_10", localProperties["client_id_10"]
-        buildConfigField "String", "CLIENT_ID_11", localProperties["client_id_11"]
-        buildConfigField "String", "CLIENT_ID_12", localProperties["client_id_12"]
-        buildConfigField "String", "CLIENT_ID_13", localProperties["client_id_13"]
-        buildConfigField "String", "CLIENT_ID_14", localProperties["client_id_14"]
-        buildConfigField "String", "CLIENT_ID_15", localProperties["client_id_15"]
-        buildConfigField "String", "CLIENT_ID_16", localProperties["client_id_16"]
-        buildConfigField "String", "CLIENT_ID_17", localProperties["client_id_17"]
-        buildConfigField "String", "CLIENT_ID_18", localProperties["client_id_18"]
-        buildConfigField "String", "CLIENT_ID_19", localProperties["client_id_19"]
-        buildConfigField "String", "CLIENT_ID_20", localProperties["client_id_20"]
-        buildConfigField "String", "CLIENT_ID_21", localProperties["client_id_21"]
-        buildConfigField "String", "CLIENT_ID_22", localProperties["client_id_22"]
-        buildConfigField "String", "CLIENT_ID_23", localProperties["client_id_23"]
-        buildConfigField "String", "CLIENT_ID_24", localProperties["client_id_24"]
-        buildConfigField "String", "CLIENT_ID_25", localProperties["client_id_25"]
-        buildConfigField "String", "CLIENT_ID_26", localProperties["client_id_26"]
         buildConfigField "String", "SERVER", localProperties["server"]
     }
     buildTypes {
