@@ -6,10 +6,4 @@
     <string name="my_music">Minha música </string>
     <string name="could_not_play_file">"Não foi possível reproduzir a faixa, desculpe "</string>
     <string name="service_unavailable">"Serviço indisponível, tente novamente mais tarde por favor "</string>
-    <string name="gdpr_body">"Este aplicativo usa o StartApp para ativar / fornecer a você uma experiência de
-        publicidade personalizada. Ao clicar em \"continuar\", você concorda em compartilhar seus dados pessoais na Rede
-        da StartApp e em seus parceiros de negócios e concorda com a política de privacidade da StartApp para permitir
-        que a StartApp e seus parceiros forneçam anúncios relevantes. "
-    </string>
-    <string name="gdpr_title">"Gostaria que apresentássemos anúncios personalizados? "</string>
 </resources>
