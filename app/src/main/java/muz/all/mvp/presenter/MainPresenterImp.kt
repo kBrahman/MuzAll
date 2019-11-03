@@ -67,6 +67,7 @@ class MainPresenterImp @Inject constructor(
 
     private fun onContentFetched(response: MuzResponse?) {
         Log.d(TAG, "onContentFetched=>$searching")
+        Log.i(TAG, "response=>${response?.results}")
         if (response?.results?.isEmpty() == true && !searching && idIterator.hasNext()) {
             showLoading()
             Log.i(TAG, "empty key=>${manager.clientId}")

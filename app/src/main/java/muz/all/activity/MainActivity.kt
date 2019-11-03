@@ -175,7 +175,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (requestCode == 1 && (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+        if (requestCode == 1 && (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED)) {
             openMusic(null)
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
