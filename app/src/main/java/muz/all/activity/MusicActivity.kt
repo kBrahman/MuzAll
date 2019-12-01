@@ -38,8 +38,7 @@ class MusicActivity : DaggerAppCompatActivity() {
         }
         val files = directory.listFiles()
             .filter {
-                !it.name.startsWith(".") && it.name != "jrdonlinemusic.db" && !it.name.endsWith(".pls")
-                        && it.name != "jrdonlinemusic.db-journal"
+                it.extension == "mp3"
             }
         rvMusic.setHasFixedSize(true)
         rvMusic.adapter = MusicAdapter(files.toTypedArray())
