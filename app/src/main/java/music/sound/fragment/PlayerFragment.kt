@@ -34,7 +34,8 @@ import music.sound.util.TRACK
 import java.io.File
 import javax.inject.Inject
 
-class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar.OnSeekBarChangeListener, Runnable {
+class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
+    SeekBar.OnSeekBarChangeListener, Runnable {
 
     companion object {
         private val TAG = PlayerFragment::class.java.simpleName
@@ -49,7 +50,11 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
         retainInstance = true
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN)
             inflater.inflate(
                 R.layout.fragment_player,
@@ -108,17 +113,30 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
     }
 
     private fun download(track: Track) {
-        if (ContextCompat.checkSelfPermission(context!!, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                context!!,
+                WRITE_EXTERNAL_STORAGE
+            ) == PERMISSION_GRANTED
+        ) {
             val downloadManager = context?.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
             val uri = Uri.parse(track.stream_url)
             val request = DownloadManager.Request(uri)
-            downloadManager.enqueue(request.setDestinationInExternalPublicDir(DIRECTORY_MUSIC, track.title + ".mp3"))
+            downloadManager.enqueue(
+                request.setDestinationInExternalPublicDir(
+                    DIRECTORY_MUSIC,
+                    track.title + ".mp3"
+                )
+            )
         } else {
             requestPermissions(arrayOf(WRITE_EXTERNAL_STORAGE), 2)
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         if ((grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED)) {
             download(arguments?.getSerializable(TRACK) as Track)
         }
@@ -152,7 +170,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener, SeekBar
 
     override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 
-    override fun onDismiss(dialog: DialogInterface?) {
+    override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         handler?.removeCallbacks(this)
         if (isPrepared) mp.stop()
