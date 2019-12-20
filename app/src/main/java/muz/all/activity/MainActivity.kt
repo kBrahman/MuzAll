@@ -2,7 +2,6 @@ package muz.all.activity
 
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.VISIBLE
 import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -25,6 +25,7 @@ import muz.all.adapter.TrackAdapter
 import muz.all.model.Track
 import muz.all.mvp.presenter.MainPresenter
 import muz.all.mvp.view.MainView
+import muz.all.util.isNetworkConnected
 import java.util.*
 import javax.inject.Inject
 
@@ -35,14 +36,27 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     }
 
     private var timeOut = false
+    private var finish = false
     @Inject
     lateinit var presenter: MainPresenter
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!isNetworkConnected(this) && ContextCompat.checkSelfPermission(
+                this,
+                WRITE_EXTERNAL_STORAGE
+            ) == PERMISSION_GRANTED
+        ) {
+            Toast.makeText(this, R.string.no_net, LENGTH_SHORT).show()
+            openMusic(null)
+            finish()
+            return
+        } else if (!isNetworkConnected(this)) {
+            openMusic(null)
+            finish = true
+        }
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         val ad = InterstitialAd(this)
@@ -50,7 +64,6 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         ad.loadAd(AdRequest.Builder().build())
         ad.adListener = object : AdListener() {
             override fun onAdFailedToLoad(p0: Int) {
-                Log.i(TAG, "ad failed=>$p0")
                 timeOut = true
             }
 
@@ -177,6 +190,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     ) {
         if (requestCode == 1 && (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED)) {
             openMusic(null)
+            if (finish) finish()
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
