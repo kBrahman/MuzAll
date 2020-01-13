@@ -9,7 +9,7 @@ import muz.all.activity.MusicActivity
 
 
 @Module
-interface AppModule : AndroidInjector<DaggerAppCompatActivity> {
+interface ActivityInjector : AndroidInjector<DaggerAppCompatActivity> {
 
     @ContributesAndroidInjector
     fun musicActivity(): MusicActivity

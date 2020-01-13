@@ -131,7 +131,6 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         }
         recBanner.loadAd(AdRequest.Builder().build())
         setVisibility(GONE)
-
     }
 
     private fun setVisibility(visibility: Int) {

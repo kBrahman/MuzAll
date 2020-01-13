@@ -1,15 +1,13 @@
 package muz.all.adapter
 
 import android.graphics.BitmapFactory
-import android.graphics.Canvas
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.music_item.view.*
 import muz.all.R
 import muz.all.activity.MusicActivity
@@ -18,7 +16,8 @@ import muz.all.util.TRACK
 import java.io.File
 
 
-class MusicAdapter(private val list: Array<File>?) : androidx.recyclerview.widget.RecyclerView.Adapter<MusicAdapter.MusicVH>() {
+class MusicAdapter(private val list: Array<File>?) :
+    androidx.recyclerview.widget.RecyclerView.Adapter<MusicAdapter.MusicVH>() {
 
     companion object {
         private val TAG = MusicAdapter::class.java.simpleName
@@ -44,8 +43,6 @@ class MusicAdapter(private val list: Array<File>?) : androidx.recyclerview.widge
         if (data != null) {
             val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
             holder.itemView.imgMusicItem.setImageBitmap(bitmap)
-//            holder.itemView.imgMusicItem.bitmap = bitmap
-//            holder.itemView.imgMusicItem.draw(Canvas())
         }
     }
 
@@ -61,7 +58,6 @@ class MusicAdapter(private val list: Array<File>?) : androidx.recyclerview.widge
             item.setOnLongClickListener {
                 val activity = it.context as MusicActivity
                 activity.setFileAndMenuItemVisibility(list?.get(adapterPosition))
-                Log.i(TAG, "on long click")
                 true
             }
         }
