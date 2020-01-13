@@ -3,5 +3,6 @@
     <string name="duration">Muda: %s</string>
     <string name="released">Tarehe ya kutolewa: %s</string>
     <string name="folder">Folda ya Muziki</string>
+    <string name="could_not_play_file">Haikuweza kucheza wimbo, samahani</string>
     <string name="my_music">Muziki wangu</string>
 </resources>
