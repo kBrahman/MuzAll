@@ -1,59 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/mcw"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:id="@+id/mcw">
+        android:layout_margin="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
         <ImageView
+                android:id="@+id/img"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:id="@+id/img"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                android:adjustViewBounds="true"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:adjustViewBounds="true"/>
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/name"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                app:layout_constraintStart_toEndOf="@id/img"
-                android:layout_marginStart="4dp"
-                android:layout_marginLeft="4dp"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+                android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/name"
-                android:id="@+id/artist"
-                app:layout_constraintStart_toEndOf="@id/img"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
-                android:textColor="@color/colorAccent"/>
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                app:layout_constraintStart_toEndOf="@id/img" />
 
-        <TextView android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/duration"
-                  app:layout_constraintStart_toEndOf="@id/img"
-                  android:layout_marginStart="4dp"
-                  android:layout_marginLeft="4dp"
-                  app:layout_constraintTop_toBottomOf="@id/artist"
-                  android:textSize="12sp"/>
+        <TextView
+                android:id="@+id/artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:textColor="@color/colorAccent"
+                app:layout_constraintStart_toEndOf="@id/img"
+                app:layout_constraintTop_toBottomOf="@id/name" />
 
-        <TextView android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/releaseDate"
-                  app:layout_constraintStart_toEndOf="@id/duration"
-                  android:layout_marginStart="4dp"
-                  android:layout_marginLeft="4dp"
-                  app:layout_constraintTop_toBottomOf="@id/artist"
-                  app:layout_constraintEnd_toEndOf="parent"
-                  android:textSize="12sp"/>
+        <TextView
+                android:id="@+id/duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@id/img"
+                app:layout_constraintTop_toBottomOf="@id/artist" />
+
+        <TextView
+                android:id="@+id/releaseDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/duration"
+                app:layout_constraintTop_toBottomOf="@id/artist" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
