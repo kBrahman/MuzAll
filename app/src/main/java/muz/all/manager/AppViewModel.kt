@@ -1,6 +1,7 @@
 package muz.all.manager
 
 import android.util.Log
+import androidx.lifecycle.ViewModel
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -13,7 +14,7 @@ import javax.inject.Inject
 class MuzApiManager @Inject constructor(
     private val apiService: APIService,
     override var clientId: String
-) : ApiManager {
+) : ApiManager, ViewModel() {
 
     companion object {
         private val TAG = MuzApiManager::class.java.simpleName

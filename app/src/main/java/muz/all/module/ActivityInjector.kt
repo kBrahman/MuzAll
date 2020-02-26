@@ -1,5 +1,6 @@
 package muz.all.module
 
+import androidx.lifecycle.ViewModelStoreOwner
 import dagger.Module
 import dagger.android.AndroidInjector
 import dagger.android.ContributesAndroidInjector

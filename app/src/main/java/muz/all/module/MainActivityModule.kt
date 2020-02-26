@@ -1,11 +1,14 @@
 package muz.all.module
 
+import androidx.lifecycle.ViewModelProvider
 import dagger.Module
 import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable
 import muz.all.BuildConfig
+import muz.all.activity.MainActivity
 import muz.all.manager.ApiManager
 import muz.all.manager.MuzApiManager
+import muz.all.model.AppViewModel
 import muz.all.mvp.presenter.MainPresenter
 import muz.all.mvp.presenter.MainPresenterImp
 import okhttp3.OkHttpClient
@@ -26,6 +29,10 @@ class MainActivityModule {
 
     @Provides
     fun provideMuzApiManager(manager: MuzApiManager): ApiManager = manager
+
+    @Provides
+    fun provideViewModel(owner: MainActivity) =
+        ViewModelProvider(owner).get(AppViewModel::class.java)
 
     @Provides
     fun provideMainPresenter(presenter: MainPresenterImp): MainPresenter = presenter

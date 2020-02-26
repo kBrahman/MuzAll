@@ -14,6 +14,7 @@ import android.widget.Toast.LENGTH_SHORT
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
@@ -22,12 +23,14 @@ import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import muz.all.R
 import muz.all.adapter.TrackAdapter
+import muz.all.model.AppViewModel
 import muz.all.model.Track
 import muz.all.mvp.presenter.MainPresenter
 import muz.all.mvp.view.MainView
 import muz.all.util.isNetworkConnected
 import java.util.*
 import javax.inject.Inject
+
 
 class MainActivity : DaggerAppCompatActivity(), MainView {
 
@@ -39,6 +42,8 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     private var finish = false
     @Inject
     lateinit var presenter: MainPresenter
+    @Inject
+    lateinit var viewModel: AppViewModel
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
 
@@ -75,8 +80,9 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
                 if (!timeOut) ad.show()
             }
         }
-        if (lastCustomNonConfigurationInstance != null) {
-            presenter = lastCustomNonConfigurationInstance as MainPresenter
+        if (viewModel.tracks != null) {
+            Log.i(TAG, "vm not null")
+            presenter.results = viewModel.tracks?.value?.toMutableList()
             timeOut = true
         } else {
             setTimer()
@@ -96,7 +102,6 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
                 }
             }
         })
-
     }
 
     private fun setTimer() {
@@ -128,6 +133,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         if (timeOut) {
             setAdapter()
         }
+        viewModel.tracks = MutableLiveData<List<Track>>(trackAdapter?.getAll())
     }
 
     private fun setAdapter() {
@@ -143,6 +149,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
 
     override fun addAndShow(tracks: List<Track>?) {
         trackAdapter?.addData(tracks)
+        viewModel.tracks = MutableLiveData<List<Track>>(tracks)
     }
 
     override fun showLoading() {

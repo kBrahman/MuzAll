@@ -1,9 +1,11 @@
 package muz.all.mvp.presenter
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import muz.all.manager.ApiManager
+import muz.all.model.AppViewModel
 import muz.all.model.MuzResponse
 import muz.all.model.Track
 import javax.inject.Inject
@@ -17,12 +19,14 @@ class MainPresenterImp @Inject constructor(
         private val TAG = MainPresenterImp::class.java.simpleName
     }
 
-
     private var offset = 0
     private var searching = false
     private lateinit var q: String
     private var loading = false
-    private var results: MutableList<Track>? = null
+
+    init {
+        Log.i(TAG, "init")
+    }
 
     override fun onViewAttached() {
         if (results != null) {
