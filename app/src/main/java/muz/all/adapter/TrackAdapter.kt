@@ -46,14 +46,18 @@ class TrackAdapter(private val results: MutableList<Track>?) :
 
     inner class VH(item: View) : RecyclerView.ViewHolder(item) {
         init {
+            player.showsDialog = false
             item.setOnClickListener {
-                if (player.showsDialog) {
+                val showsDialog = player.showsDialog
+                if (showsDialog) {
                     player.dismiss()
+                    player.showsDialog = false
                 }
                 val bundle = Bundle()
                 bundle.putSerializable(TRACK, results?.get(adapterPosition))
                 player.arguments = bundle
                 player.show((it.context as AppCompatActivity).supportFragmentManager, "player")
+                player.showsDialog = true
             }
         }
     }
