@@ -7,6 +7,7 @@ import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Environment.getExternalStoragePublicDirectory
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.VISIBLE
@@ -31,17 +32,19 @@ class MusicActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_music)
-        val directory = getExternalStoragePublicDirectory(DIRECTORY_MUSIC)
-        if (!(if (!directory.exists()) directory.mkdirs() else true)) {
-            Toast.makeText(this, R.string.err_dir_create, LENGTH_SHORT).show()
-            finish()
+        var directory = getExternalStoragePublicDirectory(DIRECTORY_MUSIC)
+        if (!isDirOk(directory)) return
+        Log.i(TAG, "dir=>$directory")
+        if (directory.listFiles() == null) {
+            directory = File(filesDir, DIRECTORY_MUSIC)
+            if (!isDirOk(directory)) return
         }
         val files = directory.listFiles()
-            .filter {
+            ?.filter {
                 it.extension == "mp3"
             }
         rvMusic.setHasFixedSize(true)
-        rvMusic.adapter = MusicAdapter(files.toTypedArray())
+        rvMusic.adapter = MusicAdapter(files?.toTypedArray())
         setSupportActionBar(toolbar)
         adViewMusic.adListener = object : AdListener() {
             override fun onAdLoaded() {
@@ -49,6 +52,15 @@ class MusicActivity : DaggerAppCompatActivity() {
             }
         }
         adViewMusic.loadAd(AdRequest.Builder().build())
+    }
+
+    private fun isDirOk(directory: File): Boolean {
+        if (!(if (!directory.exists()) directory.mkdirs() else true)) {
+            Toast.makeText(this, R.string.err_dir_create, LENGTH_SHORT).show()
+            finish()
+            return false
+        }
+        return true
     }
 
     override fun onBackPressed() {
