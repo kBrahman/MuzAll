@@ -1,6 +1,8 @@
 package music.sound.manager
 
 import music.sound.BuildConfig
+import music.sound.model.CollectionHolder
+import music.sound.model.Selection
 import music.sound.model.Track
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -17,8 +19,9 @@ class MuzApiManager : ApiManager {
     companion object {
         private val TAG = MuzApiManager::class.java.simpleName
         private const val SERVER = BuildConfig.SERVER
-
-        private const val PATH = "tracks/?limit=25&client_id=${BuildConfig.ClIENT_ID}"
+        private const val SEARCH = "search?limit=25&client_id=${BuildConfig.ClIENT_ID}"
+        private const val SELECTIONS = "mixed-selections?client_id=${BuildConfig.ClIENT_ID}"
+        private const val TRACKS = "tracks?client_id=${BuildConfig.ClIENT_ID}"
     }
 
     private var apiService: APIService
@@ -31,18 +34,24 @@ class MuzApiManager : ApiManager {
             .build().create(APIService::class.java)
     }
 
-    override fun search(q: String, offset: Int, callback: Callback<List<Track>>) =
+    override fun search(q: String, offset: Int, callback: Callback<CollectionHolder<Track>>) =
         apiService.search(q, offset).enqueue(callback)
 
-    override fun getPopular(offset: Int, callback: Callback<List<Track>>) =
-        apiService.getPopular(offset).enqueue(callback)
+    override fun getMixedSelections(callback: Callback<CollectionHolder<Selection>>) =
+        apiService.getMixedSelections().enqueue(callback)
+
+    override fun tracksBy(ids: String?, callback: Callback<List<Track>>) =
+        apiService.tracksBy(ids).enqueue(callback)
 
     private interface APIService {
 
-        @GET(PATH)
-        fun search(@Query("q") q: String, @Query("offset") offset: Int): Call<List<Track>>
+        @GET(SEARCH)
+        fun search(@Query("q") q: String, @Query("offset") offset: Int): Call<CollectionHolder<Track>>
 
-        @GET(PATH)
-        fun getPopular(@Query("offset") offset: Int): Call<List<Track>>
+        @GET(SELECTIONS)
+        fun getMixedSelections(): Call<CollectionHolder<Selection>>
+
+        @GET(TRACKS)
+        fun tracksBy(@Query("ids") ids: String?): Call<List<Track>>
     }
 }

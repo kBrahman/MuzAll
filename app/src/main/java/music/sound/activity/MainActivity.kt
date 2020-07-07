@@ -22,6 +22,8 @@ import music.sound.R
 import music.sound.adapter.TrackAdapter
 import music.sound.component.DaggerActivityComponent
 import music.sound.manager.ApiManager
+import music.sound.model.CollectionHolder
+import music.sound.model.Selection
 import music.sound.model.Track
 import retrofit2.Call
 import retrofit2.Callback
@@ -46,22 +48,65 @@ class MainActivity : AppCompatActivity() {
     private var trackAdapter: TrackAdapter? = null
     private var searching = false
 
-    private val callback = object : Callback<List<Track>> {
+    private val callback = object : Callback<CollectionHolder<Track>> {
+        override fun onFailure(call: Call<CollectionHolder<Track>>, t: Throwable) =
+            t.printStackTrace()
+
+        override fun onResponse(
+            call: Call<CollectionHolder<Track>>,
+            response: Response<CollectionHolder<Track>>
+        ) {
+            Log.i(TAG, "response=>$response")
+            val collection = response.body()?.collection?.filter { it.media != null }
+            if (trackAdapter == null && timeOut) {
+                trackAdapter = TrackAdapter(collection?.toMutableList())
+                rv.adapter = trackAdapter
+                initBanner()
+            } else if (trackAdapter == null) {
+                trackAdapter = TrackAdapter(collection?.toMutableList())
+            } else {
+                trackAdapter?.addData(collection?.toMutableList())
+            }
+            pb.visibility = GONE
+            loading = false
+        }
+    }
+
+    private val selectionsCallback: Callback<CollectionHolder<Selection>> =
+        object : Callback<CollectionHolder<Selection>> {
+            override fun onFailure(call: Call<CollectionHolder<Selection>>, t: Throwable) =
+                t.printStackTrace()
+
+            override fun onResponse(
+                call: Call<CollectionHolder<Selection>>,
+                response: Response<CollectionHolder<Selection>>
+            ) {
+
+                val found =
+                    response.body()?.collection?.find { it.urn == "soundcloud:selections:charts-top" }
+                Log.i(TAG, "found=>$response")
+                val tracks = found?.items?.collection?.get(0)?.tracks
+                val ids = tracks?.map { it.id }?.joinToString(",")
+                manager.tracksBy(ids, topTrackCallback)
+            }
+        }
+
+
+    private val topTrackCallback: Callback<List<Track>> = object : Callback<List<Track>> {
         override fun onFailure(call: Call<List<Track>>, t: Throwable) = t.printStackTrace()
 
         override fun onResponse(call: Call<List<Track>>, response: Response<List<Track>>) {
-            Log.i(TAG, "response=>$response")
-            if (trackAdapter == null && timeOut) {
-                trackAdapter = TrackAdapter(response.body()?.toMutableList())
-                rv.adapter = trackAdapter
-                pb.visibility = GONE
-                initBanner()
-            } else if (trackAdapter == null) {
-                trackAdapter = TrackAdapter(response.body()?.toMutableList())
-            } else {
-                trackAdapter?.addData(response.body())
+            val filtered = response.body()?.filter {
+                it.media.transcodings.isNotEmpty() and it.media.transcodings.any { tr ->
+                    tr.url.endsWith("/progressive")
+                }
             }
-            loading = false
+            title = "Top ${filtered?.size}"
+            trackAdapter = TrackAdapter(
+                filtered?.toMutableList()
+            )
+            rv.adapter = trackAdapter
+            pb.visibility = GONE
         }
     }
 
@@ -81,10 +126,10 @@ class MainActivity : AppCompatActivity() {
                 val layoutManager =
                     recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
-                    if (!loading) {
+                    if (!loading && searching) {
                         pb.visibility = VISIBLE
                         offset += 25
-                        if (!searching) getPopular(offset) else search(q, offset)
+                        search(q, offset)
                         loading = true
                     }
                 }
@@ -110,7 +155,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         ad?.loadAd(AdRequest.Builder().build())
-        getPopular(offset)
+        getMixedSelections()
         setTimer()
     }
 
@@ -138,9 +183,8 @@ class MainActivity : AppCompatActivity() {
         }, 6000L)
     }
 
-    private fun getPopular(offset: Int) {
-        manager.getPopular(offset, callback)
-    }
+    private fun getMixedSelections() = manager.getMixedSelections(selectionsCallback)
+
 
     private fun search(q: String, offset: Int) {
         manager.search(q, offset, callback)

@@ -2,12 +2,12 @@ package music.sound.adapter
 
 import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.track_item.view.*
 import music.sound.R
@@ -16,14 +16,17 @@ import music.sound.model.Track
 import music.sound.util.TRACK
 import music.sound.util.milliSecondsToTime
 
-class TrackAdapter(private val results: MutableList<Track>?) : androidx.recyclerview.widget.RecyclerView.Adapter<TrackAdapter.VH>() {
+class TrackAdapter(private val results: MutableList<Track>?) :
+    RecyclerView.Adapter<TrackAdapter.VH>() {
 
     private val player: DialogFragment = PlayerFragment()
 
     override fun onCreateViewHolder(group: ViewGroup, p1: Int) =
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN)
             VH(LayoutInflater.from(group.context).inflate(R.layout.track_item, group, false))
-        else VH(LayoutInflater.from(group.context).inflate(R.layout.track_item_api_16, group, false))
+        else VH(
+            LayoutInflater.from(group.context).inflate(R.layout.track_item_api_16, group, false)
+        )
 
     override fun getItemCount() = results?.size ?: 0
 
@@ -31,8 +34,10 @@ class TrackAdapter(private val results: MutableList<Track>?) : androidx.recycler
         val track = results?.get(position)
         val view = holder.itemView
         view.name.text = track?.title
-        view.duration.text = view.context.getString(R.string.duration, milliSecondsToTime(track?.duration))
-        view.uploadDate.text = view.context.getString(R.string.uploaded, track?.created_at?.replace("+0000", ""))
+        view.duration.text =
+            view.context.getString(R.string.duration, milliSecondsToTime(track?.duration))
+        view.uploadDate.text =
+            view.context.getString(R.string.uploaded, track?.created_at?.replace("+0000", ""))
         Picasso.get().load(track?.artwork_url ?: track?.user?.avatar_url).into(view.img)
     }
 
@@ -44,7 +49,7 @@ class TrackAdapter(private val results: MutableList<Track>?) : androidx.recycler
         }
     }
 
-    inner class VH(item: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(item) {
+    inner class VH(item: View) : RecyclerView.ViewHolder(item) {
         init {
             item.setOnClickListener {
                 if (player.fragmentManager != null && player.showsDialog) {

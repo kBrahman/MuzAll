@@ -10,5 +10,7 @@ data class Track(
     val created_at: String,
     val artwork_url: String,
     val stream_url: String,
-    val user: User
+    val user: User,
+    val id: Int,
+    val media: Media
 ) : Serializable

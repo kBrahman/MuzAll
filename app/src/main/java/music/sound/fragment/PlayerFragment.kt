@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -24,14 +25,20 @@ import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_music.*
 import kotlinx.android.synthetic.main.fragment_player.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import music.sound.BuildConfig
 import music.sound.R
 import music.sound.activity.MainActivity
 import music.sound.activity.MusicActivity
 import music.sound.component.DaggerFragmentComponent
+import music.sound.manager.ApiManager
 import music.sound.model.Track
 import music.sound.util.TRACK
+import org.json.JSONObject
 import java.io.File
+import java.net.URL
+import java.util.*
 import javax.inject.Inject
 
 class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
@@ -43,6 +50,9 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
 
     @Inject
     lateinit var mp: MediaPlayer
+
+    @Inject
+    lateinit var apiManager: ApiManager
     private val handler: Handler? = Handler()
     private var isPrepared = false
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,15 +76,43 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
         DaggerFragmentComponent.create().inject(this)
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
-            val streamUrl = track.stream_url + "?client_id=" + BuildConfig.ClIENT_ID
-            mp.setDataSource(streamUrl)
-            name.text = track.title
+            val url = track.media.transcodings.find { it.url.endsWith("/progressive") }?.url
+            val urlLocation = url + "?client_id=" + BuildConfig.ClIENT_ID
 
+            Log.i(TAG, "link ulr=>$urlLocation")
+            GlobalScope.launch {
+                val link = getStreamLink(urlLocation)
+                mp.setDataSource(link)
+                configureMp()
+            }
+
+            name.text = track.title
         } else if (track is File) {
             context?.let { mp.setDataSource(it, Uri.fromFile(track)) }
             download.visibility = GONE
             name.text = track.name
+            configureMp()
         }
+        recBanner?.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                recBanner?.visibility = VISIBLE
+            }
+        }
+        recBanner.loadAd(AdRequest.Builder().build())
+        setVisibility(GONE)
+    }
+
+    private suspend fun getStreamLink(urlLocation: String): String {
+        val connection = URL(urlLocation).openConnection()
+        connection.connect()
+        val stream = connection.getInputStream()
+        val s: Scanner = Scanner(stream).useDelimiter("\\A")
+        val result = if (s.hasNext()) s.next() else ""
+        val url = JSONObject(result).getString("url")
+        return url
+    }
+
+    private fun configureMp() {
         mp.setOnPreparedListener(this)
         mp.prepareAsync()
         mp.setOnCompletionListener {
@@ -92,16 +130,6 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
                 play.setImageResource(android.R.drawable.ic_media_pause)
             }
         }
-        download.setOnClickListener {
-            download(track as Track)
-        }
-        recBanner?.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                recBanner?.visibility = VISIBLE
-            }
-        }
-        recBanner.loadAd(AdRequest.Builder().build())
-        setVisibility(GONE)
     }
 
     private fun setVisibility(visibility: Int) {
