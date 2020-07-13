@@ -2,6 +2,5 @@
 <resources>
     <string name="duration">अवधि: %s</string>
     <string name="uploaded">अपलोड किया गया: %s</string>
-    <string name="folder">संगीत फ़ोल्डर</string>
     <string name="my_music">मेरा संगीत</string>
 </resources>

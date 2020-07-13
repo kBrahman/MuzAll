@@ -2,6 +2,5 @@
 <resources>
     <string name="duration">Tempoh: %s</string>
     <string name="uploaded">Tarikh muat naik: %s</string>
-    <string name="folder">Folder muzik</string>
     <string name="my_music">Muzik saya</string>
 </resources>

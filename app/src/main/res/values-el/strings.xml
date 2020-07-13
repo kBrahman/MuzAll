@@ -2,6 +2,5 @@
 <resources>
     <string name="duration">Διάρκεια: %s</string>
     <string name="uploaded">Ημερομηνία ανεβάσματος: %s</string>
-    <string name="folder">Φάκελος μουσικής</string>
     <string name="my_music">Η μουσική μου</string>
 </resources>

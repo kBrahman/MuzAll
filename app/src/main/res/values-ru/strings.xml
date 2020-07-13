@@ -2,6 +2,5 @@
 <resources>
     <string name="duration">Продолжительность: %s</string>
     <string name="uploaded">Загружено: %s</string>
-    <string name="folder">Папка музыки</string>
     <string name="my_music">Моя музыка</string>
 </resources>

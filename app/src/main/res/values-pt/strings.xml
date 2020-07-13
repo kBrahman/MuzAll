@@ -2,6 +2,5 @@
 <resources>
     <string name="duration">Duração: %s</string>
     <string name="uploaded">Data de Upload: %s</string>
-    <string name="folder">"Pasta de música "</string>
     <string name="my_music">"Minha música "</string>
 </resources>

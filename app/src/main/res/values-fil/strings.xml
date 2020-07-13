@@ -2,6 +2,5 @@
 <resources>
     <string name="duration">Tagal: %s</string>
     <string name="uploaded">Na-upload: %s</string>
-    <string name="folder">Folder ng musika</string>
     <string name="my_music">Ang aking Musika</string>
 </resources>
