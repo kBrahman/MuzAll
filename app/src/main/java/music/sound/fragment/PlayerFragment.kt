@@ -11,7 +11,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -37,6 +36,7 @@ import music.sound.model.Track
 import music.sound.util.TRACK
 import org.json.JSONObject
 import java.io.File
+import java.io.IOException
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
@@ -78,8 +78,6 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
         if (track is Track) {
             val url = track.media.transcodings.find { it.url.endsWith("/progressive") }?.url
             val urlLocation = url + "?client_id=" + BuildConfig.ClIENT_ID
-
-            Log.i(TAG, "link ulr=>$urlLocation")
             GlobalScope.launch {
                 val link = getStreamLink(urlLocation)
                 mp.setDataSource(link)
@@ -106,10 +104,9 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
         val connection = URL(urlLocation).openConnection()
         connection.connect()
         val stream = connection.getInputStream()
-        val s: Scanner = Scanner(stream).useDelimiter("\\A")
+        val s = Scanner(stream).useDelimiter("\\A")
         val result = if (s.hasNext()) s.next() else ""
-        val url = JSONObject(result).getString("url")
-        return url
+        return JSONObject(result).getString("url")
     }
 
     private fun configureMp() {

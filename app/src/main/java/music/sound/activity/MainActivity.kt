@@ -56,7 +56,6 @@ class MainActivity : AppCompatActivity() {
             call: Call<CollectionHolder<Track>>,
             response: Response<CollectionHolder<Track>>
         ) {
-            Log.i(TAG, "response=>$response")
             val collection = response.body()?.collection?.filter { it.media != null }
             if (trackAdapter == null && timeOut) {
                 trackAdapter = TrackAdapter(collection?.toMutableList())
@@ -84,7 +83,6 @@ class MainActivity : AppCompatActivity() {
 
                 val found =
                     response.body()?.collection?.find { it.urn == "soundcloud:selections:charts-top" }
-                Log.i(TAG, "found=>$response")
                 val tracks = found?.items?.collection?.get(0)?.tracks
                 val ids = tracks?.map { it.id }?.joinToString(",")
                 manager.tracksBy(ids, topTrackCallback)
