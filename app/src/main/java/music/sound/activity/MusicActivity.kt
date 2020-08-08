@@ -1,22 +1,15 @@
 package music.sound.activity
 
 import android.content.Context
-import android.media.MediaCodecList
-import android.media.MediaCodecList.ALL_CODECS
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Environment.getExternalStoragePublicDirectory
 import android.os.VibrationEffect
 import android.os.Vibrator
-import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View.VISIBLE
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_music.*
 import music.sound.R
 import music.sound.adapter.MusicAdapter
@@ -30,23 +23,22 @@ class MusicActivity : AppCompatActivity() {
     var menuItemDelete: MenuItem? = null
     private lateinit var fileToDelete: File
 
-    var ad: InterstitialAd? = null
+    //    var ad: InterstitialAd? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_music)
         val files = getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles()
         rvMusic.setHasFixedSize(true)
-      
         rvMusic.adapter = MusicAdapter(files)
-        adViewMusic.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                adViewMusic.visibility = VISIBLE
-            }
-        }
-        adViewMusic.loadAd(AdRequest.Builder().build())
-        ad = InterstitialAd(this)
-        ad?.adUnitId = getString(R.string.int_id)
-        ad?.loadAd(AdRequest.Builder().build())
+//        adViewMusic.adListener = object : AdListener() {
+//            override fun onAdLoaded() {
+//                adViewMusic.visibility = VISIBLE
+//            }
+//        }
+//        adViewMusic.loadAd(AdRequest.Builder().build())
+//        ad = InterstitialAd(this)
+//        ad?.adUnitId = getString(R.string.int_id)
+//        ad?.loadAd(AdRequest.Builder().build())
         setSupportActionBar(toolbar)
     }
 
@@ -55,7 +47,7 @@ class MusicActivity : AppCompatActivity() {
             menuItemDelete!!.isVisible = false
         } else {
             super.onBackPressed()
-            ad?.show()
+//            ad?.show()
         }
     }
 
@@ -67,7 +59,8 @@ class MusicActivity : AppCompatActivity() {
 
     fun delete(item: MenuItem) {
         fileToDelete.delete()
-        rvMusic.adapter = MusicAdapter(getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles())
+        rvMusic.adapter =
+            MusicAdapter(getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles())
         item.isVisible = false
     }
 

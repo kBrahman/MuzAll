@@ -5,28 +5,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-    <com.google.android.gms.ads.AdView
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            app:adUnitId="@string/banner_id"
-            app:adSize="MEDIUM_RECTANGLE"
-            android:id="@+id/recBanner"
-            android:visibility="gone"
-            android:layout_centerHorizontal="true"/>
-    <!--<com.startapp.android.publish.ads.banner.Mrec-->
-    <!--android:id="@+id/recBanner"-->
-    <!--android:minWidth="300dp"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:visibility="gone"-->
-    <!--android:layout_alignParentStart="true"-->
-    <!--android:layout_alignParentEnd="true"-->
-    <!--android:layout_alignParentLeft="true"-->
-    <!--android:layout_alignParentRight="true"/>-->
+<!--    <com.google.android.gms.ads.AdView-->
+<!--            android:layout_width="300dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:adUnitId="@string/banner_id"-->
+<!--            app:adSize="MEDIUM_RECTANGLE"-->
+<!--            android:id="@+id/recBanner"-->
+<!--            android:visibility="gone"-->
+<!--            android:layout_centerHorizontal="true"/>-->
+
     <TextView android:layout_width="300dp"
               android:layout_height="wrap_content"
-              android:id="@+id/name"
-              android:layout_below="@id/recBanner"/>
+              android:id="@+id/name"/>
     <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

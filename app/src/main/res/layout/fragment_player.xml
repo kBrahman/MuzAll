@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <com.google.android.gms.ads.AdView
-            android:id="@+id/recBanner"
-            android:layout_width="300dp"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            app:adSize="MEDIUM_RECTANGLE"
-            app:adUnitId="@string/banner_id"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+    <LinearLayout
+            android:id="@+id/bannerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"/>
 
     <TextView
             android:id="@+id/name"
@@ -22,7 +20,8 @@
             android:paddingStart="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recBanner" />
+            app:layout_constraintTop_toBottomOf="@id/bannerContainer"
+            tools:ignore="RtlCompat" />
 
     <ImageButton
             android:id="@+id/play"
