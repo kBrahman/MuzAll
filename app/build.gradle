@@ -66,7 +66,6 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.gms:play-services-ads:19.1.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
-//    implementation 'com.facebook.android:audience-network-sdk:5.3.0-beta2'
     implementation 'com.google.firebase:firebase-core:17.4.2'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     implementation 'androidx.multidex:multidex:2.0.1'
