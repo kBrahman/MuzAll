@@ -19,11 +19,11 @@ android {
     }
     compileSdkVersion 29
     defaultConfig {
-        applicationId lp["id_music_sound"]
+        applicationId lp["id_z_music"]
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 43
-        versionName "1.33"
+        versionCode 1
+        versionName "1.0"
         multiDexEnabled true
         buildConfigField "String", "ClIENT_ID", lp["s_c_id"]
         buildConfigField "String", "SERVER", lp["s"]
@@ -53,7 +53,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
 //    implementation 'com.google.android.gms:play-services-ads:19.2.0'
     androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
