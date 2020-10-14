@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="duration">持续时间：%s</string>
-    <string name="uploaded">上传日期：%s</string>
+    <string name="bitrate">上传日期：%s</string>
     <string name="my_music">我的音乐</string>
 </resources>

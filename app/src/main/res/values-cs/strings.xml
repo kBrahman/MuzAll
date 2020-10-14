@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="duration">Doba trvání: %s</string>
-    <string name="uploaded">Datum uploadu: %s</string>
+    <string name="bitrate">Datum uploadu: %s</string>
     <string name="my_music">Moje hudba</string>
 </resources>

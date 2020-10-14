@@ -9,11 +9,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.track_item.view.*
+import z.music.R
 import z.music.fragment.PlayerFragment
 import z.music.model.Track
 import z.music.util.TRACK
-import z.music.util.milliSecondsToTime
-import z.music.R
 
 class TrackAdapter(private val results: MutableList<Track>?) :
     RecyclerView.Adapter<TrackAdapter.VH>() {
@@ -28,12 +27,13 @@ class TrackAdapter(private val results: MutableList<Track>?) :
     override fun onBindViewHolder(holder: VH, position: Int) {
         val track = results?.get(position)
         val view = holder.itemView
-        view.name.text = track?.title
+        view.name.text = track?.track
         view.duration.text =
-            view.context.getString(R.string.duration, milliSecondsToTime(track?.duration))
-        view.uploadDate.text =
-            view.context.getString(R.string.uploaded, track?.created_at?.replace("+0000", ""))
-        Picasso.get().load(track?.artwork_url ?: track?.user?.avatar_url).into(view.img)
+            view.context.getString(R.string.duration, track?.duration)
+        view.bitrate.text =
+            view.context.getString(R.string.bitrate, track?.bitrate)
+        if (track?.artistImageUrlSquare100 != null)
+            Picasso.get().load(track.artistImageUrlSquare100).into(view.img)
     }
 
     fun addData(data: List<Track>?) {

@@ -7,7 +7,6 @@ import android.content.DialogInterface
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
@@ -60,12 +59,11 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) =
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN)
-            inflater.inflate(
-                R.layout.fragment_player,
-                container,
-                false
-            ) else inflater.inflate(R.layout.fragment_player_api_16, container, false)
+        inflater.inflate(
+            R.layout.fragment_player,
+            container,
+            false
+        )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val track = arguments?.getSerializable(TRACK)
@@ -76,7 +74,7 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
                 configureMp()
             }
 
-            name.text = track.title
+            name.text = track.track
         } else if (track is File) {
             context?.let { mp.setDataSource(it, Uri.fromFile(track)) }
             download.visibility = GONE
@@ -137,7 +135,7 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
             downloadManager.enqueue(
                 request.setDestinationInExternalPublicDir(
                     DIRECTORY_MUSIC,
-                    track.title + ".mp3"
+                    track.track + ".mp3"
                 )
             )
         } else {

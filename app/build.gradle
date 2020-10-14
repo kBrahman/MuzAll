@@ -26,6 +26,8 @@ android {
         versionName "1.0"
         multiDexEnabled true
         buildConfigField "String", "SERVER", lp["z_s"]
+        buildConfigField "String", "C_EQ", lp["z_c_eq"]
+        buildConfigField "String", "C", lp["z_c"]
     }
     buildTypes {
         release {
@@ -58,6 +60,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     kapt 'com.google.dagger:dagger-android-processor:2.29.1'
     kapt 'com.google.dagger:dagger-compiler:2.29.1'

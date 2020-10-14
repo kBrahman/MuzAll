@@ -6,6 +6,7 @@ import dagger.Provides
 import dagger.android.DaggerApplication
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import z.music.BuildConfig
 import z.music.manager.ApiManager
@@ -21,6 +22,7 @@ class ActivityModule {
         .client(OkHttpClient.Builder().readTimeout(14, TimeUnit.SECONDS).build())
         .baseUrl(BuildConfig.SERVER)
         .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build().create(MuzApiManager.APIService::class.java)
 
     @Provides

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="duration">المدة الزمنية: %s</string>
-    <string name="uploaded">تاريخ التحميل: %s</string>
+    <string name="bitrate">تاريخ التحميل: %s</string>
     <string name="my_music">"موسيقاي "</string>
 </resources>

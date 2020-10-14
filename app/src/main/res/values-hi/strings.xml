@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="duration">अवधि: %s</string>
-    <string name="uploaded">अपलोड किया गया: %s</string>
+    <string name="bitrate">अपलोड किया गया: %s</string>
     <string name="my_music">मेरा संगीत</string>
 </resources>

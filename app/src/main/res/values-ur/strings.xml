@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="uploaded">اپ لوڈ کرنے کی تاریخ: %</string>
+    <string name="bitrate">اپ لوڈ کرنے کی تاریخ: %</string>
     <string name="my_music">"میری موسیقی "</string>
     <string name="duration">دورانیہ: %s</string>
 </resources>

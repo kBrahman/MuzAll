@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="duration">Durée: %s</string>
-    <string name="uploaded">Date de téléchargement: %s</string>
+    <string name="bitrate">Date de téléchargement: %s</string>
     <string name="my_music">Ma musique</string>
 </resources>

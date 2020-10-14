@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="duration">Süresi: %s</string>
-    <string name="uploaded">Yükleme Tarihi: %s</string>
+    <string name="bitrate">Yükleme Tarihi: %s</string>
     <string name="my_music">"Benim müziğim "</string>
 </resources>

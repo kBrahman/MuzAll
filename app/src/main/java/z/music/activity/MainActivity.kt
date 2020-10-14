@@ -21,13 +21,14 @@ import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import z.music.BuildConfig
 import z.music.R
 import z.music.adapter.TrackAdapter
 import z.music.manager.ApiManager
 import z.music.model.CollectionHolder
-import z.music.model.Selection
 import z.music.model.Token
 import z.music.model.Track
+import z.music.model.TrackList
 import z.music.util.TOKEN
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -65,12 +66,10 @@ class MainActivity : DaggerAppCompatActivity() {
             call: Call<CollectionHolder<Track>>,
             response: Response<CollectionHolder<Track>>
         ) {
-            val collection = response.body()?.collection?.filter { it.media != null }
-            if (trackAdapter == null && timeOut) {
+            val collection = response.body()?.tracks?.filter { it.media != null }
+            if (trackAdapter == null) {
                 trackAdapter = TrackAdapter(collection?.toMutableList())
                 rv.adapter = trackAdapter
-            } else if (trackAdapter == null) {
-                trackAdapter = TrackAdapter(collection?.toMutableList())
             } else {
                 trackAdapter?.addData(collection?.toMutableList())
             }
@@ -79,42 +78,13 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
-    private val selectionsCallback: Callback<CollectionHolder<Selection>> =
-        object : Callback<CollectionHolder<Selection>> {
-            override fun onFailure(call: Call<CollectionHolder<Selection>>, t: Throwable) =
-                t.printStackTrace()
-
-            override fun onResponse(
-                call: Call<CollectionHolder<Selection>>,
-                response: Response<CollectionHolder<Selection>>
-            ) {
-
-                val found =
-                    response.body()?.collection?.find { it.urn == "soundcloud:selections:charts-top" }
-                val tracks = found?.items?.collection?.get(0)?.tracks
-                val ids = tracks?.map { it.id }?.joinToString(",")
-                manager.tracksBy(ids, topTrackCallback)
-            }
-        }
-
-    private val tokenClb = object : Callback<Token> {
-        override fun onResponse(call: Call<Token>, response: Response<Token>) {
-
-
-        }
-
-        override fun onFailure(call: Call<Token>, t: Throwable) = t.printStackTrace()
-
-
-    }
-
-    private fun getAccessToken(token: String?): String {
+    private fun getHash(token: String?): String {
         val stringBuilder = StringBuilder()
         stringBuilder.append(token)
         stringBuilder.append(
             xor(
-                String(Base64.decode("NQxQBQICUCEZHVY=", 0)),
-                "sdfr34egth4523de2e"
+                String(Base64.decode(BuildConfig.C_EQ, 0)),
+                BuildConfig.C
             )
         )
         return cipher(stringBuilder.toString());
@@ -155,32 +125,14 @@ class MainActivity : DaggerAppCompatActivity() {
         return String(arrayOfChar3)
     }
 
-    private val topTrackCallback: Callback<List<Track>> = object : Callback<List<Track>> {
-        override fun onFailure(call: Call<List<Track>>, t: Throwable) = t.printStackTrace()
-
-        override fun onResponse(call: Call<List<Track>>, response: Response<List<Track>>) {
-            val filtered = response.body()?.filter {
-                it.media.transcodings.isNotEmpty() and it.media.transcodings.any { tr ->
-                    tr.url.endsWith("/progressive")
-                }
-            }
-            title = "Top ${filtered?.size}"
-            trackAdapter = TrackAdapter(
-                filtered?.toMutableList()
-            )
-            if (timeOut) {
-                setAdapterAndBanner()
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val token = sharedPreferences.getString(TOKEN, null)
         if (token == null) {
             getToken()
         } else {
-            getTop()
+            Log.i(TAG, "token=>$token")
+            getTop(token)
         }
         setContentView(R.layout.activity_main)
         rv.setHasFixedSize(true)
@@ -194,11 +146,12 @@ class MainActivity : DaggerAppCompatActivity() {
                 val layoutManager =
                     recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
+                    pb.visibility = VISIBLE
                     if (!loading && searching) {
-                        pb.visibility = VISIBLE
-                        offset += 25
                         search(q, offset)
                         loading = true
+                    } else {
+                        getTop(token!!)
                     }
                 }
             }
@@ -253,11 +206,28 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun getToken() = manager.getToken().subscribe(::onToken) { e -> e.printStackTrace() }
 
-    private fun onToken(token: Token) {
+    private fun onToken(token: Token) =
+        manager.getAccessToken(token.token, getHash(token.token)).subscribe(::onAccessToken)
+
+
+    private fun onAccessToken(token: Token) {
         val t = token.token
-        val accessToken = getAccessToken(t)
-        Log.i(TAG, "token=>$t,  acc_token=>$accessToken")
-//        manager.auth(t, accessToken)
+        sharedPreferences.edit().putString(TOKEN, t).apply()
+        getTop(t)
+    }
+
+    private fun onTop(topList: TrackList) {
+        Log.i(TAG, "list=>$topList")
+        val tracks = topList.tracks
+        if (trackAdapter == null && timeOut) {
+            trackAdapter = TrackAdapter(tracks.toMutableList())
+            
+        } else {
+            trackAdapter?.addData(tracks)
+        }
+        if (timeOut) {
+            setAdapterAndBanner()
+        }
     }
 
     private fun setTimer() {
@@ -281,7 +251,8 @@ class MainActivity : DaggerAppCompatActivity() {
 //        adView.loadAd()
     }
 
-    private fun getTop() = manager.getMixedSelections(selectionsCallback)
+    private fun getTop(token: String) =
+        manager.getTop(token, (trackAdapter?.itemCount ?: 0 / 20 + 1)).subscribe(::onTop)
 
 
     private fun search(q: String, offset: Int) {

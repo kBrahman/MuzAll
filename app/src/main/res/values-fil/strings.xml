@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="duration">Tagal: %s</string>
-    <string name="uploaded">Na-upload: %s</string>
+    <string name="bitrate">Na-upload: %s</string>
     <string name="my_music">Ang aking Musika</string>
 </resources>

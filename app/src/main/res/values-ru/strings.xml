@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="duration">Продолжительность: %s</string>
-    <string name="uploaded">Загружено: %s</string>
+    <string name="bitrate">Загружено: %s</string>
     <string name="my_music">Моя музыка</string>
 </resources>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="duration">Tempoh: %s</string>
-    <string name="uploaded">Tarikh muat naik: %s</string>
+    <string name="bitrate">Tarikh muat naik: %s</string>
     <string name="my_music">Muzik saya</string>
 </resources>
