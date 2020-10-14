@@ -14,9 +14,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.facebook.ads.*
+//import com.facebook.ads.*
 import kotlinx.android.synthetic.main.activity_main.*
 import music.sound.adapter.TrackAdapter
+import music.sound.component.DaggerActivityComponent
 import music.sound.manager.ApiManager
 import music.sound.model.CollectionHolder
 import music.sound.model.Selection
@@ -35,10 +36,10 @@ class MainActivity : AppCompatActivity() {
         private val TAG = MainActivity::class.java.simpleName
     }
 
-    lateinit var adView: AdView
+//    lateinit var adView: AdView
     private var timeOut = false
 
-    var ad: InterstitialAd? = null
+//    var ad: InterstitialAd? = null
     private lateinit var q: String
 
     @Inject
@@ -110,6 +111,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
         val component = DaggerActivityComponent.create()
         component.inject(this)
@@ -136,50 +138,50 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         getMixedSelections()
         setTimer()
-        AudienceNetworkAds.initialize(this)
-        ad = InterstitialAd(this, "717811162283689_717860878945384")
-        adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
-        bannerContainer.addView(adView)
-        ad?.setAdListener(object : InterstitialAdListener {
-            override fun onInterstitialDisplayed(ad: Ad) {
-                // Interstitial ad displayed callback
-                Log.e(TAG, "Interstitial ad displayed.")
-            }
-
-            override fun onInterstitialDismissed(ad: Ad) {
-                // Interstitial dismissed callback
-                Log.e(TAG, "Interstitial ad dismissed.")
-            }
-
-            override fun onError(ad: Ad, adError: AdError) {
-                // Ad error callback
-                Log.e(
-                    TAG,
-                    "Interstitial ad failed to load: " + adError.errorMessage
-                )
-            }
-
-            override fun onAdLoaded(ad: Ad) {
-                // Interstitial ad is loaded and ready to be displayed
-                Log.d(
-                    TAG,
-                    "Interstitial ad is loaded and ready to be displayed!"
-                )
-                // Show the ad
-                this@MainActivity.ad?.show()
-            }
-
-            override fun onAdClicked(ad: Ad) {
-                // Ad clicked callback
-                Log.d(TAG, "Interstitial ad clicked!")
-            }
-
-            override fun onLoggingImpression(ad: Ad) {
-                // Ad impression logged callback
-                Log.d(TAG, "Interstitial ad impression logged!")
-            }
-        })
-        ad?.loadAd();
+//        AudienceNetworkAds.initialize(this)
+//        ad = InterstitialAd(this, getString(R.string.int_id))
+//        adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
+//        bannerContainer.addView(adView)
+//        ad?.setAdListener(object : InterstitialAdListener {
+//            override fun onInterstitialDisplayed(ad: Ad) {
+//                // Interstitial ad displayed callback
+//                Log.e(TAG, "Interstitial ad displayed.")
+//            }
+//
+//            override fun onInterstitialDismissed(ad: Ad) {
+//                // Interstitial dismissed callback
+//                Log.e(TAG, "Interstitial ad dismissed.")
+//            }
+//
+//            override fun onError(ad: Ad, adError: AdError) {
+//                // Ad error callback
+//                Log.e(
+//                    TAG,
+//                    "Interstitial ad failed to load: " + adError.errorMessage
+//                )
+//            }
+//
+//            override fun onAdLoaded(ad: Ad) {
+//                // Interstitial ad is loaded and ready to be displayed
+//                Log.d(
+//                    TAG,
+//                    "Interstitial ad is loaded and ready to be displayed!"
+//                )
+//                // Show the ad
+//                this@MainActivity.ad?.show()
+//            }
+//
+//            override fun onAdClicked(ad: Ad) {
+//                // Ad clicked callback
+//                Log.d(TAG, "Interstitial ad clicked!")
+//            }
+//
+//            override fun onLoggingImpression(ad: Ad) {
+//                // Ad impression logged callback
+//                Log.d(TAG, "Interstitial ad impression logged!")
+//            }
+//        })
+//        ad?.loadAd();
     }
 
     private fun setTimer() {
@@ -189,7 +191,7 @@ class MainActivity : AppCompatActivity() {
                 if (trackAdapter != null) {
                     runOnUiThread {
                         setAdapterAndBanner()
-                        ad = null
+//                        ad = null
                     }
                 }
                 Log.i(TAG, "time out")
@@ -200,7 +202,7 @@ class MainActivity : AppCompatActivity() {
     private fun setAdapterAndBanner() {
         rv.adapter = trackAdapter
         pb.visibility = GONE
-        adView.loadAd()
+//        adView.loadAd()
     }
 
     private fun getMixedSelections() = manager.getMixedSelections(selectionsCallback)

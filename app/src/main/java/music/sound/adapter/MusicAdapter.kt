@@ -10,10 +10,10 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.music_item.view.*
-import music.sound.R
 import music.sound.activity.MusicActivity
 import music.sound.fragment.PlayerFragment
 import music.sound.util.TRACK
+import z.music.R
 import java.io.File
 
 

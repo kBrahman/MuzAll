@@ -19,13 +19,9 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import com.facebook.ads.AdSize
-import com.facebook.ads.AdView
 import kotlinx.android.synthetic.main.fragment_player.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import music.sound.BuildConfig
-import music.sound.R
 import music.sound.activity.MainActivity
 import music.sound.activity.MusicActivity
 import music.sound.component.DaggerFragmentComponent
@@ -33,6 +29,8 @@ import music.sound.manager.ApiManager
 import music.sound.model.Track
 import music.sound.util.TRACK
 import org.json.JSONObject
+import z.music.BuildConfig
+import z.music.R
 import java.io.File
 import java.net.URL
 import java.util.*
@@ -47,7 +45,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
 
     @Inject
     lateinit var mp: MediaPlayer
-    private lateinit var adView: AdView
+//    private lateinit var adView: AdView
 
     @Inject
     lateinit var apiManager: ApiManager
@@ -56,7 +54,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-        adView = AdView(activity, "717811162283689_717812065616932", AdSize.RECTANGLE_HEIGHT_250)
+//        adView = AdView(activity, getString(R.string.rec_id), AdSize.RECTANGLE_HEIGHT_250)
     }
 
     override fun onCreateView(
@@ -91,8 +89,8 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
             configureMp()
         }
         setVisibility(GONE)
-        bannerContainer.addView(adView)
-        adView.loadAd()
+//        bannerContainer.addView(adView)
+//        adView.loadAd()
     }
 
     private suspend fun getStreamLink(urlLocation: String): String {
@@ -126,7 +124,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
 
     private fun setVisibility(visibility: Int) {
         if (activity is MainActivity) {
-            (activity as MainActivity).adView.visibility = visibility
+//            (activity as MainActivity).adView.visibility = visibility
         } else if (activity is MusicActivity) {
 //            (activity as MusicActivity).adViewMusic.visibility = visibility
         }

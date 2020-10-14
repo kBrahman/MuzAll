@@ -1,6 +1,5 @@
 package music.sound.manager
 
-import music.sound.BuildConfig
 import music.sound.model.CollectionHolder
 import music.sound.model.Selection
 import music.sound.model.Track
@@ -11,6 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
+import z.music.BuildConfig
 import java.util.concurrent.TimeUnit
 
 

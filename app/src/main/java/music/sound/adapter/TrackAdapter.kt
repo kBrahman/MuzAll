@@ -10,11 +10,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.track_item.view.*
-import music.sound.R
 import music.sound.fragment.PlayerFragment
 import music.sound.model.Track
 import music.sound.util.TRACK
 import music.sound.util.milliSecondsToTime
+import z.music.R
 
 class TrackAdapter(private val results: MutableList<Track>?) :
     RecyclerView.Adapter<TrackAdapter.VH>() {
@@ -22,11 +22,7 @@ class TrackAdapter(private val results: MutableList<Track>?) :
     private val player: DialogFragment = PlayerFragment()
 
     override fun onCreateViewHolder(group: ViewGroup, p1: Int) =
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN)
-            VH(LayoutInflater.from(group.context).inflate(R.layout.track_item, group, false))
-        else VH(
-            LayoutInflater.from(group.context).inflate(R.layout.track_item_api_16, group, false)
-        )
+        VH(LayoutInflater.from(group.context).inflate(R.layout.track_item, group, false))
 
     override fun getItemCount() = results?.size ?: 0
 

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MusicSound</string>
-    <string name="app_id">ca-app-pub-8761730220693010~7566621370</string>
-    <string name="banner_id">ca-app-pub-8761730220693010/7375049681</string>
-    <string name="int_id">ca-app-pub-8761730220693010/9123245620</string>
+    <string name="app_name">zMusic</string>
     <string name="action_delete">Delete</string>
     <string name="folder">Music folder</string>
-    <string name="fb_banner_id">717811162283689_717855242279281</string>
+<!--    <string name="rec_id">717811162283689_717812065616932</string>-->
+    <!--    <string name="fb_banner_id">717811162283689_717855242279281</string>-->
+<!--    <string name="int_id">717811162283689_717860878945384</string>-->
 </resources>
