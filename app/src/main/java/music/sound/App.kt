@@ -1,11 +1,15 @@
 package music.sound
 
-import dagger.android.AndroidInjector
+import android.content.Context
+import androidx.multidex.MultiDex
 import dagger.android.DaggerApplication
 
 class App : DaggerApplication() {
 
-    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        TODO("Not yet implemented")
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
+        MultiDex.install(this)
     }
+
+    override fun applicationInjector() = DaggerAppComponent.factory().create(this)
 }
