@@ -3,6 +3,7 @@ package z.music.activity
 //import com.facebook.ads.*
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
@@ -16,15 +17,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import z.music.R
 import z.music.adapter.TrackAdapter
 import z.music.manager.ApiManager
 import z.music.model.CollectionHolder
 import z.music.model.Selection
 import z.music.model.Track
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import z.music.R
+import z.music.util.TOKEN
 import java.util.*
 import javax.inject.Inject
 
@@ -43,6 +45,9 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var manager: ApiManager
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
     private var offset: Int = 0
     private var loading = false
     private var trackAdapter: TrackAdapter? = null
@@ -110,7 +115,10 @@ class MainActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val token = sharedPreferences.getString(TOKEN, null)
+        if (token == null) {
+//            manager.getToken()
+        }
         setContentView(R.layout.activity_main)
         rv.setHasFixedSize(true)
         rv.addOnScrollListener(object :
