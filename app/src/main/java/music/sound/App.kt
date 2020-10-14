@@ -3,8 +3,9 @@ package music.sound
 import android.content.Context
 import androidx.multidex.MultiDex
 import dagger.android.DaggerApplication
+import dagger.android.HasAndroidInjector
 
-class App : DaggerApplication() {
+class App : DaggerApplication(), HasAndroidInjector {
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
