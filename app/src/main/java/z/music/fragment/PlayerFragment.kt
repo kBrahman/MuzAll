@@ -18,25 +18,23 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
+import dagger.android.support.DaggerDialogFragment
 import kotlinx.android.synthetic.main.fragment_player.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import z.music.R
 import z.music.activity.MainActivity
 import z.music.activity.MusicActivity
-import z.music.component.DaggerFragmentComponent
 import z.music.manager.ApiManager
 import z.music.model.Track
 import z.music.util.TRACK
-import org.json.JSONObject
-import z.music.BuildConfig
-import z.music.R
 import java.io.File
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
 
-class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
+class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
     SeekBar.OnSeekBarChangeListener, Runnable {
 
     companion object {
@@ -70,14 +68,11 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
             ) else inflater.inflate(R.layout.fragment_player_api_16, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        DaggerFragmentComponent.create().inject(this)
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
             val url = track.media.transcodings.find { it.url.endsWith("/progressive") }?.url
-            val urlLocation = url + "?client_id=" + BuildConfig.ClIENT_ID
             GlobalScope.launch {
-                val link = getStreamLink(urlLocation)
-                mp.setDataSource(link)
+//                mp.setDataSource(link)
                 configureMp()
             }
 

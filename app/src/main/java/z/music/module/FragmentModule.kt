@@ -13,6 +13,6 @@ class FragmentModule {
     fun provideMediaPlayer() = MediaPlayer()
 
     @Provides
-    fun provideMuzApiManager(): ApiManager = MuzApiManager()
+    fun provideMuzApiManager(apiService: MuzApiManager.APIService): ApiManager = MuzApiManager(apiService)
 
 }

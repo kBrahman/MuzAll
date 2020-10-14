@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -25,8 +26,11 @@ import z.music.adapter.TrackAdapter
 import z.music.manager.ApiManager
 import z.music.model.CollectionHolder
 import z.music.model.Selection
+import z.music.model.Token
 import z.music.model.Track
 import z.music.util.TOKEN
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 import java.util.*
 import javax.inject.Inject
 
@@ -93,6 +97,63 @@ class MainActivity : DaggerAppCompatActivity() {
             }
         }
 
+    private val tokenClb = object : Callback<Token> {
+        override fun onResponse(call: Call<Token>, response: Response<Token>) {
+
+
+        }
+
+        override fun onFailure(call: Call<Token>, t: Throwable) = t.printStackTrace()
+
+
+    }
+
+    private fun getAccessToken(token: String?): String {
+        val stringBuilder = StringBuilder()
+        stringBuilder.append(token)
+        stringBuilder.append(
+            xor(
+                String(Base64.decode("NQxQBQICUCEZHVY=", 0)),
+                "sdfr34egth4523de2e"
+            )
+        )
+        return cipher(stringBuilder.toString());
+    }
+
+    fun cipher(paramString: String): String {
+        var paramString = paramString
+        return try {
+            val messageDigest = MessageDigest.getInstance("MD5")
+            messageDigest.update(paramString.toByteArray())
+            val arrayOfByte: ByteArray = messageDigest.digest()
+            val stringBuffer = StringBuffer()
+            for (i in arrayOfByte.indices) {
+                paramString = Integer.toHexString(arrayOfByte[i].toInt() and 0xFF)
+                while (paramString.length < 2) {
+                    val stringBuilder = java.lang.StringBuilder()
+                    stringBuilder.append("0")
+                    stringBuilder.append(paramString)
+                    paramString = stringBuilder.toString()
+                }
+                stringBuffer.append(paramString)
+            }
+            stringBuffer.toString()
+        } catch (noSuchAlgorithmException: NoSuchAlgorithmException) {
+            //            h.a(a, noSuchAlgorithmException);
+            ""
+        }
+    }
+
+    private fun xor(paramString1: String, paramString2: String): String? {
+        val arrayOfChar1 = paramString1.toCharArray()
+        val arrayOfChar2 = paramString2.toCharArray()
+        val j = arrayOfChar1.size
+        val k = arrayOfChar2.size
+        val arrayOfChar3 = CharArray(j)
+        for (i in 0 until j) arrayOfChar3[i] =
+            (arrayOfChar1[i].toInt() xor arrayOfChar2[i % k].toInt()).toChar()
+        return String(arrayOfChar3)
+    }
 
     private val topTrackCallback: Callback<List<Track>> = object : Callback<List<Track>> {
         override fun onFailure(call: Call<List<Track>>, t: Throwable) = t.printStackTrace()
@@ -117,7 +178,9 @@ class MainActivity : DaggerAppCompatActivity() {
         super.onCreate(savedInstanceState)
         val token = sharedPreferences.getString(TOKEN, null)
         if (token == null) {
-//            manager.getToken()
+            getToken()
+        } else {
+            getTop()
         }
         setContentView(R.layout.activity_main)
         rv.setHasFixedSize(true)
@@ -141,7 +204,6 @@ class MainActivity : DaggerAppCompatActivity() {
             }
         })
         setSupportActionBar(toolbar)
-        getMixedSelections()
         setTimer()
 //        AudienceNetworkAds.initialize(this)
 //        ad = InterstitialAd(this, getString(R.string.int_id))
@@ -189,6 +251,15 @@ class MainActivity : DaggerAppCompatActivity() {
 //        ad?.loadAd();
     }
 
+    private fun getToken() = manager.getToken().subscribe(::onToken) { e -> e.printStackTrace() }
+
+    private fun onToken(token: Token) {
+        val t = token.token
+        val accessToken = getAccessToken(t)
+        Log.i(TAG, "token=>$t,  acc_token=>$accessToken")
+//        manager.auth(t, accessToken)
+    }
+
     private fun setTimer() {
         Timer().schedule(object : TimerTask() {
             override fun run() {
@@ -210,7 +281,7 @@ class MainActivity : DaggerAppCompatActivity() {
 //        adView.loadAd()
     }
 
-    private fun getMixedSelections() = manager.getMixedSelections(selectionsCallback)
+    private fun getTop() = manager.getMixedSelections(selectionsCallback)
 
 
     private fun search(q: String, offset: Int) {

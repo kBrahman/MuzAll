@@ -1,37 +1,27 @@
 package z.music.manager
 
-import z.music.model.CollectionHolder
-import z.music.model.Selection
-import z.music.model.Track
-import okhttp3.OkHttpClient
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import z.music.BuildConfig
-import java.util.concurrent.TimeUnit
+import z.music.model.CollectionHolder
+import z.music.model.Selection
+import z.music.model.Token
+import z.music.model.Track
+import javax.inject.Inject
 
 
-class MuzApiManager : ApiManager {
+class MuzApiManager @Inject constructor(private val apiService: APIService) : ApiManager {
 
     companion object {
         private val TAG = MuzApiManager::class.java.simpleName
-        private const val SERVER = BuildConfig.SERVER
-        private const val SEARCH = "search?limit=25&client_id=${BuildConfig.ClIENT_ID}"
-        private const val SELECTIONS = "mixed-selections?client_id=${BuildConfig.ClIENT_ID}"
-        private const val TRACKS = "tracks?client_id=${BuildConfig.ClIENT_ID}"
-    }
-
-    private var apiService: APIService
-
-    init {
-        apiService = Retrofit.Builder()
-            .client(OkHttpClient.Builder().readTimeout(14, TimeUnit.SECONDS).build())
-            .baseUrl(SERVER)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build().create(APIService::class.java)
+        private const val SEARCH = "search?limit=25&client_id="
+        private const val SELECTIONS = "mixed-selections?client_id="
+        private const val TRACKS = "tracks?client_id="
+        private const val HELLO = "hello"
     }
 
     override fun search(q: String, offset: Int, callback: Callback<CollectionHolder<Track>>) =
@@ -43,15 +33,25 @@ class MuzApiManager : ApiManager {
     override fun tracksBy(ids: String?, callback: Callback<List<Track>>) =
         apiService.tracksBy(ids).enqueue(callback)
 
-    private interface APIService {
+    override fun getToken() =
+        apiService.getToken().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+
+
+    interface APIService {
 
         @GET(SEARCH)
-        fun search(@Query("q") q: String, @Query("offset") offset: Int): Call<CollectionHolder<Track>>
+        fun search(
+            @Query("q") q: String,
+            @Query("offset") offset: Int
+        ): Call<CollectionHolder<Track>>
 
         @GET(SELECTIONS)
         fun getMixedSelections(): Call<CollectionHolder<Selection>>
 
         @GET(TRACKS)
         fun tracksBy(@Query("ids") ids: String?): Call<List<Track>>
+
+        @GET(HELLO)
+        fun getToken(): Single<Token>
     }
 }
