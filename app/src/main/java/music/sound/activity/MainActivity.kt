@@ -1,5 +1,6 @@
 package music.sound.activity
 
+//import com.facebook.ads.*
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,14 +11,12 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-//import com.facebook.ads.*
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import music.sound.adapter.TrackAdapter
-import music.sound.component.DaggerActivityComponent
 import music.sound.manager.ApiManager
 import music.sound.model.CollectionHolder
 import music.sound.model.Selection
@@ -30,16 +29,16 @@ import java.util.*
 import javax.inject.Inject
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : DaggerAppCompatActivity() {
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
     }
 
-//    lateinit var adView: AdView
+    //    lateinit var adView: AdView
     private var timeOut = false
 
-//    var ad: InterstitialAd? = null
+    //    var ad: InterstitialAd? = null
     private lateinit var q: String
 
     @Inject
@@ -113,8 +112,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
-        val component = DaggerActivityComponent.create()
-        component.inject(this)
         rv.setHasFixedSize(true)
         rv.addOnScrollListener(object :
             androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
