@@ -1,4 +1,4 @@
-package music.sound.fragment
+package z.music.fragment
 
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.DownloadManager
@@ -22,12 +22,12 @@ import androidx.fragment.app.DialogFragment
 import kotlinx.android.synthetic.main.fragment_player.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import music.sound.activity.MainActivity
-import music.sound.activity.MusicActivity
-import music.sound.component.DaggerFragmentComponent
-import music.sound.manager.ApiManager
-import music.sound.model.Track
-import music.sound.util.TRACK
+import z.music.activity.MainActivity
+import z.music.activity.MusicActivity
+import z.music.component.DaggerFragmentComponent
+import z.music.manager.ApiManager
+import z.music.model.Track
+import z.music.util.TRACK
 import org.json.JSONObject
 import z.music.BuildConfig
 import z.music.R

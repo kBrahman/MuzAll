@@ -1,4 +1,4 @@
-package music.sound.activity
+package z.music.activity
 
 import android.content.Context
 import android.os.Build
@@ -11,7 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_music.*
-import music.sound.adapter.MusicAdapter
+import z.music.adapter.MusicAdapter
 import z.music.R
 import java.io.File
 

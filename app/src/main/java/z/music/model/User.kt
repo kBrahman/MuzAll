@@ -1,4 +1,4 @@
-package music.sound.model
+package z.music.model
 
 import androidx.annotation.Keep
 import java.io.Serializable

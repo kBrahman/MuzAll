@@ -1,6 +1,5 @@
-package music.sound.adapter
+package z.music.adapter
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +9,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.track_item.view.*
-import music.sound.fragment.PlayerFragment
-import music.sound.model.Track
-import music.sound.util.TRACK
-import music.sound.util.milliSecondsToTime
+import z.music.fragment.PlayerFragment
+import z.music.model.Track
+import z.music.util.TRACK
+import z.music.util.milliSecondsToTime
 import z.music.R
 
 class TrackAdapter(private val results: MutableList<Track>?) :

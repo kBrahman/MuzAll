@@ -1,9 +1,10 @@
-package music.sound
+package z.music
 
 import android.content.Context
 import androidx.multidex.MultiDex
 import dagger.android.DaggerApplication
 import dagger.android.HasAndroidInjector
+import z.music.component.DaggerAppComponent
 
 class App : DaggerApplication(), HasAndroidInjector {
 

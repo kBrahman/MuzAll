@@ -1,8 +1,8 @@
-package music.sound.component
+package z.music.component
 
 import dagger.Component
-import music.sound.fragment.PlayerFragment
-import music.sound.module.FragmentModule
+import z.music.fragment.PlayerFragment
+import z.music.module.FragmentModule
 
 @Component(modules = [FragmentModule::class])
 interface FragmentComponent {

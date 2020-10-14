@@ -1,4 +1,4 @@
-package music.sound.adapter
+package z.music.adapter
 
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
@@ -10,9 +10,9 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.music_item.view.*
-import music.sound.activity.MusicActivity
-import music.sound.fragment.PlayerFragment
-import music.sound.util.TRACK
+import z.music.activity.MusicActivity
+import z.music.fragment.PlayerFragment
+import z.music.util.TRACK
 import z.music.R
 import java.io.File
 

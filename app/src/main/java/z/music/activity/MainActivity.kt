@@ -1,4 +1,4 @@
-package music.sound.activity
+package z.music.activity
 
 //import com.facebook.ads.*
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
@@ -16,11 +16,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import music.sound.adapter.TrackAdapter
-import music.sound.manager.ApiManager
-import music.sound.model.CollectionHolder
-import music.sound.model.Selection
-import music.sound.model.Track
+import z.music.adapter.TrackAdapter
+import z.music.manager.ApiManager
+import z.music.model.CollectionHolder
+import z.music.model.Selection
+import z.music.model.Track
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

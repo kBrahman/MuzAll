@@ -1,8 +1,8 @@
-package music.sound.manager
+package z.music.manager
 
-import music.sound.model.CollectionHolder
-import music.sound.model.Selection
-import music.sound.model.Track
+import z.music.model.CollectionHolder
+import z.music.model.Selection
+import z.music.model.Track
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
