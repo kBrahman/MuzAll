@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+//apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
@@ -17,11 +17,11 @@ android {
             keyPassword keystoreProperties['keyPassword']
         }
     }
-    compileSdkVersion 29
+    compileSdkVersion 30
     defaultConfig {
         applicationId lp["id_z_music"]
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -72,15 +72,15 @@ dependencies {
     implementation 'com.android.support:support-annotations:28.0.0'
     implementation 'com.facebook.android:audience-network-sdk:5.11.0'
 }
-apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.gms.google-services'
 
-task copyFile(type: Copy) {
-    from(rootProject.file('crashlytics/google-services_music_sound.json')) {
-        rename 'google-services_music_sound.json', 'google-services.json'
-    }
-    into(rootProject.file('app'))
-}
-
-gradle.projectsEvaluated {
-    preBuild.dependsOn(copyFile)
-}
+//task copyFile(type: Copy) {
+//    from(rootProject.file('crashlytics/google-services_music_sound.json')) {
+//        rename 'google-services_music_sound.json', 'google-services.json'
+//    }
+//    into(rootProject.file('app'))
+//}
+//
+//gradle.projectsEvaluated {
+//    preBuild.dependsOn(copyFile)
+//}
