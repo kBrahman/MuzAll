@@ -17,6 +17,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -66,7 +67,7 @@ class MainActivity : DaggerAppCompatActivity() {
             call: Call<CollectionHolder<Track>>,
             response: Response<CollectionHolder<Track>>
         ) {
-            val collection = response.body()?.tracks?.filter { it.media != null }
+            val collection = response.body()?.tracks
             if (trackAdapter == null) {
                 trackAdapter = TrackAdapter(collection?.toMutableList())
                 rv.adapter = trackAdapter
@@ -145,11 +146,11 @@ class MainActivity : DaggerAppCompatActivity() {
             ) {
                 val layoutManager =
                     recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
-                if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
+                if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1 && !loading) {
                     pb.visibility = VISIBLE
-                    if (!loading && searching) {
+                    loading = true
+                    if (searching) {
                         search(q, offset)
-                        loading = true
                     } else {
                         getTop(token!!)
                     }
@@ -218,16 +219,21 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun onTop(topList: TrackList) {
         Log.i(TAG, "list=>$topList")
+        loading = false
         val tracks = topList.tracks
         if (trackAdapter == null && timeOut) {
             trackAdapter = TrackAdapter(tracks.toMutableList())
-            
+            rv.adapter = trackAdapter
+            pb.visibility = GONE
+        } else if (trackAdapter == null) {
+            trackAdapter = TrackAdapter(tracks.toMutableList())
         } else {
             trackAdapter?.addData(tracks)
+            pb.visibility = GONE
         }
-        if (timeOut) {
-            setAdapterAndBanner()
-        }
+//        if (timeOut) {
+//            setAdapterAndBanner()
+//        }
     }
 
     private fun setTimer() {
@@ -251,8 +257,11 @@ class MainActivity : DaggerAppCompatActivity() {
 //        adView.loadAd()
     }
 
-    private fun getTop(token: String) =
-        manager.getTop(token, (trackAdapter?.itemCount ?: 0 / 20 + 1)).subscribe(::onTop)
+    private fun getTop(token: String): Disposable? {
+        val itemCount = trackAdapter?.itemCount
+        Log.i(TAG, "item count=>$itemCount")
+        return manager.getTop(token, ((itemCount ?: 0) / 20 + 1)).subscribe(::onTop)
+    }
 
 
     private fun search(q: String, offset: Int) {

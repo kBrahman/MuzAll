@@ -68,7 +68,6 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
-            val url = track.media.transcodings.find { it.url.endsWith("/progressive") }?.url
             GlobalScope.launch {
 //                mp.setDataSource(link)
                 configureMp()

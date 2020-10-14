@@ -10,7 +10,5 @@ data class Track(
     val bitrate: String,
     val artistImageUrlSquare100: String,
     val stream_url: String,
-    val user: User,
     val id: Int,
-    val media: Media
 ) : Serializable
