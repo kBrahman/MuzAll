@@ -4,4 +4,8 @@
     <string name="released">නිකුත් කරන ලදි: %s</string>
     <string name="folder">සංගීත ෆෝල්ඩරය</string>
     <string name="my_music">මගේ සංගීතය</string>
+    <string name="could_not_play_file">ධාවන පථය වාදනය කිරීමට නොහැකි විය, සමාවෙන්න</string>
+    <string name="service_unavailable">සේවාව ලබා ගත නොහැක, කරුණාකර පසුව නැවත උත්සාහ කරන්න</string>
+    <string name="err_dir_create">සංගීතය සඳහා නාමාවලිය නිර්මාණය කිරීමට නොහැකි විය</string>
+    <string name="no_net">අන්තර්ජාල සම්බන්ධතාවයක් නොමැත</string>
 </resources>
