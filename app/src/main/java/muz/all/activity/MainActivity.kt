@@ -40,8 +40,10 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
 
     private var timeOut = false
     private var finish = false
+
     @Inject
     lateinit var presenter: MainPresenter
+
     @Inject
     lateinit var viewModel: AppViewModel
     private var isPaused = false
@@ -70,6 +72,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         ad.adListener = object : AdListener() {
             override fun onAdFailedToLoad(p0: Int) {
                 timeOut = true
+                Log.i(TAG, "ad failed=>$p0")
             }
 
             override fun onAdClosed() {

@@ -20,7 +20,6 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import com.crashlytics.android.Crashlytics
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_main.*
@@ -91,7 +90,6 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         } else if (track is File && track.exists()) {
             try {
                 val fos = FileInputStream(track)
-                Crashlytics.setString("crash_track", track.name)
                 mp?.setDataSource(fos.fd, 0, track.length())
                 fos.close()
             } catch (ex: FileNotFoundException) {
@@ -107,7 +105,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         mp?.setOnPreparedListener(this)
         mp?.prepareAsync()
         mp?.setOnCompletionListener {
-            play.setImageResource(android.R.drawable.ic_media_play)
+            play.setImageResource(R.drawable.ic_play_arrow_24)
             handler.removeCallbacks(this)
             seekBar.progress = 0
         }
@@ -115,10 +113,10 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         play.setOnClickListener {
             if (mp?.isPlaying == true) {
                 mp?.pause()
-                play.setImageResource(android.R.drawable.ic_media_play)
+                play.setImageResource(R.drawable.ic_play_arrow_24)
             } else {
                 mp?.start()
-                play.setImageResource(android.R.drawable.ic_media_pause)
+                play.setImageResource(R.drawable.ic_pause_24)
             }
         }
         download.setOnClickListener {

@@ -8,6 +8,6 @@ import androidx.core.content.ContextCompat.getSystemService
 const val TRACK = "track"
 
 fun isNetworkConnected(ctx: Context): Boolean {
-    val cm = getSystemService<ConnectivityManager>(ctx, ConnectivityManager::class.java)
-    return cm?.activeNetworkInfo != null && cm.activeNetworkInfo.isConnected
+    val cm = getSystemService(ctx, ConnectivityManager::class.java)
+    return cm?.activeNetworkInfo != null && cm.activeNetworkInfo!!.isConnected
 }
