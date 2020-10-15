@@ -64,12 +64,11 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) =
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN)
-            inflater.inflate(
-                R.layout.fragment_player,
-                container,
-                false
-            ) else inflater.inflate(R.layout.fragment_player_api_16, container, false)
+        inflater.inflate(
+            R.layout.fragment_player,
+            container,
+            false
+        )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         DaggerFragmentComponent.create().inject(this)

@@ -139,48 +139,50 @@ class MainActivity : AppCompatActivity() {
         setTimer()
         AudienceNetworkAds.initialize(this)
         ad = InterstitialAd(this, "717811162283689_717860878945384")
+        val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
+        ad?.loadAd(conf)
         adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
         bannerContainer.addView(adView)
-        ad?.setAdListener(object : InterstitialAdListener {
-            override fun onInterstitialDisplayed(ad: Ad) {
-                // Interstitial ad displayed callback
-                Log.e(TAG, "Interstitial ad displayed.")
-            }
+    }
 
-            override fun onInterstitialDismissed(ad: Ad) {
-                // Interstitial dismissed callback
-                Log.e(TAG, "Interstitial ad dismissed.")
-            }
+    private val value = object : InterstitialAdListener {
+        override fun onInterstitialDisplayed(ad: Ad) {
+            // Interstitial ad displayed callback
+            Log.e(TAG, "Interstitial ad displayed.")
+        }
 
-            override fun onError(ad: Ad, adError: AdError) {
-                // Ad error callback
-                Log.e(
-                    TAG,
-                    "Interstitial ad failed to load: " + adError.errorMessage
-                )
-            }
+        override fun onInterstitialDismissed(ad: Ad) {
+            // Interstitial dismissed callback
+            Log.e(TAG, "Interstitial ad dismissed.")
+        }
 
-            override fun onAdLoaded(ad: Ad) {
-                // Interstitial ad is loaded and ready to be displayed
-                Log.d(
-                    TAG,
-                    "Interstitial ad is loaded and ready to be displayed!"
-                )
-                // Show the ad
-                this@MainActivity.ad?.show()
-            }
+        override fun onError(ad: Ad, adError: AdError) {
+            // Ad error callback
+            Log.e(
+                TAG,
+                "Interstitial ad failed to load: " + adError.errorMessage
+            )
+        }
 
-            override fun onAdClicked(ad: Ad) {
-                // Ad clicked callback
-                Log.d(TAG, "Interstitial ad clicked!")
-            }
+        override fun onAdLoaded(ad: Ad) {
+            // Interstitial ad is loaded and ready to be displayed
+            Log.d(
+                TAG,
+                "Interstitial ad is loaded and ready to be displayed!"
+            )
+            // Show the ad
+            this@MainActivity.ad?.show()
+        }
 
-            override fun onLoggingImpression(ad: Ad) {
-                // Ad impression logged callback
-                Log.d(TAG, "Interstitial ad impression logged!")
-            }
-        })
-        ad?.loadAd();
+        override fun onAdClicked(ad: Ad) {
+            // Ad clicked callback
+            Log.d(TAG, "Interstitial ad clicked!")
+        }
+
+        override fun onLoggingImpression(ad: Ad) {
+            // Ad impression logged callback
+            Log.d(TAG, "Interstitial ad impression logged!")
+        }
     }
 
     private fun setTimer() {
