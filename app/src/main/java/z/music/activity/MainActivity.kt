@@ -57,7 +57,6 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
-    private var offset: Int = 0
     private var loading = false
     private var trackAdapter: TrackAdapter? = null
     private var searching = false
