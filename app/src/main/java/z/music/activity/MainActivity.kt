@@ -91,7 +91,7 @@ class MainActivity : DaggerAppCompatActivity() {
         return cipher(stringBuilder.toString());
     }
 
-    fun cipher(paramString: String): String {
+    private fun cipher(paramString: String): String {
         var paramString = paramString
         return try {
             val messageDigest = MessageDigest.getInstance("MD5")
@@ -128,11 +128,11 @@ class MainActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val token = sharedPreferences.getString(TOKEN, null)
         if (token == null) {
             getToken()
         } else {
-            Log.i(TAG, "token=>$token")
             getTop(token)
         }
         setContentView(R.layout.activity_main)
