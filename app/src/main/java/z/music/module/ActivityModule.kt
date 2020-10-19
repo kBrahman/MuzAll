@@ -9,6 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import z.music.BuildConfig
+import z.music.err.ErrorInterceptor
 import z.music.manager.ApiManager
 import z.music.manager.MuzApiManager
 import z.music.util.Z_MUSIC_PREFS
@@ -21,6 +22,7 @@ class ActivityModule {
     fun apiService() = Retrofit.Builder()
         .client(OkHttpClient.Builder().readTimeout(14, TimeUnit.SECONDS).build())
         .baseUrl(BuildConfig.SERVER)
+        .client(OkHttpClient.Builder().addInterceptor(ErrorInterceptor()).build())
         .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build().create(MuzApiManager.APIService::class.java)
@@ -31,5 +33,4 @@ class ActivityModule {
 
     @Provides
     fun sharedPrefs(app: DaggerApplication) = app.getSharedPreferences(Z_MUSIC_PREFS, MODE_PRIVATE)
-
 }

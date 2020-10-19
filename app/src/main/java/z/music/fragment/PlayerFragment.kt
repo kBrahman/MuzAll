@@ -4,6 +4,7 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.DownloadManager
 import android.content.Context.DOWNLOAD_SERVICE
 import android.content.DialogInterface
+import android.content.SharedPreferences
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.media.MediaPlayer
 import android.net.Uri
@@ -22,11 +23,13 @@ import kotlinx.android.synthetic.main.fragment_player.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import z.music.BuildConfig
 import z.music.R
 import z.music.activity.MainActivity
 import z.music.activity.MusicActivity
 import z.music.manager.ApiManager
 import z.music.model.Track
+import z.music.util.TOKEN
 import z.music.util.TRACK
 import java.io.File
 import java.net.URL
@@ -42,6 +45,9 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
 
     @Inject
     lateinit var mp: MediaPlayer
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 //    private lateinit var adView: AdView
 
     @Inject
@@ -69,7 +75,12 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
             GlobalScope.launch {
-//                mp.setDataSource(link)
+                val link = getStreamLink(
+                    BuildConfig.SERVER + TRACK + "/" + track.id + "/play?access_token=" + sharedPreferences.getString(
+                        TOKEN, null
+                    )
+                )
+                mp.setDataSource(link)
                 configureMp()
             }
 
@@ -98,7 +109,7 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
         mp.setOnPreparedListener(this)
         mp.prepareAsync()
         mp.setOnCompletionListener {
-            play?.setImageResource(android.R.drawable.ic_media_play)
+            play?.setImageResource(R.drawable.ic_play_arrow_24)
             handler?.removeCallbacks(this)
             sb.progress = 0
         }
@@ -106,10 +117,10 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
         play.setOnClickListener {
             if (mp.isPlaying) {
                 mp.pause()
-                play.setImageResource(android.R.drawable.ic_media_play)
+                play.setImageResource(R.drawable.ic_play_arrow_24)
             } else {
                 mp.start()
-                play.setImageResource(android.R.drawable.ic_media_pause)
+                play.setImageResource(R.drawable.ic_pause_24)
             }
         }
     }

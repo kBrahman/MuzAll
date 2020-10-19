@@ -11,29 +11,27 @@ import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.WindowManager
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.android.support.DaggerAppCompatActivity
-import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import z.music.BuildConfig
 import z.music.R
 import z.music.adapter.TrackAdapter
+import z.music.err.TokenExpiredException
 import z.music.manager.ApiManager
-import z.music.model.CollectionHolder
 import z.music.model.Token
-import z.music.model.Track
 import z.music.model.TrackList
 import z.music.util.TOKEN
 import z.music.util.isNetworkAvailable
+import java.io.IOException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
@@ -45,6 +43,8 @@ class MainActivity : DaggerAppCompatActivity() {
     companion object {
         private val TAG = MainActivity::class.java.simpleName
     }
+
+    private var currentToken: String? = null
 
     //    lateinit var adView: AdView
     private var timeOut = false
@@ -61,26 +61,6 @@ class MainActivity : DaggerAppCompatActivity() {
     private var loading = false
     private var trackAdapter: TrackAdapter? = null
     private var searching = false
-
-    private val callback = object : Callback<CollectionHolder<Track>> {
-        override fun onFailure(call: Call<CollectionHolder<Track>>, t: Throwable) =
-            t.printStackTrace()
-
-        override fun onResponse(
-            call: Call<CollectionHolder<Track>>,
-            response: Response<CollectionHolder<Track>>
-        ) {
-            val collection = response.body()?.tracks
-            if (trackAdapter == null) {
-                trackAdapter = TrackAdapter(collection?.toMutableList())
-                rv.adapter = trackAdapter
-            } else {
-                trackAdapter?.addData(collection?.toMutableList())
-            }
-            pb.visibility = GONE
-            loading = false
-        }
-    }
 
     private fun getHash(token: String?): String {
         val stringBuilder = StringBuilder()
@@ -133,17 +113,23 @@ class MainActivity : DaggerAppCompatActivity() {
         super.onCreate(savedInstanceState)
         if (isNetworkAvailable(this)) {
             init()
-        }else{
-//            setContentView(R.layout.)
+        } else {
+            setContentView(R.layout.activity_no_inet)
         }
     }
 
+    fun refresh(view: View) {
+        if (isNetworkAvailable(this)) init()
+    }
+
+
     private fun init() {
-        val token = sharedPreferences.getString(TOKEN, null)
-        if (token == null) {
+        currentToken = sharedPreferences.getString(TOKEN, null)
+        Log.i(TAG, "tok=>$currentToken")
+        if (currentToken == null) {
             getToken()
         } else {
-            getTop(token)
+            getTop(currentToken!!)
         }
         setContentView(R.layout.activity_main)
         rv.setHasFixedSize(true)
@@ -160,9 +146,9 @@ class MainActivity : DaggerAppCompatActivity() {
                     pb.visibility = VISIBLE
                     loading = true
                     if (searching) {
-                        search(q, offset)
+                        search(q, currentToken!!)
                     } else {
-                        getTop(token!!)
+                        getTop(currentToken!!)
                     }
                 }
             }
@@ -222,15 +208,15 @@ class MainActivity : DaggerAppCompatActivity() {
 
 
     private fun onAccessToken(token: Token) {
-        val t = token.token
-        sharedPreferences.edit().putString(TOKEN, t).apply()
-        getTop(t)
+        this.currentToken = token.token
+        sharedPreferences.edit().putString(TOKEN, this.currentToken).apply()
+        getTop(currentToken!!)
     }
 
-    private fun onTop(topList: TrackList) {
-        Log.i(TAG, "list=>$topList")
-        loading = false
-        val tracks = topList.tracks
+    private fun onResult(result: TrackList) {
+        Log.i(TAG, "list=>$result")
+        loading = result.page == result.pagesCount
+        val tracks = result.tracks
         if (trackAdapter == null && timeOut) {
             trackAdapter = TrackAdapter(tracks.toMutableList())
             rv.adapter = trackAdapter
@@ -267,16 +253,25 @@ class MainActivity : DaggerAppCompatActivity() {
 //        adView.loadAd()
     }
 
-    private fun getTop(token: String): Disposable? {
-        val itemCount = trackAdapter?.itemCount
-        Log.i(TAG, "item count=>$itemCount")
-        return manager.getTop(token, ((itemCount ?: 0) / 20 + 1)).subscribe(::onTop)
+    private fun getTop(token: String) =
+        manager.getTop(token, ((trackAdapter?.itemCount ?: 0) / 20 + 1))
+            .subscribe(::onResult, ::onErr)
+
+    private fun onErr(t: Throwable) = when (t) {
+        is TokenExpiredException -> onTokenExpired()
+        else -> throw IOException()
     }
 
 
-    private fun search(q: String, offset: Int) {
-        manager.search(q, offset, callback)
+    private fun onTokenExpired() {
+        Log.i(TAG, "onTokenExpired")
+        getToken().dispose()
+        getToken()
     }
+
+    private fun search(q: String, token: String) =
+        manager.search(q, token, ((trackAdapter?.itemCount ?: 0) / 20 + 1))?.subscribe(::onResult)
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -285,10 +280,10 @@ class MainActivity : DaggerAppCompatActivity() {
                 override fun onQueryTextSubmit(q: String): Boolean {
                     if (q.isNotBlank()) {
                         this@MainActivity.q = q
-                        offset = 0
                         trackAdapter = null
+                        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
                         pb.visibility = VISIBLE
-                        search(q, offset)
+                        search(q, currentToken!!)
                         searching = true
                     }
                     return true

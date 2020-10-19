@@ -9,6 +9,6 @@ import z.music.activity.MainActivity
 @Module
 interface AppModule : AndroidInjector<DaggerAppCompatActivity> {
 
-    @ContributesAndroidInjector(modules = [ActivityModule::class])
+    @ContributesAndroidInjector(modules = [ActivityModule::class, ActivityModuleContrib::class])
     fun mainActivity(): MainActivity
 }
