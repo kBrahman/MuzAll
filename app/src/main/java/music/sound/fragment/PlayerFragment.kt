@@ -7,7 +7,6 @@ import android.content.DialogInterface
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
@@ -107,7 +106,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
         mp.setOnPreparedListener(this)
         mp.prepareAsync()
         mp.setOnCompletionListener {
-            play?.setImageResource(android.R.drawable.ic_media_play)
+            play?.setImageResource(R.drawable.ic_play_24)
             handler?.removeCallbacks(this)
             sb.progress = 0
         }
@@ -115,7 +114,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
         play.setOnClickListener {
             if (mp.isPlaying) {
                 mp.pause()
-                play.setImageResource(android.R.drawable.ic_media_play)
+                play.setImageResource(R.drawable.ic_play_24)
             } else {
                 mp.start()
                 play.setImageResource(android.R.drawable.ic_media_pause)
