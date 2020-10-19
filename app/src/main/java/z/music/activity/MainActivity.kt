@@ -16,6 +16,8 @@ import android.view.View.VISIBLE
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
@@ -31,6 +33,7 @@ import z.music.model.Token
 import z.music.model.Track
 import z.music.model.TrackList
 import z.music.util.TOKEN
+import z.music.util.isNetworkAvailable
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
@@ -128,7 +131,14 @@ class MainActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (isNetworkAvailable(this)) {
+            init()
+        }else{
+//            setContentView(R.layout.)
+        }
+    }
 
+    private fun init() {
         val token = sharedPreferences.getString(TOKEN, null)
         if (token == null) {
             getToken()
@@ -138,14 +148,14 @@ class MainActivity : DaggerAppCompatActivity() {
         setContentView(R.layout.activity_main)
         rv.setHasFixedSize(true)
         rv.addOnScrollListener(object :
-            androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+            RecyclerView.OnScrollListener() {
             override fun onScrolled(
-                recyclerView: androidx.recyclerview.widget.RecyclerView,
+                recyclerView: RecyclerView,
                 dx: Int,
                 dy: Int
             ) {
                 val layoutManager =
-                    recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
+                    recyclerView.layoutManager as LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1 && !loading) {
                     pb.visibility = VISIBLE
                     loading = true
@@ -159,50 +169,50 @@ class MainActivity : DaggerAppCompatActivity() {
         })
         setSupportActionBar(toolbar)
         setTimer()
-//        AudienceNetworkAds.initialize(this)
-//        ad = InterstitialAd(this, getString(R.string.int_id))
-//        adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
-//        bannerContainer.addView(adView)
-//        ad?.setAdListener(object : InterstitialAdListener {
-//            override fun onInterstitialDisplayed(ad: Ad) {
-//                // Interstitial ad displayed callback
-//                Log.e(TAG, "Interstitial ad displayed.")
-//            }
-//
-//            override fun onInterstitialDismissed(ad: Ad) {
-//                // Interstitial dismissed callback
-//                Log.e(TAG, "Interstitial ad dismissed.")
-//            }
-//
-//            override fun onError(ad: Ad, adError: AdError) {
-//                // Ad error callback
-//                Log.e(
-//                    TAG,
-//                    "Interstitial ad failed to load: " + adError.errorMessage
-//                )
-//            }
-//
-//            override fun onAdLoaded(ad: Ad) {
-//                // Interstitial ad is loaded and ready to be displayed
-//                Log.d(
-//                    TAG,
-//                    "Interstitial ad is loaded and ready to be displayed!"
-//                )
-//                // Show the ad
-//                this@MainActivity.ad?.show()
-//            }
-//
-//            override fun onAdClicked(ad: Ad) {
-//                // Ad clicked callback
-//                Log.d(TAG, "Interstitial ad clicked!")
-//            }
-//
-//            override fun onLoggingImpression(ad: Ad) {
-//                // Ad impression logged callback
-//                Log.d(TAG, "Interstitial ad impression logged!")
-//            }
-//        })
-//        ad?.loadAd();
+        //        AudienceNetworkAds.initialize(this)
+        //        ad = InterstitialAd(this, getString(R.string.int_id))
+        //        adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
+        //        bannerContainer.addView(adView)
+        //        ad?.setAdListener(object : InterstitialAdListener {
+        //            override fun onInterstitialDisplayed(ad: Ad) {
+        //                // Interstitial ad displayed callback
+        //                Log.e(TAG, "Interstitial ad displayed.")
+        //            }
+        //
+        //            override fun onInterstitialDismissed(ad: Ad) {
+        //                // Interstitial dismissed callback
+        //                Log.e(TAG, "Interstitial ad dismissed.")
+        //            }
+        //
+        //            override fun onError(ad: Ad, adError: AdError) {
+        //                // Ad error callback
+        //                Log.e(
+        //                    TAG,
+        //                    "Interstitial ad failed to load: " + adError.errorMessage
+        //                )
+        //            }
+        //
+        //            override fun onAdLoaded(ad: Ad) {
+        //                // Interstitial ad is loaded and ready to be displayed
+        //                Log.d(
+        //                    TAG,
+        //                    "Interstitial ad is loaded and ready to be displayed!"
+        //                )
+        //                // Show the ad
+        //                this@MainActivity.ad?.show()
+        //            }
+        //
+        //            override fun onAdClicked(ad: Ad) {
+        //                // Ad clicked callback
+        //                Log.d(TAG, "Interstitial ad clicked!")
+        //            }
+        //
+        //            override fun onLoggingImpression(ad: Ad) {
+        //                // Ad impression logged callback
+        //                Log.d(TAG, "Interstitial ad impression logged!")
+        //            }
+        //        })
+        //        ad?.loadAd();
     }
 
     private fun getToken() = manager.getToken().subscribe(::onToken) { e -> e.printStackTrace() }
