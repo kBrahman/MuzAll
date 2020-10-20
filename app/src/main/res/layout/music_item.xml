@@ -10,7 +10,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-        <music.sound.view.CircularImgView
+        <zhet.mus.sound.view.CircularImgView
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
