@@ -215,7 +215,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun onResult(result: TrackList) {
         Log.i(TAG, "list=>$result")
         loading = result.page == result.pagesCount
-        val tracks = result.tracks
+        val tracks = result.tracks.filter { it.playbackEnabled }
         if (trackAdapter == null && timeOut) {
             trackAdapter = TrackAdapter(tracks.toMutableList())
             rv.adapter = trackAdapter
