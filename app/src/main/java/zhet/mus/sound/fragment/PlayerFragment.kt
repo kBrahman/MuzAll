@@ -55,7 +55,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-        adView = AdView(activity, "717811162283689_717812065616932", AdSize.RECTANGLE_HEIGHT_250)
+        adView = AdView(activity, getString(R.string.banner_rec_id), AdSize.RECTANGLE_HEIGHT_250)
     }
 
     override fun onCreateView(
