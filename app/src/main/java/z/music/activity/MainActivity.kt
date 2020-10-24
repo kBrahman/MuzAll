@@ -73,8 +73,8 @@ class MainActivity : DaggerAppCompatActivity() {
         return cipher(stringBuilder.toString());
     }
 
-    private fun cipher(paramString: String): String {
-        var paramString = paramString
+    private fun cipher(s: String): String {
+        var paramString = s
         return try {
             val messageDigest = MessageDigest.getInstance("MD5")
             messageDigest.update(paramString.toByteArray())
@@ -214,8 +214,9 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun onResult(result: TrackList) {
         Log.i(TAG, "list=>$result")
-        loading = result.page == result.pagesCount
         val tracks = result.tracks.filter { it.playbackEnabled }
+//        val tracks=result.tracks
+        loading = tracks.size < 20
         if (trackAdapter == null && timeOut) {
             trackAdapter = TrackAdapter(tracks.toMutableList())
             rv.adapter = trackAdapter
