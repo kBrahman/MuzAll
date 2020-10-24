@@ -20,9 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.ads.AudienceNetworkAds
-import com.facebook.ads.InterstitialAd
-import com.facebook.ads.InterstitialAdListener
+import com.facebook.ads.*
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import z.music.BuildConfig
@@ -47,12 +45,52 @@ class MainActivity : DaggerAppCompatActivity() {
         private val TAG = MainActivity::class.java.simpleName
     }
 
+    private val value = object : InterstitialAdListener {
+        override fun onInterstitialDisplayed(ad: Ad) {
+            // Interstitial ad displayed callback
+            Log.e(TAG, "Interstitial ad displayed.")
+        }
+
+        override fun onInterstitialDismissed(ad: Ad) {
+            // Interstitial dismissed callback
+            Log.e(TAG, "Interstitial ad dismissed.")
+        }
+
+        override fun onError(ad: Ad, adError: AdError) {
+            // Ad error callback
+            Log.e(
+                TAG,
+                "Interstitial ad failed to load: " + adError.errorMessage
+            )
+        }
+
+        override fun onAdLoaded(ad: Ad) {
+            // Interstitial ad is loaded and ready to be displayed
+            Log.d(
+                TAG,
+                "Interstitial ad is loaded and ready to be displayed!"
+            )
+            // Show the ad
+            this@MainActivity.ad?.show()
+        }
+
+        override fun onAdClicked(ad: Ad) {
+            // Ad clicked callback
+            Log.d(TAG, "Interstitial ad clicked!")
+        }
+
+        override fun onLoggingImpression(ad: Ad) {
+            // Ad impression logged callback
+            Log.d(TAG, "Interstitial ad impression logged!")
+        }
+    }
+
     private var currentToken: String? = null
 
     //    lateinit var adView: AdView
     private var timeOut = false
 
-        var ad: InterstitialAd? = null
+    var ad: InterstitialAd? = null
     private lateinit var q: String
 
     @Inject
@@ -157,50 +195,11 @@ class MainActivity : DaggerAppCompatActivity() {
         })
         setSupportActionBar(toolbar)
         setTimer()
-                AudienceNetworkAds.initialize(this)
-                ad = InterstitialAd(this, getString(R.string.int_id))
+        AudienceNetworkAds.initialize(this)
+        ad = InterstitialAd(this, getString(R.string.int_id))
 //                adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
 //                bannerContainer.addView(adView)
-//                ad?.setAdListener(object : InterstitialAdListener {
-//                    override fun onInterstitialDisplayed(ad: Ad) {
-//                        // Interstitial ad displayed callback
-//                        Log.e(TAG, "Interstitial ad displayed.")
-//                    }
-//
-//                    override fun onInterstitialDismissed(ad: Ad) {
-//                        // Interstitial dismissed callback
-//                        Log.e(TAG, "Interstitial ad dismissed.")
-//                    }
-//
-//                    override fun onError(ad: Ad, adError: AdError) {
-//                        // Ad error callback
-//                        Log.e(
-//                            TAG,
-//                            "Interstitial ad failed to load: " + adError.errorMessage
-//                        )
-//                    }
-//
-//                    override fun onAdLoaded(ad: Ad) {
-//                        // Interstitial ad is loaded and ready to be displayed
-//                        Log.d(
-//                            TAG,
-//                            "Interstitial ad is loaded and ready to be displayed!"
-//                        )
-//                        // Show the ad
-//                        this@MainActivity.ad?.show()
-//                    }
-//
-//                    override fun onAdClicked(ad: Ad) {
-//                        // Ad clicked callback
-//                        Log.d(TAG, "Interstitial ad clicked!")
-//                    }
-//
-//                    override fun onLoggingImpression(ad: Ad) {
-//                        // Ad impression logged callback
-//                        Log.d(TAG, "Interstitial ad impression logged!")
-//                    }
-//                })
-                ad?.loadAd();
+        ad?.loadAd();
     }
 
     private fun getToken() = manager.getToken().subscribe(::onToken) { e -> e.printStackTrace() }
