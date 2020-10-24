@@ -62,7 +62,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 TAG,
                 "Interstitial ad failed to load: " + adError.errorMessage
             )
-            timeOut=true
+            timeOut = true
         }
 
         override fun onAdLoaded(ad: Ad) {
@@ -202,6 +202,7 @@ class MainActivity : DaggerAppCompatActivity() {
         ad?.loadAd(conf)
         adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
         bannerContainer.addView(adView)
+        adView.loadAd()
         setTimer()
     }
 

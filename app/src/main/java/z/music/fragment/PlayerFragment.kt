@@ -18,6 +18,8 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
+import com.facebook.ads.AdSize
+import com.facebook.ads.AdView
 import dagger.android.support.DaggerDialogFragment
 import kotlinx.android.synthetic.main.fragment_player.*
 import kotlinx.coroutines.GlobalScope
@@ -48,7 +50,7 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
-//    private lateinit var adView: AdView
+    private lateinit var adView: AdView
 
     @Inject
     lateinit var apiManager: ApiManager
@@ -57,7 +59,7 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-//        adView = AdView(activity, getString(R.string.rec_id), AdSize.RECTANGLE_HEIGHT_250)
+        adView = AdView(activity, getString(R.string.rec_id), AdSize.RECTANGLE_HEIGHT_250)
     }
 
     override fun onCreateView(
@@ -92,8 +94,8 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
             configureMp()
         }
         setVisibility(GONE)
-//        bannerContainer.addView(adView)
-//        adView.loadAd()
+        bannerContainer.addView(adView)
+        adView.loadAd()
     }
 
     private suspend fun getStreamLink(urlLocation: String): String {
