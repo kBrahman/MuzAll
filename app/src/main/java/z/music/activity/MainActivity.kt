@@ -62,6 +62,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 TAG,
                 "Interstitial ad failed to load: " + adError.errorMessage
             )
+            timeOut=true
         }
 
         override fun onAdLoaded(ad: Ad) {
@@ -87,7 +88,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private var currentToken: String? = null
 
-    //    lateinit var adView: AdView
+    lateinit var adView: AdView
     private var timeOut = false
 
     var ad: InterstitialAd? = null
@@ -197,9 +198,11 @@ class MainActivity : DaggerAppCompatActivity() {
         setTimer()
         AudienceNetworkAds.initialize(this)
         ad = InterstitialAd(this, getString(R.string.int_id))
-//                adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
-//                bannerContainer.addView(adView)
-        ad?.loadAd();
+        val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
+        ad?.loadAd(conf)
+        adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
+        bannerContainer.addView(adView)
+        setTimer()
     }
 
     private fun getToken() = manager.getToken().subscribe(::onToken) { e -> e.printStackTrace() }
@@ -217,7 +220,6 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun onResult(result: TrackList) {
         Log.i(TAG, "list=>$result")
         val tracks = result.tracks.filter { it.playbackEnabled }
-//        val tracks=result.tracks
         loading = tracks.size < 20
         if (trackAdapter == null && timeOut) {
             trackAdapter = TrackAdapter(tracks.toMutableList())
@@ -241,7 +243,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 if (trackAdapter != null) {
                     runOnUiThread {
                         setAdapterAndBanner()
-//                        ad = null
+                        ad = null
                     }
                 }
                 Log.i(TAG, "time out")
