@@ -7,7 +7,7 @@ import dagger.android.DaggerApplication
 import zhet.mus.sound.module.AppModule
 
 @Component(modules = [AndroidInjectionModule::class, AppModule::class])
-interface AppComponent {
+interface AppComponent : AndroidInjector<DaggerApplication> {
 
     @Component.Factory
     abstract class Factory : AndroidInjector.Factory<DaggerApplication>

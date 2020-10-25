@@ -19,7 +19,6 @@ import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import zhet.mus.sound.R
 import zhet.mus.sound.adapter.TrackAdapter
-import zhet.mus.sound.component.DaggerActivityComponent
 import zhet.mus.sound.manager.ApiManager
 import zhet.mus.sound.model.CollectionHolder
 import zhet.mus.sound.model.Selection
