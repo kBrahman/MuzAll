@@ -1,4 +1,4 @@
-package zhet.mus.sound.component
+package zhet.mus.sound.module
 
 import dagger.Module
 import dagger.android.AndroidInjector
@@ -9,7 +9,7 @@ import zhet.mus.sound.activity.MainActivity
 @Module
 interface AppModule : AndroidInjector<DaggerAppCompatActivity> {
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = [ActivityModule::class])
     fun mainActivity(): MainActivity
 
 }
