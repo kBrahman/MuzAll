@@ -5,9 +5,8 @@ import androidx.multidex.MultiDex
 import dagger.android.DaggerApplication
 import dagger.android.HasAndroidInjector
 
-class App : DaggerApplication(), HasAndroidInjector<App> {
+class App : DaggerApplication(), HasAndroidInjector {
 
-    class App : DaggerApplication(), HasAndroidInjector {
 
         override fun attachBaseContext(base: Context?) {
             super.attachBaseContext(base)
@@ -15,5 +14,4 @@ class App : DaggerApplication(), HasAndroidInjector<App> {
         }
 
         override fun applicationInjector() = DaggerAppComponent.factory().create(this)
-    }
 }
