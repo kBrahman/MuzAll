@@ -15,6 +15,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.facebook.ads.*
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import zhet.mus.sound.R
 import zhet.mus.sound.adapter.TrackAdapter
@@ -30,7 +31,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : DaggerAppCompatActivity() {
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
