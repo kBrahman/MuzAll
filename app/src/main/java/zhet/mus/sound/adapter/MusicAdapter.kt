@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.music_item.view.*
+import kotlinx.android.synthetic.main.item_my_music.view.*
 import zhet.mus.sound.R
 import zhet.mus.sound.activity.MusicActivity
 import zhet.mus.sound.fragment.PlayerFragment
@@ -27,7 +27,7 @@ class MusicAdapter(private val list: Array<File>) : RecyclerView.Adapter<MusicAd
     private val player = PlayerFragment()
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int) =
-        MusicVH(LayoutInflater.from(p0.context).inflate(R.layout.music_item, p0, false))
+        MusicVH(LayoutInflater.from(p0.context).inflate(R.layout.item_my_music, p0, false))
 
     override fun getItemCount() = list.size
 

@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.track_item.view.*
+import kotlinx.android.synthetic.main.item_track.view.*
 import zhet.mus.sound.R
 import zhet.mus.sound.fragment.PlayerFragment
 import zhet.mus.sound.model.Track
@@ -21,7 +21,7 @@ class TrackAdapter(private val results: MutableList<Track>?) :
     private val player: DialogFragment = PlayerFragment()
 
     override fun onCreateViewHolder(group: ViewGroup, p1: Int) =
-        VH(LayoutInflater.from(group.context).inflate(R.layout.track_item, group, false))
+        VH(LayoutInflater.from(group.context).inflate(R.layout.item_track, group, false))
 
     override fun getItemCount() = results?.size ?: 0
 

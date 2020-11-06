@@ -3,4 +3,5 @@
     <string name="duration">期間: %s</string>
     <string name="uploaded">アップロード日: %s</string>
     <string name="my_music">私の音楽 </string>
+    <string name="mixed_selections">混合選択</string>
 </resources>

@@ -3,4 +3,5 @@
     <string name="duration">المدة الزمنية: %s</string>
     <string name="uploaded">تاريخ التحميل: %s</string>
     <string name="my_music">"موسيقاي "</string>
+    <string name="mixed_selections">التحديدات المختلطة</string>
 </resources>

@@ -3,4 +3,5 @@
     <string name="duration">Duración: %s</string>
     <string name="uploaded">Fecha de carga: %s</string>
     <string name="my_music">Mi música</string>
+    <string name="mixed_selections">selecciones mixtas</string>
 </resources>

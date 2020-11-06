@@ -10,22 +10,22 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.facebook.ads.*
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import zhet.mus.sound.R
+import zhet.mus.sound.adapter.SelectionsAdapter
 import zhet.mus.sound.adapter.TrackAdapter
 import zhet.mus.sound.manager.ApiManager
 import zhet.mus.sound.model.CollectionHolder
 import zhet.mus.sound.model.Selection
 import zhet.mus.sound.model.Track
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.*
 import javax.inject.Inject
 
@@ -36,6 +36,7 @@ class MainActivity : DaggerAppCompatActivity() {
         private val TAG = MainActivity::class.java.simpleName
     }
 
+    private var selectionsAdapter: SelectionsAdapter? = null
     lateinit var adView: AdView
     private var timeOut = false
 
@@ -81,14 +82,24 @@ class MainActivity : DaggerAppCompatActivity() {
                 response: Response<CollectionHolder<Selection>>
             ) {
 
-                val found =
-                    response.body()?.collection?.find { it.urn == "soundcloud:selections:charts-top" }
-                val tracks = found?.items?.collection?.get(0)?.tracks
-                val ids = tracks?.map { it.id }?.joinToString(",")
-                manager.tracksBy(ids, topTrackCallback)
+                val withTracks =
+                    response.body()?.collection?.filter { it.items.collection.any { e -> !e.tracks.isNullOrEmpty() } }
+
+                title = getString(R.string.mixed_selections)
+
+                withTracks?.let {
+                    selectionsAdapter = SelectionsAdapter(it) { ids, name ->
+                        pb.visibility = VISIBLE
+                        manager.tracksBy(ids, topTrackCallback)
+                        title = name
+                        Log.i(TAG, "click")
+                    }
+                }
+                if (timeOut) {
+                    setAdapterAndBanner()
+                }
             }
         }
-
 
     private val topTrackCallback: Callback<List<Track>> = object : Callback<List<Track>> {
         override fun onFailure(call: Call<List<Track>>, t: Throwable) = t.printStackTrace()
@@ -99,13 +110,11 @@ class MainActivity : DaggerAppCompatActivity() {
                     tr.url.endsWith("/progressive")
                 }
             }
-            title = "Top ${filtered?.size}"
             trackAdapter = TrackAdapter(
                 filtered?.toMutableList()
             )
-            if (timeOut) {
-                setAdapterAndBanner()
-            }
+            rv.adapter = trackAdapter
+            pb.visibility = GONE
         }
     }
 
@@ -136,7 +145,7 @@ class MainActivity : DaggerAppCompatActivity() {
         getMixedSelections()
         setTimer()
         AudienceNetworkAds.initialize(this)
-        ad = InterstitialAd(this, "717811162283689_717860878945384")
+        ad = InterstitialAd(this, getString(R.string.fb_int_id))
         val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
         ad?.loadAd(conf)
         adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
@@ -187,7 +196,7 @@ class MainActivity : DaggerAppCompatActivity() {
         Timer().schedule(object : TimerTask() {
             override fun run() {
                 timeOut = true
-                if (trackAdapter != null) {
+                if (selectionsAdapter != null) {
                     runOnUiThread {
                         setAdapterAndBanner()
                         ad = null
@@ -199,7 +208,7 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun setAdapterAndBanner() {
-        rv.adapter = trackAdapter
+        rv.adapter = selectionsAdapter
         pb.visibility = GONE
         adView.loadAd()
     }
