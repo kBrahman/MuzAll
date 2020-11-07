@@ -202,7 +202,6 @@ class MainActivity : DaggerAppCompatActivity() {
         ad?.loadAd(conf)
         adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
         bannerContainer.addView(adView)
-        adView.loadAd()
         setTimer()
     }
 
@@ -219,7 +218,6 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun onResult(result: TrackList) {
-        Log.i(TAG, "list=>$result")
         val tracks = result.tracks.filter { it.playbackEnabled }
         loading = tracks.size < 20
         if (trackAdapter == null && timeOut) {
@@ -255,7 +253,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun setAdapterAndBanner() {
         rv.adapter = trackAdapter
         pb.visibility = GONE
-//        adView.loadAd()
+        adView.loadAd()
     }
 
     private fun getTop(token: String) =

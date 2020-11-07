@@ -34,6 +34,7 @@ class TrackAdapter(private val results: MutableList<Track>?) :
             view.context.getString(R.string.bitrate, track?.bitrate)
         if (track?.artistImageUrlSquare100 != null)
             Picasso.get().load(track.artistImageUrlSquare100).into(view.img)
+        else view.img.setImageResource(R.mipmap.ic_launcher)
     }
 
     fun addData(data: List<Track>?) {

@@ -129,7 +129,7 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
 
     private fun setVisibility(visibility: Int) {
         if (activity is MainActivity) {
-//            (activity as MainActivity).adView.visibility = visibility
+            (activity as MainActivity).adView.visibility = visibility
         } else if (activity is MusicActivity) {
 //            (activity as MusicActivity).adViewMusic.visibility = visibility
         }
