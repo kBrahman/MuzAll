@@ -4,7 +4,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activity.MainActivity">
+        tools:context="cc.music.activity.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBar"
@@ -25,17 +25,16 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@id/adView"
             app:layout_constraintTop_toBottomOf="@id/appBar" />
 
-    <com.google.android.gms.ads.AdView
-            android:id="@+id/adView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:adSize="BANNER"
-            app:adUnitId="@string/banner_id"
-            app:layout_constraintBottom_toBottomOf="parent"></com.google.android.gms.ads.AdView>
+<!--    <com.google.android.gms.ads.AdView-->
+<!--            android:id="@+id/adView"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:visibility="gone"-->
+<!--            app:adSize="BANNER"-->
+<!--            app:adUnitId="@string/banner_id"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent" />-->
 
     <ProgressBar
             android:id="@+id/pb"

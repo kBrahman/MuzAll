@@ -10,11 +10,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-        <muz.all.view.CircularImgView
+        <cc.music.view.CircularImgView
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_music_note_black_24dp"
+                android:src="@mipmap/ic_launcher_round"
                 android:id="@+id/imgMusicItem"
                 android:adjustViewBounds="true"/>
         <TextView

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MuzAll</string>
     <string name="duration">Durată: %s</string>
     <string name="released">Eliberată: %s</string>
     <string name="folder">"Dosar muzică "</string>
