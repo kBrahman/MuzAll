@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MuzAll</string>
+    <string name="duration">Dauer: %s</string>
+    <string name="released">Veröffentlichungsdatum: %s</string>
+    <string name="folder">Musikordner</string>
+    <string name="my_music">"Meine Musik "</string>
+    <string name="could_not_play_file">Der Titel konnte leider nicht abgespielt werden</string>
+    <string name="service_unavailable">Service nicht verfügbar, versuchen Sie es später erneut</string>
+    <string name="err_dir_create">Verzeichnis für Musik konnte nicht erstellt werden</string>
+    <string name="no_net">Keine Internetverbindung</string>
+</resources>
