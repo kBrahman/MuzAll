@@ -3,4 +3,6 @@
     <string name="duration">Süresi: %s</string>
     <string name="bitrate">Yükleme Tarihi: %s</string>
     <string name="my_music">"Benim müziğim "</string>
+    <string name="network_not_available">İnternet erişimi yok</string>
+    <string name="refresh">Yenile</string>
 </resources>
