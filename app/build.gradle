@@ -73,15 +73,15 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
     implementation 'com.google.firebase:firebase-analytics:18.0.0'
 }
-apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.gms.google-services'
 
-task copyFile(type: Copy) {
-    from(rootProject.file('crashlytics/google-services_music_sound.json')) {
-        rename 'google-services_music_sound.json', 'google-services.json'
-    }
-    into(rootProject.file('app'))
-}
-
-gradle.projectsEvaluated {
-    preBuild.dependsOn(copyFile)
-}
+//task copyFile(type: Copy) {
+//    from(rootProject.file('crashlytics/google-services_music_sound.json')) {
+//        rename 'google-services_music_sound.json', 'google-services.json'
+//    }
+//    into(rootProject.file('app'))
+//}
+//
+//gradle.projectsEvaluated {
+//    preBuild.dependsOn(copyFile)
+//}
