@@ -10,7 +10,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(rootProject.file("keystore.properties").newDataInputStream())
 android {
     signingConfigs {
-        zhet {
+        devtok {
             storeFile file(keystoreProperties['storeFile'])
             storePassword keystoreProperties['storePassword']
             keyAlias keystoreProperties['keyAlias']
@@ -32,7 +32,7 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.zhet
+            signingConfig signingConfigs.devtok
             applicationVariants.all { variant ->
                 variant.outputs.all {
                     outputFileName = "MusicSound.apk"
