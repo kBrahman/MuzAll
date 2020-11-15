@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -81,6 +82,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
             val audio = track.audio
+            Log.i(TAG,"url=>$audio")
             mp?.setDataSource(audio)
             name.text = track.upload_name
         } else if (track is File && track.exists()) {
@@ -104,6 +106,10 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
             play.setImageResource(R.drawable.ic_play_arrow_24)
             handler.removeCallbacks(this)
             seekBar.progress = 0
+        }
+        mp?.setOnErrorListener { _, what, extra ->
+            Log.i(TAG, "what=>$what; extra=>$extra")
+            true
         }
         seekBar.setOnSeekBarChangeListener(this)
         play.setOnClickListener {
