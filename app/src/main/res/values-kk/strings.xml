@@ -3,4 +3,5 @@
     <string name="duration">Ұзақтығы: %s</string>
     <string name="uploaded">Жүктелген күні: %s</string>
     <string name="my_music">Менің музыкам</string>
+    <string name="mixed_selections">"Аралас таңдау "</string>
 </resources>
