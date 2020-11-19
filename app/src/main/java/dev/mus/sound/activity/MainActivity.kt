@@ -206,6 +206,7 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun setAdapterAndBanner() {
+        Log.i(TAG, "setAdapterAndBanner")
         rv.adapter = selectionsAdapter
         pb.visibility = GONE
         adView.loadAd()
