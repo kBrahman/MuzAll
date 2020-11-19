@@ -21,8 +21,8 @@ android {
         applicationId lp["id_z_music"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "1.3"
         multiDexEnabled true
         buildConfigField "String", "SERVER", lp["z_s"]
         buildConfigField "String", "C_EQ", lp["z_c_eq"]

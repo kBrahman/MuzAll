@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Trwanie:</string>
+    <string name="my_music">Moja muzyka</string>
+    <string name="network_not_available">Brak dostępu do internetu</string>
+    <string name="refresh">Odświeżać</string>
+</resources>

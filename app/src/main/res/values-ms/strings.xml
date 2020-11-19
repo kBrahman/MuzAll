@@ -3,4 +3,5 @@
     <string name="duration">Tempoh: %s</string>
     <string name="bitrate">Tarikh muat naik: %s</string>
     <string name="my_music">Muzik saya</string>
+    <string name="network_not_available">"Tiada akses Internet "</string>
 </resources>
