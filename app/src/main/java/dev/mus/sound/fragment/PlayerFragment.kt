@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -20,18 +21,18 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.facebook.ads.AdSize
 import com.facebook.ads.AdView
-import kotlinx.android.synthetic.main.fragment_player.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import dev.mus.sound.BuildConfig
 import dev.mus.sound.R
 import dev.mus.sound.activity.MainActivity
 import dev.mus.sound.activity.MusicActivity
 import dev.mus.sound.component.DaggerFragmentComponent
+import dev.mus.sound.databinding.FragmentPlayerBinding
 import dev.mus.sound.manager.ApiManager
 import dev.mus.sound.model.Track
 import dev.mus.sound.util.TRACK
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONObject
-import dev.mus.sound.BuildConfig
 import java.io.File
 import java.net.URL
 import java.util.*
@@ -50,8 +51,10 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
 
     @Inject
     lateinit var apiManager: ApiManager
-    private val handler: Handler? = Handler()
+    private val handler: Handler = Handler(Looper.myLooper()!!)
     private var isPrepared = false
+    private lateinit var binding: FragmentPlayerBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
@@ -62,12 +65,10 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) =
-        inflater.inflate(
-            R.layout.fragment_player,
-            container,
-            false
-        )
+    ): View {
+        binding = FragmentPlayerBinding.inflate(layoutInflater)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         DaggerFragmentComponent.create().inject(this)
@@ -81,15 +82,15 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
                 configureMp()
             }
 
-            name.text = track.title
+            binding.name.text = track.title
         } else if (track is File) {
             context?.let { mp.setDataSource(it, Uri.fromFile(track)) }
-            download.visibility = GONE
-            name.text = track.name
+            binding.download.visibility = GONE
+            binding.name.text = track.name
             configureMp()
         }
         setVisibility(GONE)
-        bannerContainer.addView(adView)
+        binding.bannerContainer.addView(adView)
         adView.loadAd()
     }
 
@@ -106,18 +107,18 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
         mp.setOnPreparedListener(this)
         mp.prepareAsync()
         mp.setOnCompletionListener {
-            play?.setImageResource(R.drawable.ic_play_24)
-            handler?.removeCallbacks(this)
-            sb.progress = 0
+            binding.play.setImageResource(R.drawable.ic_play_24)
+            handler.removeCallbacks(this)
+            binding.sb.progress = 0
         }
-        sb.setOnSeekBarChangeListener(this)
-        play.setOnClickListener {
+        binding.sb.setOnSeekBarChangeListener(this)
+        binding.play.setOnClickListener {
             if (mp.isPlaying) {
                 mp.pause()
-                play.setImageResource(R.drawable.ic_play_24)
+                binding.play.setImageResource(R.drawable.ic_play_24)
             } else {
                 mp.start()
-                play.setImageResource(android.R.drawable.ic_media_pause)
+                binding.play.setImageResource(android.R.drawable.ic_media_pause)
             }
         }
     }
@@ -132,7 +133,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
 
     private fun download(track: Track) {
         if (ContextCompat.checkSelfPermission(
-                context!!,
+                requireContext(),
                 WRITE_EXTERNAL_STORAGE
             ) == PERMISSION_GRANTED
         ) {
@@ -162,7 +163,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
 
     override fun onPrepared(mp: MediaPlayer?) {
         mp?.start()
-        pbPlayer.visibility = GONE
+        binding.pbPlayer.visibility = GONE
         startSeekBar()
         isPrepared = true
     }
@@ -173,7 +174,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
 
     override fun run() {
         val currentPosition = mp.currentPosition
-        sb?.progress = currentPosition.times(100).div(mp.duration)
+        binding.sb?.progress = currentPosition.times(100).div(mp.duration)
         startSeekBar()
     }
 
@@ -190,10 +191,10 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        handler?.removeCallbacks(this)
+        handler.removeCallbacks(this)
         if (isPrepared) mp.stop()
         mp.release()
-        sb.progress = 0
+        binding.sb.progress = 0
         setVisibility(VISIBLE)
         isPrepared = false
     }

@@ -18,11 +18,11 @@ import dagger.android.support.DaggerAppCompatActivity
 import dev.mus.sound.R
 import dev.mus.sound.adapter.SelectionsAdapter
 import dev.mus.sound.adapter.TrackAdapter
+import dev.mus.sound.databinding.ActivityMainBinding
 import dev.mus.sound.manager.ApiManager
 import dev.mus.sound.model.CollectionHolder
 import dev.mus.sound.model.Selection
 import dev.mus.sound.model.Track
-import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -42,6 +42,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     var ad: InterstitialAd? = null
     private lateinit var q: String
+    private lateinit var binding: ActivityMainBinding
 
     @Inject
     lateinit var manager: ApiManager
@@ -61,13 +62,13 @@ class MainActivity : DaggerAppCompatActivity() {
             val collection = response.body()?.collection?.filter { it.media != null }
             if (trackAdapter == null && timeOut) {
                 trackAdapter = TrackAdapter(collection?.toMutableList())
-                rv.adapter = trackAdapter
+                binding.rv.adapter = trackAdapter
             } else if (trackAdapter == null) {
                 trackAdapter = TrackAdapter(collection?.toMutableList())
             } else {
                 trackAdapter?.addData(collection?.toMutableList())
             }
-            pb.visibility = GONE
+            binding.pb.visibility = GONE
             loading = false
         }
     }
@@ -88,7 +89,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
                 withTracks?.let {
                     selectionsAdapter = SelectionsAdapter(it) { ids, name ->
-                        pb.visibility = VISIBLE
+                        binding.pb.visibility = VISIBLE
                         manager.tracksBy(ids, topTrackCallback)
                         title = name
                     }
@@ -111,16 +112,17 @@ class MainActivity : DaggerAppCompatActivity() {
             trackAdapter = TrackAdapter(
                 filtered?.toMutableList()
             )
-            rv.adapter = trackAdapter
-            pb.visibility = GONE
+            binding.rv.adapter = trackAdapter
+            binding.pb.visibility = GONE
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        rv.setHasFixedSize(true)
-        rv.addOnScrollListener(object :
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.rv.setHasFixedSize(true)
+        binding.rv.addOnScrollListener(object :
             androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
             override fun onScrolled(
                 recyclerView: androidx.recyclerview.widget.RecyclerView,
@@ -131,7 +133,7 @@ class MainActivity : DaggerAppCompatActivity() {
                     recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
                     if (!loading && searching) {
-                        pb.visibility = VISIBLE
+                        binding.pb.visibility = VISIBLE
                         offset += 25
                         search(q, offset)
                         loading = true
@@ -139,7 +141,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 }
             }
         })
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         getMixedSelections()
         setTimer()
         AudienceNetworkAds.initialize(this)
@@ -147,7 +149,7 @@ class MainActivity : DaggerAppCompatActivity() {
         val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
         ad?.loadAd(conf)
         adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
-        bannerContainer.addView(adView)
+        binding.bannerContainer.addView(adView)
     }
 
     private val value = object : InterstitialAdListener {
@@ -207,8 +209,8 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun setAdapterAndBanner() {
         Log.i(TAG, "setAdapterAndBanner")
-        rv.adapter = selectionsAdapter
-        pb.visibility = GONE
+        binding.rv.adapter = selectionsAdapter
+        binding.pb.visibility = GONE
         adView.loadAd()
     }
 
@@ -228,7 +230,7 @@ class MainActivity : DaggerAppCompatActivity() {
                         this@MainActivity.q = q
                         offset = 0
                         trackAdapter = null
-                        pb.visibility = VISIBLE
+                        binding.pb.visibility = VISIBLE
                         search(q, offset)
                         searching = true
                     }
