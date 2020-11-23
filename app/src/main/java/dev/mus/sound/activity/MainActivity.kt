@@ -37,8 +37,8 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private var selectionsAdapter: SelectionsAdapter? = null
-    lateinit var adView: AdView
-    private var timeOut = false
+//    lateinit var adView: AdView
+    private var timeOut = true
 
     var ad: InterstitialAd? = null
     private lateinit var q: String
@@ -145,11 +145,11 @@ class MainActivity : DaggerAppCompatActivity() {
         getMixedSelections()
         setTimer()
         AudienceNetworkAds.initialize(this)
-        ad = InterstitialAd(this, getString(R.string.fb_int_id))
+//        ad = InterstitialAd(this, getString(R.string.fb_int_id))
         val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
         ad?.loadAd(conf)
-        adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
-        binding.bannerContainer.addView(adView)
+//        adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
+//        binding.bannerContainer.addView(adView)
     }
 
     private val value = object : InterstitialAdListener {
@@ -211,7 +211,7 @@ class MainActivity : DaggerAppCompatActivity() {
         Log.i(TAG, "setAdapterAndBanner")
         binding.rv.adapter = selectionsAdapter
         binding.pb.visibility = GONE
-        adView.loadAd()
+//        adView.loadAd()
     }
 
     private fun getMixedSelections() = manager.getMixedSelections(selectionsCallback)

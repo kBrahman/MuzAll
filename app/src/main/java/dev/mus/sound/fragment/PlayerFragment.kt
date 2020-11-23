@@ -58,7 +58,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-        adView = AdView(activity, getString(R.string.banner_rec_id), AdSize.RECTANGLE_HEIGHT_250)
+//        adView = AdView(activity, getString(R.string.banner_rec_id), AdSize.RECTANGLE_HEIGHT_250)
     }
 
     override fun onCreateView(
@@ -125,7 +125,7 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
 
     private fun setVisibility(visibility: Int) {
         if (activity is MainActivity) {
-            (activity as MainActivity).adView.visibility = visibility
+//            (activity as MainActivity).adView.visibility = visibility
         } else if (activity is MusicActivity) {
 //            (activity as MusicActivity).adViewMusic.visibility = visibility
         }

@@ -3,7 +3,7 @@
     <string name="app_name">MusicSound</string>
     <string name="action_delete">Delete</string>
     <string name="folder">Music folder</string>
-    <string name="fb_banner_id">717811162283689_717855242279281</string>
-    <string name="banner_rec_id">717811162283689_717812065616932</string>
-    <string name="fb_int_id">717811162283689_717860878945384</string>
+<!--    <string name="fb_banner_id">717811162283689_717855242279281</string>-->
+<!--    <string name="banner_rec_id">717811162283689_717812065616932</string>-->
+<!--    <string name="fb_int_id">717811162283689_717860878945384</string>-->
 </resources>
