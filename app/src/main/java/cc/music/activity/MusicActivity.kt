@@ -7,15 +7,14 @@ import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Environment.getExternalStoragePublicDirectory
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import cc.music.R
 import cc.music.adapter.MusicAdapter
+import cc.music.databinding.ActivityMusicBinding
 import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.synthetic.main.activity_music.*
 import java.io.File
 
 class MusicActivity : DaggerAppCompatActivity() {
@@ -25,13 +24,14 @@ class MusicActivity : DaggerAppCompatActivity() {
 
     private var menuItemDelete: MenuItem? = null
     private var fileToDelete: File? = null
+    private lateinit var binding: ActivityMusicBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_music)
+        binding = ActivityMusicBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         var directory = getExternalStoragePublicDirectory(DIRECTORY_MUSIC)
         if (!isDirOk(directory)) return
-        Log.i(TAG, "dir=>$directory")
         if (directory.listFiles() == null) {
             directory = File(filesDir, DIRECTORY_MUSIC)
             if (!isDirOk(directory)) return
@@ -40,9 +40,9 @@ class MusicActivity : DaggerAppCompatActivity() {
             ?.filter {
                 it.extension == "mp3"
             }
-        rvMusic.setHasFixedSize(true)
-        rvMusic.adapter = MusicAdapter(files?.toTypedArray())
-        setSupportActionBar(toolbar)
+        binding.rvMusic.setHasFixedSize(true)
+        binding.rvMusic.adapter = MusicAdapter(files?.toTypedArray())
+        setSupportActionBar(binding.toolbar)
 //        adViewMusic.adListener = object : AdListener() {
 //            override fun onAdLoaded() {
 //                adViewMusic.visibility = VISIBLE
@@ -76,7 +76,7 @@ class MusicActivity : DaggerAppCompatActivity() {
 
     fun delete(item: MenuItem) {
         fileToDelete?.delete()
-        rvMusic.adapter =
+        binding.rvMusic.adapter =
             MusicAdapter(getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles())
         item.isVisible = false
     }
@@ -94,7 +94,11 @@ class MusicActivity : DaggerAppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             v?.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {
-            v?.vibrate(50)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                v?.vibrate(VibrationEffect.createOneShot(50, 1))
+            } else {
+                v?.vibrate(50)
+            }
         }
     }
 }

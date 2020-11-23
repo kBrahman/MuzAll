@@ -18,13 +18,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import cc.music.R
 import cc.music.adapter.TrackAdapter
+import cc.music.databinding.ActivityMainBinding
 import cc.music.model.AppViewModel
 import cc.music.model.Track
 import cc.music.mvp.presenter.MainPresenter
 import cc.music.mvp.view.MainView
 import cc.music.util.isNetworkConnected
+import com.facebook.ads.AdSize
+import com.facebook.ads.AdView
 import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import javax.inject.Inject
 
@@ -35,6 +37,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         private val TAG = MainActivity::class.java.simpleName
     }
 
+    private lateinit var adView: AdView
     private var timeOut = true
     private var finish = false
 
@@ -45,6 +48,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     lateinit var viewModel: AppViewModel
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,34 +65,19 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             openMusic(null)
             finish = true
         }
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-//        val ad = InterstitialAd(this)
-//        ad.adUnitId = getString(R.string.int_id)
-//        ad.loadAd(AdRequest.Builder().build())
-//        ad.adListener = object : AdListener() {
-//            override fun onAdFailedToLoad(p0: Int) {
-//                timeOut = true
-//                Log.i(TAG, "ad failed=>$p0")
-//            }
-//
-//            override fun onAdClosed() {
-//                timeOut = true
-//            }
-//
-//            override fun onAdLoaded() {
-//                if (!timeOut) ad.show()
-//            }
-//        }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         if (viewModel.tracks != null) {
+            Log.i(TAG, "view model tracks not null")
             presenter.results = viewModel.tracks?.value?.toMutableList()
             timeOut = true
         } else {
             setTimer()
         }
         presenter.view = this
-        rv.setHasFixedSize(true)
-        rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.rv.setHasFixedSize(true)
+        binding.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(
                 recyclerView: RecyclerView,
                 dx: Int,
@@ -108,7 +97,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             override fun run() {
                 timeOut = true
                 if (trackAdapter != null) {
-                    runOnUiThread { setAdapter() }
+                    runOnUiThread { setAdapterAndBanner() }
                 }
                 Log.i(TAG, "time out")
             }
@@ -130,20 +119,23 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     override fun show(tracks: MutableList<Track>?) {
         trackAdapter = TrackAdapter(tracks)
         if (timeOut) {
-            setAdapter()
+            setAdapterAndBanner()
         }
         viewModel.tracks = MutableLiveData<List<Track>>(trackAdapter?.getAll())
     }
 
-    private fun setAdapter() {
+    private fun setAdapterAndBanner() {
+        Log.i(TAG, "set adapter and banner")
         hideLoading()
-        rv.adapter = trackAdapter
-//        adView.adListener = object : AdListener() {
-//            override fun onAdLoaded() {
-//                adView.visibility = VISIBLE
-//            }
-//        }
-//        adView.loadAd(AdRequest.Builder().build())
+        binding.rv.adapter = trackAdapter
+        adView = AdView(this, getString(R.string.banner_id), AdSize.BANNER_HEIGHT_50)
+        binding.bannerContainer.addView(adView)
+        adView.loadAd()
+    }
+
+    override fun onDestroy() {
+//        adView.destroy()
+        super.onDestroy()
     }
 
     override fun addAndShow(tracks: List<Track>?) {
@@ -152,11 +144,11 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     }
 
     override fun showLoading() {
-        pb.visibility = VISIBLE
+        binding.pb.visibility = VISIBLE
     }
 
     override fun hideLoading() {
-        pb.visibility = View.GONE
+        binding.pb.visibility = View.GONE
     }
 
     override fun showServiceUnavailable() {

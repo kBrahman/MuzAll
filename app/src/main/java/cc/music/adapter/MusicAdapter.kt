@@ -4,19 +4,18 @@ import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import cc.music.R
-import kotlinx.android.synthetic.main.music_item.view.*
+import androidx.recyclerview.widget.RecyclerView
 import cc.music.activity.MusicActivity
+import cc.music.databinding.MusicItemBinding
 import cc.music.fragment.PlayerFragment
 import cc.music.util.TRACK
 import java.io.File
 
 
 class MusicAdapter(private val list: Array<File>?) :
-    androidx.recyclerview.widget.RecyclerView.Adapter<MusicAdapter.MusicVH>() {
+    RecyclerView.Adapter<MusicAdapter.MusicVH>() {
 
     companion object {
         private val TAG = MusicAdapter::class.java.simpleName
@@ -26,13 +25,13 @@ class MusicAdapter(private val list: Array<File>?) :
     private val player = PlayerFragment()
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int) =
-        MusicVH(LayoutInflater.from(p0.context).inflate(R.layout.music_item, p0, false))
+        MusicVH(MusicItemBinding.inflate(LayoutInflater.from(p0.context), p0, false))
 
     override fun getItemCount() = list?.size ?: 0
 
     override fun onBindViewHolder(holder: MusicVH, i: Int) {
         val file = list?.get(i)
-        holder.itemView.musicName.text = file?.name
+        holder.binding.musicName.text = file?.name
         try {
             retriever.setDataSource(file?.absolutePath)
         } catch (e: RuntimeException) {
@@ -41,20 +40,20 @@ class MusicAdapter(private val list: Array<File>?) :
         val data = retriever.embeddedPicture;
         if (data != null) {
             val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
-            holder.itemView.imgMusicItem.setImageBitmap(bitmap)
+            holder.binding.imgMusicItem.setImageBitmap(bitmap)
         }
     }
 
-    inner class MusicVH(item: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(item) {
+    inner class MusicVH(val binding: MusicItemBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
-            item.setOnClickListener {
+            binding.root.setOnClickListener {
                 val bundle = Bundle()
                 bundle.putSerializable(TRACK, list?.get(adapterPosition))
                 player.arguments = bundle
                 player.show((it.context as AppCompatActivity).supportFragmentManager, "player")
             }
 
-            item.setOnLongClickListener {
+            binding.root.setOnLongClickListener {
                 val activity = it.context as MusicActivity
                 activity.setFileAndMenuItemVisibility(list?.get(adapterPosition))
                 true

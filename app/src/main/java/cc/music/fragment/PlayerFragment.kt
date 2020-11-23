@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,11 +26,11 @@ import cc.music.R
 import cc.music.activity.MainActivity
 import cc.music.activity.MusicActivity
 import cc.music.component.DaggerFragmentComponent
+import cc.music.databinding.FragmentPlayerBinding
 import cc.music.model.Track
 import cc.music.mvp.presenter.PlayerPresenter
 import cc.music.mvp.view.PlayerView
 import cc.music.util.TRACK
-import kotlinx.android.synthetic.main.fragment_player.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -48,15 +49,15 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
 
     @set:Inject
     var mp: MediaPlayer? = null
-    private val handler = Handler()
+    private val handler = Handler(Looper.myLooper()!!)
     private var isPrepared = false
-
+    private lateinit var binding: FragmentPlayerBinding
     override fun showLoading() {
-        pbPlayer?.visibility = VISIBLE
+        binding.pbPlayer.visibility = VISIBLE
     }
 
     override fun hideLoading() {
-        pbPlayer?.visibility = GONE
+        binding.pbPlayer.visibility = GONE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,22 +70,19 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) =
-        inflater.inflate(
-            R.layout.fragment_player,
-            container,
-            false
-        )
-
+    ): View {
+        binding = FragmentPlayerBinding.inflate(layoutInflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         DaggerFragmentComponent.create().inject(this)
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
             val audio = track.audio
-            Log.i(TAG,"url=>$audio")
+            Log.i(TAG, "url=>$audio")
             mp?.setDataSource(audio)
-            name.text = track.upload_name
+            binding.name.text = track.upload_name
         } else if (track is File && track.exists()) {
             try {
                 val fos = FileInputStream(track)
@@ -94,8 +92,8 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
                 Toast.makeText(context, R.string.could_not_play_file, LENGTH_LONG).show()
                 return
             }
-            download.visibility = GONE
-            name.text = track.name
+            binding.download.visibility = GONE
+            binding.name.text = track.name
         } else {
             Toast.makeText(context, R.string.could_not_play_file, LENGTH_LONG).show()
             return
@@ -103,25 +101,25 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         mp?.setOnPreparedListener(this)
         mp?.prepareAsync()
         mp?.setOnCompletionListener {
-            play.setImageResource(R.drawable.ic_play_arrow_24)
+            binding.play.setImageResource(R.drawable.ic_play_arrow_24)
             handler.removeCallbacks(this)
-            seekBar.progress = 0
+            binding.seekBar.progress = 0
         }
         mp?.setOnErrorListener { _, what, extra ->
             Log.i(TAG, "what=>$what; extra=>$extra")
             true
         }
-        seekBar.setOnSeekBarChangeListener(this)
-        play.setOnClickListener {
+        binding.seekBar.setOnSeekBarChangeListener(this)
+        binding.play.setOnClickListener {
             if (mp?.isPlaying == true) {
                 mp?.pause()
-                play.setImageResource(R.drawable.ic_play_arrow_24)
+                binding.play.setImageResource(R.drawable.ic_play_arrow_24)
             } else {
                 mp?.start()
-                play.setImageResource(R.drawable.ic_pause_24)
+                binding.play.setImageResource(R.drawable.ic_pause_24)
             }
         }
-        download.setOnClickListener {
+        binding.download.setOnClickListener {
             download(track as Track)
         }
 //        recBanner.adListener = object : AdListener() {
@@ -143,7 +141,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
 
     private fun download(track: Track) {
         if (ContextCompat.checkSelfPermission(
-                context!!,
+                requireContext(),
                 WRITE_EXTERNAL_STORAGE
             ) == PERMISSION_GRANTED
         ) {
@@ -187,7 +185,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         val currentPosition = mp?.currentPosition ?: 0
         var dur = mp?.duration ?: 1
         if (dur != 0) dur = currentPosition.times(100).div(dur)
-        seekBar?.progress = dur
+        binding.seekBar.progress = dur
         startSeekBar()
     }
 
@@ -206,7 +204,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         handler.removeCallbacks(this)
         if (isPrepared) mp?.stop()
         mp?.release()
-        seekBar?.progress = 0
+        binding.seekBar?.progress = 0
         setVisibility(VISIBLE)
         isPrepared = false
         super.onDismiss(dialog)
