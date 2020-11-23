@@ -10,15 +10,16 @@ import android.os.Vibrator
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_music.*
 import z.music.adapter.MusicAdapter
 import z.music.R
+import z.music.databinding.ActivityMusicBinding
 import java.io.File
 
 class MusicActivity : AppCompatActivity() {
     companion object {
         private val TAG = MusicActivity::class.java.simpleName
     }
+    private lateinit var binding: ActivityMusicBinding
 
     var menuItemDelete: MenuItem? = null
     private lateinit var fileToDelete: File
@@ -26,10 +27,11 @@ class MusicActivity : AppCompatActivity() {
     //    var ad: InterstitialAd? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_music)
+        binding= ActivityMusicBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         val files = getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles()
-        rvMusic.setHasFixedSize(true)
-        rvMusic.adapter = MusicAdapter(files)
+        binding.rvMusic.setHasFixedSize(true)
+        binding.rvMusic.adapter = MusicAdapter(files)
 //        adViewMusic.adListener = object : AdListener() {
 //            override fun onAdLoaded() {
 //                adViewMusic.visibility = VISIBLE
@@ -39,7 +41,7 @@ class MusicActivity : AppCompatActivity() {
 //        ad = InterstitialAd(this)
 //        ad?.adUnitId = getString(R.string.int_id)
 //        ad?.loadAd(AdRequest.Builder().build())
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
     }
 
     override fun onBackPressed() {
@@ -59,7 +61,7 @@ class MusicActivity : AppCompatActivity() {
 
     fun delete(item: MenuItem) {
         fileToDelete.delete()
-        rvMusic.adapter =
+        binding.rvMusic.adapter =
             MusicAdapter(getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles())
         item.isVisible = false
     }

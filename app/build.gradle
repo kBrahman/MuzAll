@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 def lp = new Properties()
@@ -8,6 +7,9 @@ lp.load(rootProject.file('local.properties').newDataInputStream())
 def keystoreProperties = new Properties()
 keystoreProperties.load(rootProject.file("keystore.properties").newDataInputStream())
 android {
+    buildFeatures {
+        viewBinding true
+    }
     signingConfigs {
         zhet {
             storeFile file(keystoreProperties['storeFile'])

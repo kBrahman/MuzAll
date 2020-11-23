@@ -22,10 +22,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.ads.*
 import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
 import z.music.BuildConfig
 import z.music.R
 import z.music.adapter.TrackAdapter
+import z.music.databinding.ActivityMainBinding
 import z.music.err.TokenExpiredException
 import z.music.manager.ApiManager
 import z.music.model.Token
@@ -44,6 +44,8 @@ class MainActivity : DaggerAppCompatActivity() {
     companion object {
         private val TAG = MainActivity::class.java.simpleName
     }
+
+    private lateinit var binding: ActivityMainBinding
 
     private val value = object : InterstitialAdListener {
         override fun onInterstitialDisplayed(ad: Ad) {
@@ -172,9 +174,10 @@ class MainActivity : DaggerAppCompatActivity() {
         } else {
             getTop(currentToken!!)
         }
-        setContentView(R.layout.activity_main)
-        rv.setHasFixedSize(true)
-        rv.addOnScrollListener(object :
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.rv.setHasFixedSize(true)
+        binding.rv.addOnScrollListener(object :
             RecyclerView.OnScrollListener() {
             override fun onScrolled(
                 recyclerView: RecyclerView,
@@ -184,7 +187,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 val layoutManager =
                     recyclerView.layoutManager as LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1 && !loading) {
-                    pb.visibility = VISIBLE
+                    binding.pb.visibility = VISIBLE
                     loading = true
                     if (searching) {
                         search(q, currentToken!!)
@@ -194,14 +197,14 @@ class MainActivity : DaggerAppCompatActivity() {
                 }
             }
         })
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         setTimer()
         AudienceNetworkAds.initialize(this)
         ad = InterstitialAd(this, getString(R.string.int_id))
         val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
         ad?.loadAd(conf)
         adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
-        bannerContainer.addView(adView)
+        binding.bannerContainer.addView(adView)
         setTimer()
     }
 
@@ -222,13 +225,13 @@ class MainActivity : DaggerAppCompatActivity() {
         loading = tracks.size < 20
         if (trackAdapter == null && timeOut) {
             trackAdapter = TrackAdapter(tracks.toMutableList())
-            rv.adapter = trackAdapter
-            pb.visibility = GONE
+            binding.rv.adapter = trackAdapter
+            binding.pb.visibility = GONE
         } else if (trackAdapter == null) {
             trackAdapter = TrackAdapter(tracks.toMutableList())
         } else {
             trackAdapter?.addData(tracks)
-            pb.visibility = GONE
+            binding.pb.visibility = GONE
         }
 //        if (timeOut) {
 //            setAdapterAndBanner()
@@ -251,8 +254,8 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun setAdapterAndBanner() {
-        rv.adapter = trackAdapter
-        pb.visibility = GONE
+        binding.rv.adapter = trackAdapter
+        binding.pb.visibility = GONE
         adView.loadAd()
     }
 
@@ -285,7 +288,7 @@ class MainActivity : DaggerAppCompatActivity() {
                         this@MainActivity.q = q
                         trackAdapter = null
                         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-                        pb.visibility = VISIBLE
+                        binding.pb.visibility = VISIBLE
                         search(q, currentToken!!)
                         searching = true
                     }

@@ -1,15 +1,15 @@
 package z.music.adapter
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.track_item.view.*
 import z.music.R
+import z.music.databinding.TrackItemBinding
 import z.music.fragment.PlayerFragment
 import z.music.model.Track
 import z.music.util.TRACK
@@ -17,24 +17,30 @@ import z.music.util.TRACK
 class TrackAdapter(private val results: MutableList<Track>?) :
     RecyclerView.Adapter<TrackAdapter.VH>() {
 
+    companion object {
+        private val TAG = TrackAdapter::class.simpleName
+    }
+
     private val player: DialogFragment = PlayerFragment()
 
-    override fun onCreateViewHolder(group: ViewGroup, p1: Int) =
-        VH(LayoutInflater.from(group.context).inflate(R.layout.track_item, group, false))
+    override fun onCreateViewHolder(group: ViewGroup, p1: Int): VH {
+        val binding = TrackItemBinding.inflate(LayoutInflater.from(group.context), group, false)
+        return VH(binding)
+    }
 
     override fun getItemCount() = results?.size ?: 0
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val track = results?.get(position)
-        val view = holder.itemView
-        view.name.text = track?.track
-        view.duration.text =
-            view.context.getString(R.string.duration, track?.duration)
-        view.bitrate.text =
-            view.context.getString(R.string.bitrate, track?.bitrate)
+        val b = holder.binding
+        b.name.text = track?.track
+        b.duration.text =
+            b.root.context.getString(R.string.duration, track?.duration)
+        b.bitrate.text =
+            b.root.context.getString(R.string.bitrate, track?.bitrate)
         if (track?.artistImageUrlSquare100 != null)
-            Picasso.get().load(track.artistImageUrlSquare100).into(view.img)
-        else view.img.setImageResource(R.mipmap.ic_launcher)
+            Picasso.get().load(track.artistImageUrlSquare100).into(b.img)
+        else b.img.setImageResource(R.mipmap.ic_launcher)
     }
 
     fun addData(data: List<Track>?) {
@@ -45,12 +51,14 @@ class TrackAdapter(private val results: MutableList<Track>?) :
         }
     }
 
-    inner class VH(item: View) : RecyclerView.ViewHolder(item) {
+    inner class VH(val binding: TrackItemBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
-            item.setOnClickListener {
-                if (player.fragmentManager != null && player.showsDialog) {
-                    player.dismiss()
-                }
+            binding.root.setOnClickListener {
+                val showsDialog = player.showsDialog
+                Log.i(TAG, "shows d=>$showsDialog")
+//                if (showsDialog) {
+//                    player.dismiss()
+//                }
                 val bundle = Bundle()
                 bundle.putSerializable(TRACK, results?.get(adapterPosition))
                 player.arguments = bundle
