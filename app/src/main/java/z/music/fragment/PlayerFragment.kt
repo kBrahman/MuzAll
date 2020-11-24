@@ -58,7 +58,7 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
 
     @Inject
     lateinit var apiManager: ApiManager
-    private val handler: Handler? = Handler(Looper.myLooper()!!)
+    private val handler: Handler = Handler(Looper.myLooper()!!)
     private var isPrepared = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
