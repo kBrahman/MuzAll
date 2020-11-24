@@ -2,14 +2,13 @@ package muz.all.adapter
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.track_item.view.*
 import muz.all.R
+import muz.all.databinding.TrackItemBinding
 import muz.all.fragment.PlayerFragment
 import muz.all.model.Track
 import muz.all.util.TRACK
@@ -20,18 +19,19 @@ class TrackAdapter(private val results: MutableList<Track>?) :
     private val player: DialogFragment = PlayerFragment()
 
     override fun onCreateViewHolder(group: ViewGroup, p1: Int) =
-        VH(LayoutInflater.from(group.context).inflate(R.layout.track_item, group, false))
+        VH(TrackItemBinding.inflate(LayoutInflater.from(group.context), group, false))
 
     override fun getItemCount() = results?.size ?: 0
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val track = results?.get(position)
-        val view = holder.itemView
-        view.name.text = track?.name
-        view.artist.text = track?.artist_name
-        view.duration.text = view.context.getString(R.string.duration, track?.duration)
-        view.releaseDate.text = view.context.getString(R.string.released, track?.releasedate)
-        Picasso.get().load(track?.image).into(view.img)
+        val binding = holder.binding
+        binding.name.text = track?.name
+        binding.artist.text = track?.artist_name
+        binding.duration.text = binding.root.context.getString(R.string.duration, track?.duration)
+        binding.releaseDate.text =
+            binding.root.context.getString(R.string.released, track?.releasedate)
+        Picasso.get().load(track?.image).into(binding.img)
     }
 
     fun addData(data: List<Track>?) {
@@ -44,10 +44,10 @@ class TrackAdapter(private val results: MutableList<Track>?) :
 
     fun getAll() = results
 
-    inner class VH(item: View) : RecyclerView.ViewHolder(item) {
+    inner class VH(val binding: TrackItemBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             player.showsDialog = false
-            item.setOnClickListener {
+            binding.root.setOnClickListener {
                 val showsDialog = player.showsDialog
                 if (showsDialog) {
                     player.dismiss()

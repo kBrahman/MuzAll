@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply from: "id.gradle"
 def localProperties = new Properties()
@@ -23,8 +22,8 @@ android {
         applicationId localProperties["app_id"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 88
-        versionName "1.87"
+        versionCode 89
+        versionName "1.88"
         buildConfigField "String[]", "IDS", "{$ids}"
         multiDexEnabled true
         buildConfigField "String", "SERVER", localProperties["server"]
@@ -45,6 +44,9 @@ android {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
@@ -60,14 +62,14 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.google.dagger:dagger-android-support:2.29.1'
-    kapt 'com.google.dagger:dagger-compiler:2.29.1'
-    kapt 'com.google.dagger:dagger-android-processor:2.29.1'
+    implementation 'com.google.dagger:dagger-android-support:2.30'
+    kapt 'com.google.dagger:dagger-compiler:2.30'
+    kapt 'com.google.dagger:dagger-android-processor:2.30'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.gms:play-services-ads:19.5.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.google.firebase:firebase-analytics:18.0.0'
-    implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
+    implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 }

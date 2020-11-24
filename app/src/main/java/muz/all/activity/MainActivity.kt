@@ -20,9 +20,9 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
 import muz.all.R
 import muz.all.adapter.TrackAdapter
+import muz.all.databinding.ActivityMainBinding
 import muz.all.model.AppViewModel
 import muz.all.model.Track
 import muz.all.mvp.presenter.MainPresenter
@@ -48,7 +48,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     lateinit var viewModel: AppViewModel
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
-
+    internal lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!isNetworkConnected(this) && ContextCompat.checkSelfPermission(
@@ -64,8 +64,9 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             openMusic(null)
             finish = true
         }
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         val ad = InterstitialAd(this)
         ad.adUnitId = getString(R.string.int_id)
         ad.loadAd(AdRequest.Builder().build())
@@ -91,8 +92,8 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             setTimer()
         }
         presenter.view = this
-        rv.setHasFixedSize(true)
-        rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.rv.setHasFixedSize(true)
+        binding.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(
                 recyclerView: RecyclerView,
                 dx: Int,
@@ -141,13 +142,13 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
 
     private fun setAdapter() {
         hideLoading()
-        rv.adapter = trackAdapter
-        adView.adListener = object : AdListener() {
+        binding.rv.adapter = trackAdapter
+        binding.adView.adListener = object : AdListener() {
             override fun onAdLoaded() {
-                adView.visibility = VISIBLE
+                binding.adView.visibility = VISIBLE
             }
         }
-        adView.loadAd(AdRequest.Builder().build())
+        binding.adView.loadAd(AdRequest.Builder().build())
     }
 
     override fun addAndShow(tracks: List<Track>?) {
@@ -156,11 +157,11 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     }
 
     override fun showLoading() {
-        pb.visibility = VISIBLE
+        binding.pb.visibility = VISIBLE
     }
 
     override fun hideLoading() {
-        pb.visibility = View.GONE
+        binding.pb.visibility = View.GONE
     }
 
     override fun showServiceUnavailable() {

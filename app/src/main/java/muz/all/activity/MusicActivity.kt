@@ -16,9 +16,9 @@ import android.widget.Toast.LENGTH_SHORT
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.synthetic.main.activity_music.*
 import muz.all.R
 import muz.all.adapter.MusicAdapter
+import muz.all.databinding.ActivityMusicBinding
 import java.io.File
 
 class MusicActivity : DaggerAppCompatActivity() {
@@ -28,10 +28,12 @@ class MusicActivity : DaggerAppCompatActivity() {
 
     private var menuItemDelete: MenuItem? = null
     private var fileToDelete: File? = null
+    internal lateinit var binding: ActivityMusicBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_music)
+        binding = ActivityMusicBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         var directory = getExternalStoragePublicDirectory(DIRECTORY_MUSIC)
         if (!isDirOk(directory)) return
         Log.i(TAG, "dir=>$directory")
@@ -43,15 +45,15 @@ class MusicActivity : DaggerAppCompatActivity() {
             ?.filter {
                 it.extension == "mp3"
             }
-        rvMusic.setHasFixedSize(true)
-        rvMusic.adapter = MusicAdapter(files?.toTypedArray())
-        setSupportActionBar(toolbar)
-        adViewMusic.adListener = object : AdListener() {
+        binding.rvMusic.setHasFixedSize(true)
+        binding.rvMusic.adapter = MusicAdapter(files?.toTypedArray())
+        setSupportActionBar(binding.toolbar)
+        binding.adViewMusic.adListener = object : AdListener() {
             override fun onAdLoaded() {
-                adViewMusic.visibility = VISIBLE
+                binding.adViewMusic.visibility = VISIBLE
             }
         }
-        adViewMusic.loadAd(AdRequest.Builder().build())
+        binding.adViewMusic.loadAd(AdRequest.Builder().build())
     }
 
     private fun isDirOk(directory: File): Boolean {
@@ -79,7 +81,7 @@ class MusicActivity : DaggerAppCompatActivity() {
 
     fun delete(item: MenuItem) {
         fileToDelete?.delete()
-        rvMusic.adapter =
+        binding.rvMusic.adapter =
             MusicAdapter(getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles())
         item.isVisible = false
     }

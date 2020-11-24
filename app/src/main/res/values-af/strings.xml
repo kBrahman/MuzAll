@@ -5,4 +5,5 @@
     <string name="folder">Musiek gids</string>
     <string name="could_not_play_file">Kon nie die snit speel nie, jammer</string>
     <string name="my_music">My musiek</string>
+    <string name="action_delete">Vee uit</string>
 </resources>
