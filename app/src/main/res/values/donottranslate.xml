@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MusicSound</string>
+    <string name="app_name">sMusic</string>
     <string name="action_delete">Delete</string>
     <string name="folder">Music folder</string>
 <!--    <string name="fb_banner_id">717811162283689_717855242279281</string>-->

@@ -21,8 +21,8 @@ android {
         applicationId lp["id_music_sound"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 50
-        versionName "1.40"
+        versionCode 51
+        versionName "2.0"
         multiDexEnabled true
         buildConfigField "String", "ClIENT_ID", lp["s_c_id"]
         buildConfigField "String", "SERVER", lp["s"]
@@ -63,9 +63,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    kapt 'com.google.dagger:dagger-android-processor:2.30'
-    kapt 'com.google.dagger:dagger-compiler:2.30'
-    implementation 'com.google.dagger:dagger-android-support:2.30'
+    kapt 'com.google.dagger:dagger-android-processor:2.30.1'
+    kapt 'com.google.dagger:dagger-compiler:2.30.1'
+    implementation 'com.google.dagger:dagger-android-support:2.30.1'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.android.support:multidex:1.0.3'
