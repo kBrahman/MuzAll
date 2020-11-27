@@ -38,7 +38,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     }
 
     private lateinit var adView: AdView
-    private var timeOut = true
+    private var timeOut = false
     private var finish = false
 
     @Inject

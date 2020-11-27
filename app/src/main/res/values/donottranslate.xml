@@ -3,6 +3,6 @@
     <string name="app_name">cMusic</string>
 <!--    <string name="app_id">ca-app-pub-8761730220693010~3693194663</string>-->
     <string name="banner_id">709403326639518_709403973306120</string>
-<!--    <string name="int_id">ca-app-pub-8761730220693010/7789186490</string>-->
+    <string name="int_id">709403326639518_712220439691140</string>
     <string name="action_delete">Delete</string>
 </resources>
