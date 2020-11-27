@@ -14,6 +14,8 @@ import android.widget.Toast.LENGTH_SHORT
 import cc.music.R
 import cc.music.adapter.MusicAdapter
 import cc.music.databinding.ActivityMusicBinding
+import com.facebook.ads.AdSize
+import com.facebook.ads.AdView
 import dagger.android.support.DaggerAppCompatActivity
 import java.io.File
 
@@ -22,6 +24,7 @@ class MusicActivity : DaggerAppCompatActivity() {
         private val TAG = MusicActivity::class.java.simpleName
     }
 
+    lateinit var adView: AdView
     private var menuItemDelete: MenuItem? = null
     private var fileToDelete: File? = null
     private lateinit var binding: ActivityMusicBinding
@@ -43,12 +46,9 @@ class MusicActivity : DaggerAppCompatActivity() {
         binding.rvMusic.setHasFixedSize(true)
         binding.rvMusic.adapter = MusicAdapter(files?.toTypedArray())
         setSupportActionBar(binding.toolbar)
-//        adViewMusic.adListener = object : AdListener() {
-//            override fun onAdLoaded() {
-//                adViewMusic.visibility = VISIBLE
-//            }
-//        }
-//        adViewMusic.loadAd(AdRequest.Builder().build())
+        adView = AdView(this, getString(R.string.banner_id), AdSize.BANNER_HEIGHT_50)
+        binding.bannerContainer.addView(adView)
+        adView.loadAd()
     }
 
     private fun isDirOk(directory: File): Boolean {

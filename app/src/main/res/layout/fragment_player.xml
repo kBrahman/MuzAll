@@ -4,15 +4,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-<!--    <com.google.android.gms.ads.AdView-->
-<!--            android:id="@+id/recBanner"-->
-<!--            android:layout_width="300dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:visibility="gone"-->
-<!--            app:adSize="MEDIUM_RECTANGLE"-->
-<!--            app:adUnitId="@string/banner_id"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent" />-->
+    <LinearLayout
+            android:id="@+id/bannerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical" />
 
     <TextView
             android:id="@+id/name"
@@ -21,7 +18,8 @@
             android:layout_marginStart="4dp"
             android:paddingStart="4dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/play" />
+            app:layout_constraintStart_toStartOf="@id/play"
+            app:layout_constraintTop_toBottomOf="@id/bannerContainer" />
 
     <ImageButton
             android:id="@+id/play"

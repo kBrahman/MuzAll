@@ -31,6 +31,8 @@ import cc.music.model.Track
 import cc.music.mvp.presenter.PlayerPresenter
 import cc.music.mvp.view.PlayerView
 import cc.music.util.TRACK
+import com.facebook.ads.AdSize
+import com.facebook.ads.AdView
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -46,6 +48,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
 
     @Inject
     lateinit var playerPresenter: PlayerPresenter
+    private lateinit var adView: AdView
 
     @set:Inject
     var mp: MediaPlayer? = null
@@ -122,20 +125,14 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         binding.download.setOnClickListener {
             download(track as Track)
         }
-//        recBanner.adListener = object : AdListener() {
-//            override fun onAdLoaded() {
-//                recBanner?.visibility = VISIBLE
-//            }
-//        }
-//        recBanner.loadAd(AdRequest.Builder().build())
         setVisibility(GONE)
     }
 
     private fun setVisibility(visibility: Int) {
         if (activity is MainActivity) {
-//            (activity as MainActivity).adView.visibility = visibility
+            (activity as MainActivity).adView.visibility = visibility
         } else if (activity is MusicActivity) {
-//            (activity as MusicActivity).adViewMusic.visibility = visibility
+            (activity as MusicActivity).adView.visibility = visibility
         }
     }
 
@@ -170,10 +167,15 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
+        Log.i(TAG, "onPrepared")
         isPrepared = true
         mp?.start()
         hideLoading()
         startSeekBar()
+        adView =
+            AdView(requireContext(), getString(R.string.id_rec), AdSize.RECTANGLE_HEIGHT_250)
+        binding.bannerContainer.addView(adView)
+        adView.loadAd()
     }
 
     private fun startSeekBar() {
@@ -204,7 +206,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         handler.removeCallbacks(this)
         if (isPrepared) mp?.stop()
         mp?.release()
-        binding.seekBar?.progress = 0
+        binding.seekBar.progress = 0
         setVisibility(VISIBLE)
         isPrepared = false
         super.onDismiss(dialog)

@@ -24,8 +24,7 @@ import cc.music.model.Track
 import cc.music.mvp.presenter.MainPresenter
 import cc.music.mvp.view.MainView
 import cc.music.util.isNetworkConnected
-import com.facebook.ads.AdSize
-import com.facebook.ads.AdView
+import com.facebook.ads.*
 import dagger.android.support.DaggerAppCompatActivity
 import java.util.*
 import javax.inject.Inject
@@ -37,7 +36,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         private val TAG = MainActivity::class.java.simpleName
     }
 
-    private lateinit var adView: AdView
+    internal lateinit var adView: AdView
     private var timeOut = false
     private var finish = false
 
@@ -49,9 +48,36 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
     private lateinit var binding: ActivityMainBinding
+    private var interstitialAd: InterstitialAd? = null
+    private val adListener = object : InterstitialAdListener {
+        override fun onError(p0: Ad?, error: AdError?) {
+            Log.i(TAG, "int ad err=>$error")
+        }
+
+        override fun onAdLoaded(ad: Ad?) {
+            interstitialAd?.show()
+        }
+
+        override fun onAdClicked(p0: Ad?) {}
+
+        override fun onLoggingImpression(p0: Ad?) {}
+
+        override fun onInterstitialDisplayed(p0: Ad?) {
+            Log.i(TAG, "int ad displayed")
+        }
+
+        override fun onInterstitialDismissed(p0: Ad?) {
+            Log.i(TAG, "int ad dismiss")
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        interstitialAd = InterstitialAd(this, getString(R.string.int_id))
+        interstitialAd?.loadAd(
+            interstitialAd?.buildLoadAdConfig()?.withAdListener(adListener)?.build()
+        )
         if (!isNetworkConnected(this) && ContextCompat.checkSelfPermission(
                 this,
                 WRITE_EXTERNAL_STORAGE
@@ -99,6 +125,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
                 if (trackAdapter != null) {
                     runOnUiThread { setAdapterAndBanner() }
                 }
+                interstitialAd = null
                 Log.i(TAG, "time out")
             }
         }, 6000L)
@@ -131,11 +158,6 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         adView = AdView(this, getString(R.string.banner_id), AdSize.BANNER_HEIGHT_50)
         binding.bannerContainer.addView(adView)
         adView.loadAd()
-    }
-
-    override fun onDestroy() {
-//        adView.destroy()
-        super.onDestroy()
     }
 
     override fun addAndShow(tracks: List<Track>?) {

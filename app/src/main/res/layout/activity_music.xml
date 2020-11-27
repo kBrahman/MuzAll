@@ -23,14 +23,14 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:layout_constraintBottom_toTopOf="@id/bannerContainer"
             app:layout_constraintTop_toBottomOf="@id/appBar"
             app:spanCount="3" />
-    <!--    <com.google.android.gms.ads.AdView-->
-    <!--            android:id="@+id/adViewMusic"-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            app:adSize="BANNER"-->
-    <!--            app:adUnitId="@string/banner_id"-->
-    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--            android:visibility="gone"/>-->
+
+    <LinearLayout
+            android:id="@+id/bannerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
