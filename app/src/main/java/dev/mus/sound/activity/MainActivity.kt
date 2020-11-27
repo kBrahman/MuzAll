@@ -90,7 +90,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 withTracks?.let {
                     selectionsAdapter = SelectionsAdapter(it) { ids, name ->
                         binding.pb.visibility = VISIBLE
-                        manager.tracksBy(ids, topTrackCallback)
+                        manager.tracksBy(ids, selectionCallback)
                         title = name
                     }
                 }
@@ -100,7 +100,7 @@ class MainActivity : DaggerAppCompatActivity() {
             }
         }
 
-    private val topTrackCallback: Callback<List<Track>> = object : Callback<List<Track>> {
+    private val selectionCallback: Callback<List<Track>> = object : Callback<List<Track>> {
         override fun onFailure(call: Call<List<Track>>, t: Throwable) = t.printStackTrace()
 
         override fun onResponse(call: Call<List<Track>>, response: Response<List<Track>>) {
@@ -143,11 +143,11 @@ class MainActivity : DaggerAppCompatActivity() {
         })
         setSupportActionBar(binding.toolbar)
         getMixedSelections()
-        setTimer()
-        AudienceNetworkAds.initialize(this)
+//        setTimer()
+//        AudienceNetworkAds.initialize(this)
 //        ad = InterstitialAd(this, getString(R.string.fb_int_id))
-        val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
-        ad?.loadAd(conf)
+//        val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
+//        ad?.loadAd(conf)
 //        adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
 //        binding.bannerContainer.addView(adView)
     }

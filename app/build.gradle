@@ -21,8 +21,8 @@ android {
         applicationId lp["id_music_sound"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 51
-        versionName "2.0"
+        versionCode 52
+        versionName "2.1"
         multiDexEnabled true
         buildConfigField "String", "ClIENT_ID", lp["s_c_id"]
         buildConfigField "String", "SERVER", lp["s"]

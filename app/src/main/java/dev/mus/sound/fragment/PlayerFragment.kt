@@ -90,8 +90,8 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
             configureMp()
         }
         setVisibility(GONE)
-        binding.bannerContainer.addView(adView)
-        adView.loadAd()
+//        binding.bannerContainer.addView(adView)
+//        adView.loadAd()
     }
 
     private suspend fun getStreamLink(urlLocation: String): String {
