@@ -23,8 +23,8 @@ android {
         applicationId lp["id_z_music"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 5
-        versionName "1.4"
+        versionCode 6
+        versionName "1.5"
         multiDexEnabled true
         buildConfigField "String", "SERVER", lp["z_s"]
         buildConfigField "String", "C_EQ", lp["z_c_eq"]
@@ -64,9 +64,9 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    kapt 'com.google.dagger:dagger-android-processor:2.30'
-    kapt 'com.google.dagger:dagger-compiler:2.30'
-    implementation 'com.google.dagger:dagger-android-support:2.30'
+    kapt 'com.google.dagger:dagger-android-processor:2.30.1'
+    kapt 'com.google.dagger:dagger-compiler:2.30.1'
+    implementation 'com.google.dagger:dagger-android-support:2.30.1'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
 //    implementation 'com.google.firebase:firebase-core:17.5.1'

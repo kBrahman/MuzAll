@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">zMusic</string>
-    <string name="action_delete">Delete</string>
     <string name="folder">Music folder</string>
     <string name="bitrate">Bitrate: %s</string>
     <string name="int_id">390241672132900_390242712132796</string>

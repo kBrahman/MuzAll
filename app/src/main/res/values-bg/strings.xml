@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">zMusic</string>
+    <string name="duration">Продължителност: %s</string>
+    <string name="folder">"Музикална папка "</string>
+    <string name="action_delete">"Изтрий "</string>
+    <string name="bitrate">Битрейт: %s</string>
+    <string name="my_music">"Моята музика "</string>
+    <string name="network_not_available">"Няма достъп до интернет "</string>
+    <string name="refresh">Обнови</string>
+</resources>
