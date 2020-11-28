@@ -2,26 +2,22 @@ package muz.all.adapter
 
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import muz.all.activity.MusicActivity
 import muz.all.databinding.MusicItemBinding
-import muz.all.fragment.PlayerFragment
-import muz.all.util.TRACK
 import java.io.File
 
 
-class MusicAdapter(private val list: Array<File>?) : RecyclerView.Adapter<MusicAdapter.MusicVH>() {
+class MusicAdapter(private val list: Array<File>?, val onClick: (pos: Int) -> Unit) :
+    RecyclerView.Adapter<MusicAdapter.MusicVH>() {
 
     companion object {
         private val TAG = MusicAdapter::class.java.simpleName
     }
 
     private val retriever = MediaMetadataRetriever()
-    private val player = PlayerFragment()
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int) =
         MusicVH(MusicItemBinding.inflate(LayoutInflater.from(p0.context), p0, false))
 
@@ -45,13 +41,8 @@ class MusicAdapter(private val list: Array<File>?) : RecyclerView.Adapter<MusicA
     inner class MusicVH(val binding: MusicItemBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
-                val bundle = Bundle()
-                bundle.putSerializable(TRACK, list?.get(adapterPosition))
-                player.arguments = bundle
-                player.show(
-                    (it.context as AppCompatActivity).supportFragmentManager,
-                    "music_player"
-                )
+
+                onClick(adapterPosition)
             }
 
             binding.root.setOnLongClickListener {

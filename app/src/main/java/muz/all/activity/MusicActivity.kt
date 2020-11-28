@@ -19,12 +19,16 @@ import dagger.android.support.DaggerAppCompatActivity
 import muz.all.R
 import muz.all.adapter.MusicAdapter
 import muz.all.databinding.ActivityMusicBinding
+import muz.all.fragment.PlayerFragment
+import muz.all.util.TRACK
 import java.io.File
 
 class MusicActivity : DaggerAppCompatActivity() {
     companion object {
         private val TAG = MusicActivity::class.java.simpleName
     }
+
+    private val player = PlayerFragment()
 
     private var menuItemDelete: MenuItem? = null
     private var fileToDelete: File? = null
@@ -36,7 +40,6 @@ class MusicActivity : DaggerAppCompatActivity() {
         setContentView(binding.root)
         var directory = getExternalStoragePublicDirectory(DIRECTORY_MUSIC)
         if (!isDirOk(directory)) return
-        Log.i(TAG, "dir=>$directory")
         if (directory.listFiles() == null) {
             directory = File(filesDir, DIRECTORY_MUSIC)
             if (!isDirOk(directory)) return
@@ -46,7 +49,9 @@ class MusicActivity : DaggerAppCompatActivity() {
                 it.extension == "mp3"
             }
         binding.rvMusic.setHasFixedSize(true)
-        binding.rvMusic.adapter = MusicAdapter(files?.toTypedArray())
+        binding.rvMusic.adapter = MusicAdapter(files?.toTypedArray()) {
+            onItemClick(files, it)
+        }
         setSupportActionBar(binding.toolbar)
         binding.adViewMusic.adListener = object : AdListener() {
             override fun onAdLoaded() {
@@ -54,6 +59,13 @@ class MusicActivity : DaggerAppCompatActivity() {
             }
         }
         binding.adViewMusic.loadAd(AdRequest.Builder().build())
+    }
+
+    private fun onItemClick(files: List<File>?, it: Int) {
+        val bundle = Bundle()
+        bundle.putSerializable(TRACK, files?.get(it))
+        player.arguments = bundle
+        player.show(supportFragmentManager, "player")
     }
 
     private fun isDirOk(directory: File): Boolean {
@@ -81,8 +93,13 @@ class MusicActivity : DaggerAppCompatActivity() {
 
     fun delete(item: MenuItem) {
         fileToDelete?.delete()
+        val list = getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles()?.filter {
+            it.extension == "mp3"
+        }
         binding.rvMusic.adapter =
-            MusicAdapter(getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles())
+            MusicAdapter(list?.toTypedArray()) {
+                onItemClick(list, it)
+            }
         item.isVisible = false
     }
 
