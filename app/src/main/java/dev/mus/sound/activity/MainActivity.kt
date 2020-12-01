@@ -37,8 +37,8 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private var selectionsAdapter: SelectionsAdapter? = null
-//    lateinit var adView: AdView
-    private var timeOut = true
+    lateinit var adView: AdView
+    private var timeOut = false
 
     var ad: InterstitialAd? = null
     private lateinit var q: String
@@ -143,13 +143,13 @@ class MainActivity : DaggerAppCompatActivity() {
         })
         setSupportActionBar(binding.toolbar)
         getMixedSelections()
-//        setTimer()
-//        AudienceNetworkAds.initialize(this)
-//        ad = InterstitialAd(this, getString(R.string.fb_int_id))
-//        val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
-//        ad?.loadAd(conf)
-//        adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
-//        binding.bannerContainer.addView(adView)
+        setTimer()
+        AudienceNetworkAds.initialize(this)
+        ad = InterstitialAd(this, getString(R.string.fb_int_id))
+        val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
+        ad?.loadAd(conf)
+        adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
+        binding.bannerContainer.addView(adView)
     }
 
     private val value = object : InterstitialAdListener {
@@ -165,6 +165,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
         override fun onError(ad: Ad, adError: AdError) {
             // Ad error callback
+            timeOut=true
             Log.e(
                 TAG,
                 "Interstitial ad failed to load: " + adError.errorMessage
@@ -211,7 +212,7 @@ class MainActivity : DaggerAppCompatActivity() {
         Log.i(TAG, "setAdapterAndBanner")
         binding.rv.adapter = selectionsAdapter
         binding.pb.visibility = GONE
-//        adView.loadAd()
+        adView.loadAd()
     }
 
     private fun getMixedSelections() = manager.getMixedSelections(selectionsCallback)
