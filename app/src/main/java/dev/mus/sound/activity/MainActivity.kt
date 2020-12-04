@@ -165,7 +165,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
         override fun onError(ad: Ad, adError: AdError) {
             // Ad error callback
-            timeOut=true
+            timeOut = true
             Log.e(
                 TAG,
                 "Interstitial ad failed to load: " + adError.errorMessage

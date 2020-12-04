@@ -24,7 +24,6 @@ class MusicActivity : AppCompatActivity() {
     private lateinit var fileToDelete: File
     private lateinit var binding: ActivityMusicBinding
 
-    //    var ad: InterstitialAd? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMusicBinding.inflate(layoutInflater)
