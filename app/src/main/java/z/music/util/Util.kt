@@ -8,6 +8,7 @@ import android.os.Build
 const val TRACK = "track"
 const val Z_MUSIC_PREFS = "z_music_prefs"
 const val TOKEN = "token"
+const val VISIBILITY_BUTTON_ADD = "visibility_button_add"
 
 fun isNetworkAvailable(context: Context): Boolean {
     val connectivityManager =

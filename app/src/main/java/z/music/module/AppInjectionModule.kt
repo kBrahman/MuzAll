@@ -13,6 +13,6 @@ interface AppInjectionModule : AndroidInjector<DaggerAppCompatActivity> {
     @ContributesAndroidInjector(modules = [ActivityModule::class, ActivityInjectionModule::class])
     fun mainActivity(): MainActivity
 
-    @ContributesAndroidInjector(modules = [ActivityModule::class])
+    @ContributesAndroidInjector(modules = [ActivityModule::class, ActivityInjectionModule::class])
     fun musicActivity(): MusicActivity
 }

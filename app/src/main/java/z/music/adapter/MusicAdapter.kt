@@ -2,6 +2,7 @@ package z.music.adapter
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +13,7 @@ import z.music.databinding.MusicItemBinding
 import z.music.fragment.PlayerFragment
 import z.music.model.Track
 import z.music.util.TRACK
+import z.music.util.VISIBILITY_BUTTON_ADD
 
 
 class MusicAdapter(private val list: List<Track>) : RecyclerView.Adapter<MusicAdapter.MusicVH>() {
@@ -41,13 +43,14 @@ class MusicAdapter(private val list: List<Track>) : RecyclerView.Adapter<MusicAd
             binding.root.setOnClickListener {
                 val bundle = Bundle()
                 bundle.putSerializable(TRACK, list[adapterPosition])
+                bundle.putInt(VISIBILITY_BUTTON_ADD, GONE)
                 player.arguments = bundle
                 player.show((it.context as AppCompatActivity).supportFragmentManager, "player")
             }
 
             binding.root.setOnLongClickListener {
                 val activity = it.context as MusicActivity
-                activity.setFileAndMenuItemVisibility(list[adapterPosition])
+                activity.setDeletableAndMenuItemVisibility(list[adapterPosition])
                 true
             }
         }

@@ -29,6 +29,7 @@ import z.music.manager.ApiManager
 import z.music.model.Track
 import z.music.util.TOKEN
 import z.music.util.TRACK
+import z.music.util.VISIBILITY_BUTTON_ADD
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
@@ -90,6 +91,17 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
         setVisibility(GONE)
         binding.bannerContainer.addView(adView)
         adView.loadAd()
+        binding.addRm.visibility = arguments?.getInt(VISIBILITY_BUTTON_ADD) ?: VISIBLE
+        checkTrackAdded(track)
+    }
+
+    private fun checkTrackAdded(track: Track) {
+        GlobalScope.launch {
+            track.isAdded = db.trackDao().isAdded(track.id)
+            if (track.isAdded) {
+                activity?.runOnUiThread { binding.addRm.setImageResource(R.drawable.ic_check_24) }
+            }
+        }
     }
 
     private fun getStreamLink(urlLocation: String): String {

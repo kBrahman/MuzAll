@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import dagger.android.support.DaggerAppCompatActivity
@@ -39,7 +40,7 @@ class MusicActivity : DaggerAppCompatActivity() {
             val all = db.trackDao().all()
             runOnUiThread { binding.rvMusic.adapter = MusicAdapter(all) }
         }
-        setActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar)
     }
 
     override fun onBackPressed() {
@@ -47,7 +48,6 @@ class MusicActivity : DaggerAppCompatActivity() {
             menuItemDelete!!.isVisible = false
         } else {
             super.onBackPressed()
-//            ad?.show()
         }
     }
 
@@ -60,15 +60,18 @@ class MusicActivity : DaggerAppCompatActivity() {
     fun delete(item: MenuItem) {
         GlobalScope.launch {
             db.trackDao().delete(trackToDelete)
-            binding.rvMusic.adapter =
-                MusicAdapter(db.trackDao().all())
-            item.isVisible = false
+            val list = db.trackDao().all()
+            runOnUiThread {
+                binding.rvMusic.adapter = MusicAdapter(list)
+                item.isVisible = false
+            }
         }
 
     }
 
-    fun setFileAndMenuItemVisibility(track: Track) {
+    fun setDeletableAndMenuItemVisibility(track: Track) {
         menuItemDelete.let {
+            Log.i(TAG, "let")
             trackToDelete = track
             it?.isVisible = true
             vibrate()
@@ -78,7 +81,7 @@ class MusicActivity : DaggerAppCompatActivity() {
     private fun vibrate() {
         val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v?.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+            v?.vibrate(VibrationEffect.createOneShot(100, 110))
         } else {
             //deprecated in API 26
             v?.vibrate(500)

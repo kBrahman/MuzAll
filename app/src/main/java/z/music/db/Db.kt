@@ -20,5 +20,8 @@ abstract class Db : RoomDatabase() {
         @Delete
         fun delete(track: Track)
 
+        @Query("SELECT EXISTS(SELECT 1 FROM Track WHERE id=:i)")
+        fun isAdded(i: Int): Boolean
+
     }
 }
