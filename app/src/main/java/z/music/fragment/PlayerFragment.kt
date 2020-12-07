@@ -1,24 +1,18 @@
 package z.music.fragment
 
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.app.DownloadManager
-import android.content.Context.DOWNLOAD_SERVICE
 import android.content.DialogInterface
 import android.content.SharedPreferences
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.core.content.ContextCompat
 import com.facebook.ads.AdSize
 import com.facebook.ads.AdView
 import dagger.android.support.DaggerDialogFragment
@@ -30,11 +24,11 @@ import z.music.R
 import z.music.activity.MainActivity
 import z.music.activity.MusicActivity
 import z.music.databinding.FragmentPlayerBinding
+import z.music.db.Db
 import z.music.manager.ApiManager
 import z.music.model.Track
 import z.music.util.TOKEN
 import z.music.util.TRACK
-import java.io.File
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
@@ -46,6 +40,7 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
         private val TAG = PlayerFragment::class.java.simpleName
     }
 
+    private lateinit var track: Track
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
 
@@ -60,6 +55,10 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
     lateinit var apiManager: ApiManager
     private val handler: Handler = Handler(Looper.myLooper()!!)
     private var isPrepared = false
+
+    @Inject
+    lateinit var db: Db
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
@@ -70,37 +69,30 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentPlayerBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val track = arguments?.getSerializable(TRACK)
-        if (track is Track) {
-            GlobalScope.launch {
-                val link = getStreamLink(
-                    BuildConfig.SERVER + TRACK + "/" + track.id + "/play?access_token=" + sharedPreferences.getString(
-                        TOKEN, null
-                    )
+        track = arguments?.getSerializable(TRACK) as Track
+        GlobalScope.launch {
+            val link = getStreamLink(
+                BuildConfig.SERVER + TRACK + "/" + track.id + "/play?access_token=" + sharedPreferences.getString(
+                    TOKEN, null
                 )
-                mp.setDataSource(link)
-                configureMp()
-            }
-
-            binding.name.text = track.track
-        } else if (track is File) {
-            context?.let { mp.setDataSource(it, Uri.fromFile(track)) }
-            binding.download.visibility = GONE
-            binding.name.text = track.name
+            )
+            mp.setDataSource(link)
             configureMp()
         }
+        binding.name.text = track.track
+
         setVisibility(GONE)
         binding.bannerContainer.addView(adView)
         adView.loadAd()
     }
 
-    private suspend fun getStreamLink(urlLocation: String): String {
+    private fun getStreamLink(urlLocation: String): String {
         val connection = URL(urlLocation).openConnection()
         connection.connect()
         val stream = connection.getInputStream()
@@ -113,8 +105,8 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
         mp.setOnPreparedListener(this)
         mp.prepareAsync()
         mp.setOnCompletionListener {
-            binding.play?.setImageResource(R.drawable.ic_play_arrow_24)
-            handler?.removeCallbacks(this)
+            binding.play.setImageResource(R.drawable.ic_play_arrow_24)
+            handler.removeCallbacks(this)
             binding.sb.progress = 0
         }
         binding.sb.setOnSeekBarChangeListener(this)
@@ -137,50 +129,31 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
         }
     }
 
-    private fun download(track: Track) {
-        if (ContextCompat.checkSelfPermission(
-                context!!,
-                WRITE_EXTERNAL_STORAGE
-            ) == PERMISSION_GRANTED
-        ) {
-            val downloadManager = context?.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-            val uri = Uri.parse(track.stream_url)
-            val request = DownloadManager.Request(uri)
-            downloadManager.enqueue(
-                request.setDestinationInExternalPublicDir(
-                    DIRECTORY_MUSIC,
-                    track.track + ".mp3"
-                )
-            )
-        } else {
-            requestPermissions(arrayOf(WRITE_EXTERNAL_STORAGE), 2)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if ((grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED)) {
-            download(arguments?.getSerializable(TRACK) as Track)
-        }
-    }
-
     override fun onPrepared(mp: MediaPlayer?) {
         mp?.start()
         binding.pbPlayer.visibility = GONE
         startSeekBar()
         isPrepared = true
+        binding.addRm.setOnClickListener {
+            if (!track.isAdded) {
+                track.isAdded = true
+                GlobalScope.launch {
+                    db.trackDao().insert(track)
+                    Log.i(TAG, "all=>${db.trackDao().all()}")
+                }
+                binding.addRm.setImageResource(R.drawable.ic_check_24)
+            }
+
+        }
     }
 
     private fun startSeekBar() {
-        handler?.postDelayed(this, 1000)
+        handler.postDelayed(this, 1000)
     }
 
     override fun run() {
         val currentPosition = mp.currentPosition
-        binding.sb?.progress = currentPosition.times(100).div(mp.duration)
+        binding.sb.progress = currentPosition.times(100).div(mp.duration)
         startSeekBar()
     }
 
@@ -197,7 +170,7 @@ class PlayerFragment : DaggerDialogFragment(), MediaPlayer.OnPreparedListener,
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        handler?.removeCallbacks(this)
+        handler.removeCallbacks(this)
         if (isPrepared) mp.stop()
         mp.release()
         binding.sb.progress = 0

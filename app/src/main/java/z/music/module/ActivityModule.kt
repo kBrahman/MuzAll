@@ -1,6 +1,7 @@
 package z.music.module
 
 import android.content.Context.MODE_PRIVATE
+import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.android.DaggerApplication
@@ -9,6 +10,8 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import z.music.BuildConfig
+import z.music.R
+import z.music.db.Db
 import z.music.err.ErrorInterceptor
 import z.music.manager.ApiManager
 import z.music.manager.MuzApiManager
@@ -33,4 +36,11 @@ class ActivityModule {
 
     @Provides
     fun sharedPrefs(app: DaggerApplication) = app.getSharedPreferences(Z_MUSIC_PREFS, MODE_PRIVATE)
+
+    @Provides
+    fun db(ctx: DaggerApplication) = Room.databaseBuilder(
+        ctx,
+        Db::class.java,
+        ctx.getString(R.string.app_name) + "_db"
+    ).build()
 }

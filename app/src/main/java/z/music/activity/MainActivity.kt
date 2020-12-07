@@ -1,11 +1,9 @@
 package z.music.activity
 
 //import com.facebook.ads.*
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -16,8 +14,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.WindowManager
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.ads.*
@@ -301,13 +297,7 @@ class MainActivity : DaggerAppCompatActivity() {
         return true
     }
 
-    fun openMusic(item: MenuItem?) {
-        if (ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
-            startActivity(Intent(this, MusicActivity::class.java))
-        } else {
-            ActivityCompat.requestPermissions(this, arrayOf(READ_EXTERNAL_STORAGE), 1)
-        }
-    }
+    fun openMusic(item: MenuItem?) = startActivity(Intent(this, MusicActivity::class.java))
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

@@ -5,7 +5,7 @@ import dagger.android.ContributesAndroidInjector
 import z.music.fragment.PlayerFragment
 
 @Module
-interface ActivityModuleContrib {
+interface ActivityInjectionModule {
 
     @ContributesAndroidInjector(modules = [FragmentModule::class])
     fun playerFrag(): PlayerFragment

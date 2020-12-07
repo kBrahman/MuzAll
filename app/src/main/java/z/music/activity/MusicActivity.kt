@@ -3,45 +3,43 @@ package z.music.activity
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment.DIRECTORY_MUSIC
-import android.os.Environment.getExternalStoragePublicDirectory
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import z.music.adapter.MusicAdapter
+import dagger.android.support.DaggerAppCompatActivity
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import z.music.R
+import z.music.adapter.MusicAdapter
 import z.music.databinding.ActivityMusicBinding
-import java.io.File
+import z.music.db.Db
+import z.music.model.Track
+import javax.inject.Inject
 
-class MusicActivity : AppCompatActivity() {
+class MusicActivity : DaggerAppCompatActivity() {
     companion object {
         private val TAG = MusicActivity::class.java.simpleName
     }
+
+    @Inject
+    lateinit var db: Db
     private lateinit var binding: ActivityMusicBinding
 
     var menuItemDelete: MenuItem? = null
-    private lateinit var fileToDelete: File
+    private lateinit var trackToDelete: Track
 
     //    var ad: InterstitialAd? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= ActivityMusicBinding.inflate(layoutInflater)
+        binding = ActivityMusicBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val files = getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles()
         binding.rvMusic.setHasFixedSize(true)
-        binding.rvMusic.adapter = MusicAdapter(files)
-//        adViewMusic.adListener = object : AdListener() {
-//            override fun onAdLoaded() {
-//                adViewMusic.visibility = VISIBLE
-//            }
-//        }
-//        adViewMusic.loadAd(AdRequest.Builder().build())
-//        ad = InterstitialAd(this)
-//        ad?.adUnitId = getString(R.string.int_id)
-//        ad?.loadAd(AdRequest.Builder().build())
-        setSupportActionBar(binding.toolbar)
+        GlobalScope.launch {
+            val all = db.trackDao().all()
+            runOnUiThread { binding.rvMusic.adapter = MusicAdapter(all) }
+        }
+        setActionBar(binding.toolbar)
     }
 
     override fun onBackPressed() {
@@ -60,15 +58,18 @@ class MusicActivity : AppCompatActivity() {
     }
 
     fun delete(item: MenuItem) {
-        fileToDelete.delete()
-        binding.rvMusic.adapter =
-            MusicAdapter(getExternalStoragePublicDirectory(DIRECTORY_MUSIC).listFiles())
-        item.isVisible = false
+        GlobalScope.launch {
+            db.trackDao().delete(trackToDelete)
+            binding.rvMusic.adapter =
+                MusicAdapter(db.trackDao().all())
+            item.isVisible = false
+        }
+
     }
 
-    fun setFileAndMenuItemVisibility(file: File) {
+    fun setFileAndMenuItemVisibility(track: Track) {
         menuItemDelete.let {
-            fileToDelete = file
+            trackToDelete = track
             it?.isVisible = true
             vibrate()
         }
