@@ -1,6 +1,5 @@
 package muz.all.module
 
-import androidx.lifecycle.ViewModelStoreOwner
 import dagger.Module
 import dagger.android.AndroidInjector
 import dagger.android.ContributesAndroidInjector
@@ -10,9 +9,9 @@ import muz.all.activity.MusicActivity
 
 
 @Module
-interface ActivityInjector : AndroidInjector<DaggerAppCompatActivity> {
+interface AppInjectionModule : AndroidInjector<DaggerAppCompatActivity> {
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = [MusicInjectionModule::class])
     fun musicActivity(): MusicActivity
 
     @ContributesAndroidInjector(modules = [MainActivityModule::class])

@@ -7,7 +7,6 @@ import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Environment.getExternalStoragePublicDirectory
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.VISIBLE
@@ -22,13 +21,15 @@ import muz.all.databinding.ActivityMusicBinding
 import muz.all.fragment.PlayerFragment
 import muz.all.util.TRACK
 import java.io.File
+import javax.inject.Inject
 
 class MusicActivity : DaggerAppCompatActivity() {
     companion object {
         private val TAG = MusicActivity::class.java.simpleName
     }
 
-    private val player = PlayerFragment()
+    @Inject
+    lateinit var player: PlayerFragment
 
     private var menuItemDelete: MenuItem? = null
     private var fileToDelete: File? = null

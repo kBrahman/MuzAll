@@ -113,7 +113,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             override fun run() {
                 timeOut = true
                 if (trackAdapter != null) {
-                    runOnUiThread { setAdapter() }
+                    runOnUiThread { setAdapterAndBanner() }
                 }
                 Log.i(TAG, "time out")
             }
@@ -135,17 +135,20 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     override fun show(tracks: MutableList<Track>?) {
         trackAdapter = TrackAdapter(tracks)
         if (timeOut) {
-            setAdapter()
+            setAdapterAndBanner()
         }
         viewModel.tracks = MutableLiveData<List<Track>>(trackAdapter?.getAll())
     }
 
-    private fun setAdapter() {
+    private fun setAdapterAndBanner() {
         hideLoading()
         binding.rv.adapter = trackAdapter
         binding.adView.adListener = object : AdListener() {
             override fun onAdLoaded() {
-                binding.adView.visibility = VISIBLE
+                Log.i(TAG,"ad loaded")
+                if (supportFragmentManager.findFragmentByTag("player")?.isVisible != true) {
+                    binding.adView.visibility = VISIBLE
+                }
             }
         }
         binding.adView.loadAd(AdRequest.Builder().build())

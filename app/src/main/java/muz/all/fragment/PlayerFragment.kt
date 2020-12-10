@@ -20,16 +20,14 @@ import android.widget.SeekBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
+import dagger.android.support.DaggerDialogFragment
 import muz.all.R
 import muz.all.activity.MainActivity
 import muz.all.activity.MusicActivity
-import muz.all.component.DaggerFragmentComponent
 import muz.all.databinding.FragmentPlayerBinding
 import muz.all.model.Track
-import muz.all.mvp.presenter.PlayerPresenter
 import muz.all.mvp.view.PlayerView
 import muz.all.util.TRACK
 import java.io.File
@@ -37,16 +35,13 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 import javax.inject.Inject
 
-class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListener,
+class PlayerFragment : DaggerDialogFragment(), PlayerView, MediaPlayer.OnPreparedListener,
     SeekBar.OnSeekBarChangeListener,
     Runnable {
 
     companion object {
         private val TAG = PlayerFragment::class.java.simpleName
     }
-
-    @Inject
-    lateinit var playerPresenter: PlayerPresenter
 
     @set:Inject
     var mp: MediaPlayer? = null
@@ -78,7 +73,6 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        DaggerFragmentComponent.create().inject(this)
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
             val audio = track.audio
@@ -201,7 +195,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
         handler.removeCallbacks(this)
         if (isPrepared) mp?.stop()
         mp?.release()
-        binding.seekBar?.progress = 0
+        binding.seekBar.progress = 0
         setVisibility(VISIBLE)
         isPrepared = false
         super.onDismiss(dialog)

@@ -8,22 +8,20 @@ import android.media.MediaPlayer
 import android.os.Build
 import dagger.Module
 import dagger.Provides
-import muz.all.mvp.presenter.PlayerPresenter
-import muz.all.mvp.presenter.PlayerPresenterImpl
 
 @Module
 class FragmentModule {
     @Provides
-    fun provideMediaPlayer(): MediaPlayer? {
+    fun provideMediaPlayer(): MediaPlayer {
         val mp = MediaPlayer()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mp.setAudioAttributes(AudioAttributes.Builder().setContentType(CONTENT_TYPE_MUSIC).setUsage(USAGE_MEDIA).build())
+            mp.setAudioAttributes(
+                AudioAttributes.Builder().setContentType(CONTENT_TYPE_MUSIC).setUsage(USAGE_MEDIA)
+                    .build()
+            )
         } else {
             mp.setAudioStreamType(STREAM_MUSIC)
         }
         return mp
     }
-
-    @Provides
-    fun providePlayerPresenter(presenter: PlayerPresenterImpl): PlayerPresenter = presenter
 }

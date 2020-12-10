@@ -4,9 +4,9 @@ import dagger.Component
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
-import muz.all.module.ActivityInjector
+import muz.all.module.AppInjectionModule
 
-@Component(modules = [AndroidInjectionModule::class, ActivityInjector::class])
+@Component(modules = [AndroidInjectionModule::class, AppInjectionModule::class])
 interface AppComponent : AndroidInjector<DaggerApplication> {
 
     @Component.Factory
