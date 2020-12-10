@@ -8,10 +8,11 @@ import muz.all.R
 import muz.all.databinding.TrackItemBinding
 import muz.all.model.Track
 
-class TrackAdapter(private val results: MutableList<Track>?) :
+class TrackAdapter(
+    private val results: MutableList<Track>?,
+    private val onItemClick: (track: Track?) -> Unit
+) :
     RecyclerView.Adapter<TrackAdapter.VH>() {
-
-//    private val player: DialogFragment = PlayerFragment()
 
     override fun onCreateViewHolder(group: ViewGroup, p1: Int) =
         VH(TrackItemBinding.inflate(LayoutInflater.from(group.context), group, false))
@@ -41,19 +42,9 @@ class TrackAdapter(private val results: MutableList<Track>?) :
 
     inner class VH(val binding: TrackItemBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
-//            player.showsDialog = false
-//            binding.root.setOnClickListener {
-//                val showsDialog = player.showsDialog
-//                if (showsDialog) {
-//                    player.dismiss()
-//                    player.showsDialog = false
-//                }
-//                val bundle = Bundle()
-//                bundle.putSerializable(TRACK, results?.get(adapterPosition))
-//                player.arguments = bundle
-//                player.show((it.context as AppCompatActivity).supportFragmentManager, "player")
-//                player.showsDialog = true
-//            }
+            binding.root.setOnClickListener {
+                onItemClick(results?.get(adapterPosition))
+            }
         }
     }
 }

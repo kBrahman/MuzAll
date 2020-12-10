@@ -35,7 +35,8 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 import javax.inject.Inject
 
-class PlayerFragment : DaggerDialogFragment(), PlayerView, MediaPlayer.OnPreparedListener,
+class PlayerFragment : DaggerDialogFragment(), PlayerView,
+    MediaPlayer.OnPreparedListener,
     SeekBar.OnSeekBarChangeListener,
     Runnable {
 
@@ -43,8 +44,8 @@ class PlayerFragment : DaggerDialogFragment(), PlayerView, MediaPlayer.OnPrepare
         private val TAG = PlayerFragment::class.java.simpleName
     }
 
-    @set:Inject
-    var mp: MediaPlayer? = null
+    @Inject
+    lateinit var mp: MediaPlayer
     private val handler = Handler(Looper.myLooper()!!)
     private var isPrepared = false
     private lateinit var binding: FragmentPlayerBinding
@@ -76,12 +77,12 @@ class PlayerFragment : DaggerDialogFragment(), PlayerView, MediaPlayer.OnPrepare
         val track = arguments?.getSerializable(TRACK)
         if (track is Track) {
             val audio = track.audio
-            mp?.setDataSource(audio)
+            mp.setDataSource(audio)
             binding.name.text = track.name
         } else if (track is File && track.exists()) {
             try {
                 val fos = FileInputStream(track)
-                mp?.setDataSource(fos.fd, 0, track.length())
+                mp.setDataSource(fos.fd, 0, track.length())
                 fos.close()
             } catch (ex: FileNotFoundException) {
                 Toast.makeText(context, R.string.could_not_play_file, LENGTH_LONG).show()

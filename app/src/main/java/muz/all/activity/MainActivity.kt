@@ -23,10 +23,12 @@ import dagger.android.support.DaggerAppCompatActivity
 import muz.all.R
 import muz.all.adapter.TrackAdapter
 import muz.all.databinding.ActivityMainBinding
+import muz.all.fragment.PlayerFragment
 import muz.all.model.AppViewModel
 import muz.all.model.Track
 import muz.all.mvp.presenter.MainPresenter
 import muz.all.mvp.view.MainView
+import muz.all.util.TRACK
 import muz.all.util.isNetworkConnected
 import java.util.*
 import javax.inject.Inject
@@ -43,6 +45,9 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
 
     @Inject
     lateinit var presenter: MainPresenter
+
+    @Inject
+    lateinit var player: PlayerFragment
 
     @Inject
     lateinit var viewModel: AppViewModel
@@ -133,7 +138,18 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     }
 
     override fun show(tracks: MutableList<Track>?) {
-        trackAdapter = TrackAdapter(tracks)
+        trackAdapter = TrackAdapter(tracks) {
+//            val showsDialog = player.showsDialog
+//            if (showsDialog) {
+//                player.dismiss()
+//                player.showsDialog = false
+//            }
+            val bundle = Bundle()
+            bundle.putSerializable(TRACK, it)
+            player.arguments = bundle
+            player.show(supportFragmentManager, "player")
+            player.showsDialog = true
+        }
         if (timeOut) {
             setAdapterAndBanner()
         }
@@ -145,7 +161,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         binding.rv.adapter = trackAdapter
         binding.adView.adListener = object : AdListener() {
             override fun onAdLoaded() {
-                Log.i(TAG,"ad loaded")
+                Log.i(TAG, "ad loaded")
                 if (supportFragmentManager.findFragmentByTag("player")?.isVisible != true) {
                     binding.adView.visibility = VISIBLE
                 }

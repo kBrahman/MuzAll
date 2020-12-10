@@ -67,6 +67,7 @@ class MusicActivity : DaggerAppCompatActivity() {
         bundle.putSerializable(TRACK, files?.get(it))
         player.arguments = bundle
         player.show(supportFragmentManager, "player")
+        player.showsDialog = true
     }
 
     private fun isDirOk(directory: File): Boolean {
