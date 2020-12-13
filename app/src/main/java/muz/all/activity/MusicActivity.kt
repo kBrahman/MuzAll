@@ -21,15 +21,11 @@ import muz.all.databinding.ActivityMusicBinding
 import muz.all.fragment.PlayerFragment
 import muz.all.util.TRACK
 import java.io.File
-import javax.inject.Inject
 
 class MusicActivity : DaggerAppCompatActivity() {
     companion object {
         private val TAG = MusicActivity::class.java.simpleName
     }
-
-    @Inject
-    lateinit var player: PlayerFragment
 
     private var menuItemDelete: MenuItem? = null
     private var fileToDelete: File? = null
@@ -65,6 +61,7 @@ class MusicActivity : DaggerAppCompatActivity() {
     private fun onItemClick(files: List<File>?, it: Int) {
         val bundle = Bundle()
         bundle.putSerializable(TRACK, files?.get(it))
+        val player = PlayerFragment()
         player.arguments = bundle
         player.show(supportFragmentManager, "player")
         player.showsDialog = true

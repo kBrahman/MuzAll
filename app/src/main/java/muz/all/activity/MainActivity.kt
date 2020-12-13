@@ -47,9 +47,6 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     lateinit var presenter: MainPresenter
 
     @Inject
-    lateinit var player: PlayerFragment
-
-    @Inject
     lateinit var viewModel: AppViewModel
     private var isPaused = false
     override var trackAdapter: TrackAdapter? = null
@@ -139,13 +136,9 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
 
     override fun show(tracks: MutableList<Track>?) {
         trackAdapter = TrackAdapter(tracks) {
-//            val showsDialog = player.showsDialog
-//            if (showsDialog) {
-//                player.dismiss()
-//                player.showsDialog = false
-//            }
             val bundle = Bundle()
             bundle.putSerializable(TRACK, it)
+            val player = PlayerFragment()
             player.arguments = bundle
             player.show(supportFragmentManager, "player")
             player.showsDialog = true

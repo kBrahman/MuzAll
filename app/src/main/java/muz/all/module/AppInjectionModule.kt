@@ -9,10 +9,10 @@ import muz.all.activity.MusicActivity
 @Module
 interface AppInjectionModule {
 
-    @ContributesAndroidInjector(modules = [ActivityModule::class, ActivityInjectionModule::class])
+    @ContributesAndroidInjector(modules = [ActivityInjectionModule::class])
     fun musicActivity(): MusicActivity
 
-    @ContributesAndroidInjector(modules = [MainActivityModule::class, ActivityModule::class, ActivityInjectionModule::class])
+    @ContributesAndroidInjector(modules = [MainActivityModule::class, ActivityInjectionModule::class])
     fun mainActivity(): MainActivity
 
 }
