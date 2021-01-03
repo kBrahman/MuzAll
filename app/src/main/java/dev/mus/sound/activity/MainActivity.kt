@@ -4,6 +4,9 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -11,6 +14,24 @@ import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.widget.SearchView
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.facebook.ads.*
@@ -23,9 +44,12 @@ import dev.mus.sound.manager.ApiManager
 import dev.mus.sound.model.CollectionHolder
 import dev.mus.sound.model.Selection
 import dev.mus.sound.model.Track
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.URL
 import java.util.*
 import javax.inject.Inject
 
@@ -36,6 +60,7 @@ class MainActivity : DaggerAppCompatActivity() {
         private val TAG = MainActivity::class.java.simpleName
     }
 
+    private lateinit var selections: List<Selection>
     private var selectionsAdapter: SelectionsAdapter? = null
     lateinit var adView: AdView
     private var timeOut = false
@@ -50,6 +75,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private var loading = false
     private var trackAdapter: TrackAdapter? = null
     private var searching = false
+    private lateinit var uiState: MutableState<UIState>
 
     private val callback = object : Callback<CollectionHolder<Track>> {
         override fun onFailure(call: Call<CollectionHolder<Track>>, t: Throwable) =
@@ -61,10 +87,10 @@ class MainActivity : DaggerAppCompatActivity() {
         ) {
             val collection = response.body()?.collection?.filter { it.media != null }
             if (trackAdapter == null && timeOut) {
-                trackAdapter = TrackAdapter(collection?.toMutableList())
+                trackAdapter = TrackAdapter(collection?.toMutableList(), ::play)
                 binding.rv.adapter = trackAdapter
             } else if (trackAdapter == null) {
-                trackAdapter = TrackAdapter(collection?.toMutableList())
+                trackAdapter = TrackAdapter(collection?.toMutableList(), ::play)
             } else {
                 trackAdapter?.addData(collection?.toMutableList())
             }
@@ -82,12 +108,12 @@ class MainActivity : DaggerAppCompatActivity() {
                 call: Call<CollectionHolder<Selection>>,
                 response: Response<CollectionHolder<Selection>>
             ) {
-                val withTracks =
-                    response.body()?.collection?.filter { it.items.collection.any { e -> !e.tracks.isNullOrEmpty() } }
-
                 title = getString(R.string.mixed_selections)
-
-                withTracks?.let {
+                selections =
+                    response.body()?.collection?.filter { it.items.collection.any { e -> !e.tracks.isNullOrEmpty() } }
+                        ?: emptyList()
+                uiState.value = UIState.SELECTION
+                selections.let {
                     selectionsAdapter = SelectionsAdapter(it) { ids, name ->
                         binding.pb.visibility = VISIBLE
                         manager.tracksBy(ids, selectionCallback)
@@ -109,39 +135,87 @@ class MainActivity : DaggerAppCompatActivity() {
                     tr.url.endsWith("/progressive")
                 }
             }
-            trackAdapter = TrackAdapter(
-                filtered?.toMutableList()
-            )
+
+            trackAdapter = TrackAdapter(filtered?.toMutableList(), ::play)
             binding.rv.adapter = trackAdapter
             binding.pb.visibility = GONE
         }
     }
 
+    private fun play(track: Track?) {
+        setContent {
+            Dialog(onDismissRequest = { /*TODO*/ }) {
+                Text(text = "TEST")
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        binding.rv.setHasFixedSize(true)
-        binding.rv.addOnScrollListener(object :
-            androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-            override fun onScrolled(
-                recyclerView: androidx.recyclerview.widget.RecyclerView,
-                dx: Int,
-                dy: Int
-            ) {
-                val layoutManager =
-                    recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
-                if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
-                    if (!loading && searching) {
-                        binding.pb.visibility = VISIBLE
-                        offset += 25
-                        search(q, offset)
-                        loading = true
+        setContent {
+            val colorPrimary = Color(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    getColor(R.color.colorPrimary)
+                } else {
+                    resources.getColor(R.color.colorPrimary)
+                }
+            )
+            uiState = remember { mutableStateOf(UIState.PB) }
+            when (uiState.value) {
+                UIState.PB -> Box(Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        color = colorPrimary, modifier = Modifier.align(
+                            Alignment.Center
+                        )
+                    )
+
+                }
+                UIState.SELECTION -> LazyColumn(Modifier.padding(start = 4.dp, end = 4.dp)) {
+                    items(items = selections) {
+                        Text(
+                            it.title,
+                            fontSize = 20.sp,
+                            style = TextStyle(fontWeight = FontWeight.Bold)
+                        )
+                        LazyRow {
+                            items(items = it.items.collection) { playlist ->
+                                val btp = remember { mutableStateOf<Bitmap?>(null) }
+                                getBitmap(btp, playlist.calculated_artwork_url)
+                                Card(Modifier.preferredSize(100.dp)) {
+                                    val bitmap = btp.value?.asImageBitmap()
+                                    if (bitmap != null) {
+                                        Image(bitmap, modifier = Modifier.fillMaxSize())
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
-        })
-        setSupportActionBar(binding.toolbar)
+        }
+//        binding = ActivityMainBinding.inflate(layoutInflater)
+//        setContentView(binding.root)
+//        binding.rv.setHasFixedSize(true)
+//        binding.rv.addOnScrollListener(object :
+//            androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+//            override fun onScrolled(
+//                recyclerView: androidx.recyclerview.widget.RecyclerView,
+//                dx: Int,
+//                dy: Int
+//            ) {
+//                val layoutManager =
+//                    recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
+//                if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
+//                    if (!loading && searching) {
+//                        binding.pb.visibility = VISIBLE
+//                        offset += 25
+//                        search(q, offset)
+//                        loading = true
+//                    }
+//                }
+//            }
+//        })
+//        setSupportActionBar(binding.toolbar)
         getMixedSelections()
         setTimer()
         AudienceNetworkAds.initialize(this)
@@ -149,8 +223,13 @@ class MainActivity : DaggerAppCompatActivity() {
         val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
         ad?.loadAd(conf)
         adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
-        binding.bannerContainer.addView(adView)
+//        binding.bannerContainer.addView(adView)
     }
+
+    private fun getBitmap(btp: MutableState<Bitmap?>, url: String) = GlobalScope.launch {
+        btp.value = BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
+    }
+
 
     private val value = object : InterstitialAdListener {
         override fun onInterstitialDisplayed(ad: Ad) {
@@ -164,21 +243,12 @@ class MainActivity : DaggerAppCompatActivity() {
         }
 
         override fun onError(ad: Ad, adError: AdError) {
-            // Ad error callback
             timeOut = true
-            Log.e(
-                TAG,
-                "Interstitial ad failed to load: " + adError.errorMessage
-            )
+            Log.e(TAG, "Interstitial ad failed to load: " + adError.errorMessage)
         }
 
         override fun onAdLoaded(ad: Ad) {
-            // Interstitial ad is loaded and ready to be displayed
-            Log.d(
-                TAG,
-                "Interstitial ad is loaded and ready to be displayed!"
-            )
-            // Show the ad
+            Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!")
             this@MainActivity.ad?.show()
         }
 
@@ -210,8 +280,8 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun setAdapterAndBanner() {
         Log.i(TAG, "setAdapterAndBanner")
-        binding.rv.adapter = selectionsAdapter
-        binding.pb.visibility = GONE
+//        binding.rv.adapter = selectionsAdapter
+//        binding.pb.visibility = GONE
         adView.loadAd()
     }
 
@@ -261,5 +331,10 @@ class MainActivity : DaggerAppCompatActivity() {
             openMusic(null)
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    private enum class UIState {
+        PB,
+        SELECTION
     }
 }

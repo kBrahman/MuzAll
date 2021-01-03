@@ -1,9 +1,7 @@
 package dev.mus.sound.adapter
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
@@ -11,10 +9,12 @@ import dev.mus.sound.R
 import dev.mus.sound.databinding.ItemTrackBinding
 import dev.mus.sound.fragment.PlayerFragment
 import dev.mus.sound.model.Track
-import dev.mus.sound.util.TRACK
 import dev.mus.sound.util.milliSecondsToTime
 
-class TrackAdapter(private val results: MutableList<Track>?) :
+class TrackAdapter(
+    private val results: MutableList<Track>?,
+    private val onClick: (track: Track?) -> Unit
+) :
     RecyclerView.Adapter<TrackAdapter.VH>() {
 
     private val player: DialogFragment = PlayerFragment()
@@ -49,13 +49,11 @@ class TrackAdapter(private val results: MutableList<Track>?) :
     inner class VH(val binding: ItemTrackBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
-                if (player.fragmentManager != null && player.showsDialog) {
-                    player.dismiss()
-                }
-                val bundle = Bundle()
-                bundle.putSerializable(TRACK, results?.get(adapterPosition))
-                player.arguments = bundle
-                player.show((it.context as AppCompatActivity).supportFragmentManager, "player")
+                onClick(results?.get(adapterPosition))
+//                val bundle = Bundle()
+//                bundle.putSerializable(TRACK, results?.get(adapterPosition))
+//                player.arguments = bundle
+//                player.show((it.context as AppCompatActivity).supportFragmentManager, "player")
             }
         }
     }

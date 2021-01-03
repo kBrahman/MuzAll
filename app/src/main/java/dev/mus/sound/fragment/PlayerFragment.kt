@@ -169,12 +169,12 @@ class PlayerFragment : DialogFragment(), MediaPlayer.OnPreparedListener,
     }
 
     private fun startSeekBar() {
-        handler?.postDelayed(this, 1000)
+        handler.postDelayed(this, 1000)
     }
 
     override fun run() {
         val currentPosition = mp.currentPosition
-        binding.sb?.progress = currentPosition.times(100).div(mp.duration)
+        binding.sb.progress = currentPosition.times(100).div(mp.duration)
         startSeekBar()
     }
 
