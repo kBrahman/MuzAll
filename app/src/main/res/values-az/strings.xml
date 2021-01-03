@@ -4,4 +4,8 @@
     <string name="released">Buraxılış tarixi: %s</string>
     <string name="folder">"Musiqi qovluğu "</string>
     <string name="my_music">Musiqiim</string>
+    <string name="action_delete">Sil</string>
+    <string name="could_not_play_file">"Təəssüf ki, treki oxutmaq olmur "</string>
+    <string name="service_unavailable">"Xidmət əlçatan deyil, daha sonra yenidən cəhd edin "</string>
+    <string name="err_dir_create">"Musiqi üçün qovluq yarana bilmədi "</string>
 </resources>

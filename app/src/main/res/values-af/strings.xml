@@ -5,4 +5,5 @@
     <string name="folder">Musiek gids</string>
     <string name="could_not_play_file">Kon nie die snit speel nie, jammer</string>
     <string name="my_music">My musiek</string>
+    <string name="service_unavailable">"Diens nie beskikbaar nie, probeer asseblief later weer "</string>
 </resources>
