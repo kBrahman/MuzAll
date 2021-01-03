@@ -6,4 +6,5 @@
     <string name="my_music">เพลงของฉัน</string>
     <string name="could_not_play_file">ไม่สามารถเล่นแทร็กได้ขออภัย</string>
     <string name="service_unavailable">ไม่สามารถใช้บริการได้โปรดลองอีกครั้งในภายหลัง</string>
+    <string name="err_dir_create">"ไม่สามารถสร้างไดเร็กทอรีสำหรับเพลง "</string>
 </resources>

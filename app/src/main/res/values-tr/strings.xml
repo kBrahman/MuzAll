@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MuzAll</string>
+    <string name="duration">Süre: %s</string>
+    <string name="released">Yayınlanan: %s</string>
+    <string name="folder">"Müzik klasörü "</string>
+    <string name="my_music">"Benim müziğim "</string>
+    <string name="could_not_play_file">" Müzik çalınamadı, üzgünüm"</string>
+    <string name="service_unavailable">"Hizmet kullanılamıyor, lütfen daha sonra tekrar deneyin "</string>
+    <string name="err_dir_create">"Müzik dizini oluşturulamadı "</string>
+    <string name="no_net">"İnternet bağlantısı yok "</string>
+    <string name="action_delete">Sil</string>
+</resources>
