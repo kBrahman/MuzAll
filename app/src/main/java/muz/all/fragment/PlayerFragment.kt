@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.Environment.DIRECTORY_MUSIC
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -22,6 +23,7 @@ import android.widget.Toast.LENGTH_LONG
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
 import dagger.android.support.DaggerDialogFragment
 import muz.all.R
 import muz.all.activity.MainActivity
@@ -103,11 +105,11 @@ class PlayerFragment : DaggerDialogFragment(), PlayerView,
         }
         binding.seekBar.setOnSeekBarChangeListener(this)
         binding.play.setOnClickListener {
-            if (mp?.isPlaying == true) {
-                mp?.pause()
+            if (mp.isPlaying) {
+                mp.pause()
                 binding.play.setImageResource(R.drawable.ic_play_arrow_24)
             } else {
-                mp?.start()
+                mp.start()
                 binding.play.setImageResource(R.drawable.ic_pause_24)
             }
         }
@@ -117,6 +119,10 @@ class PlayerFragment : DaggerDialogFragment(), PlayerView,
         binding.recBanner.adListener = object : AdListener() {
             override fun onAdLoaded() {
                 binding.recBanner.visibility = VISIBLE
+            }
+
+            override fun onAdFailedToLoad(error: LoadAdError?) {
+               Log.i(TAG,"err=>$error")
             }
         }
         binding.recBanner.loadAd(AdRequest.Builder().build())
