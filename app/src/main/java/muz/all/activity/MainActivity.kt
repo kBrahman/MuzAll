@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import dagger.android.support.DaggerAppCompatActivity
 import muz.all.R
 import muz.all.adapter.TrackAdapter
@@ -69,10 +70,11 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        val ad = InterstitialAd(this)
-        ad.adUnitId = getString(R.string.int_id)
-        ad.loadAd(AdRequest.Builder().build())
-        ad.adListener = object : AdListener() {
+        MobileAds.initialize(this) {}
+        val interstitialAd = InterstitialAd(this)
+        interstitialAd.adUnitId = getString(R.string.int_id)
+        interstitialAd.loadAd(AdRequest.Builder().build())
+        interstitialAd.adListener = object : AdListener() {
             override fun onAdFailedToLoad(p0: Int) {
                 timeOut = true
                 Log.i(TAG, "ad failed=>$p0")
@@ -83,11 +85,10 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             }
 
             override fun onAdLoaded() {
-                if (!timeOut) ad.show()
+                if (!timeOut) interstitialAd.show()
             }
         }
         if (viewModel.tracks != null) {
-            Log.i(TAG, "vm not null")
             presenter.results = viewModel.tracks?.value?.toMutableList()
             timeOut = true
         } else {

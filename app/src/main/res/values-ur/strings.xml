@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MuzAll</string>
     <string name="duration">دورانیہ: %s</string>
     <string name="released">جاری: %s</string>
     <string name="folder">میوزک فولڈر</string>
-    <string name="my_music">My music</string>
+    <string name="my_music">میری موسیقی</string>
     <string name="could_not_play_file">معذرت ، ٹریک نہیں کھیل سکا</string>
     <string name="service_unavailable">خدمت دستیاب نہیں ، براہ کرم بعد میں دوبارہ کوشش کریں</string>
     <string name="err_dir_create">موسیقی کے لئے ڈائریکٹری تشکیل نہیں دے سکی</string>
