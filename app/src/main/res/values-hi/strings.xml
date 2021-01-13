@@ -9,6 +9,4 @@
     <string name="err_dir_create">संगीत के लिए निर्देशिका नहीं बना सका</string>
     <string name="no_net">कोई इंटरनेट कनेक्शन नहीं</string>
     <string name="action_delete">हटाएं</string>
-    <string name="err_dir_create">संगीत के लिए निर्देशिका नहीं बना सका</string>
-    <string name="no_net">No internet connection</string>
 </resources>
