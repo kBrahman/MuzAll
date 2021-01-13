@@ -4,4 +4,4 @@ import androidx.annotation.Keep
 import java.io.Serializable
 
 @Keep
-data class FileFormatInfo(val ps: String) : Serializable
+data class FileFormatInfo(val ps: String?) : Serializable

@@ -4,4 +4,5 @@
     <string name="released">Dirilis: %s</string>
     <string name="folder">Folder musik</string>
     <string name="my_music">"Lagu saya "</string>
+    <string name="service_unavailable">Layanan tidak tersedia, coba lagi nanti</string>
 </resources>

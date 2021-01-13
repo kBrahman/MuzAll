@@ -11,7 +11,11 @@ data class Track(
     val image: String
 ) : Serializable {
     val duration: String
-        get() = files.last { !it.file_format_info.ps.isNullOrEmpty() }.file_format_info.ps
+        get() = try {
+            files.last { !it.file_format_info.ps.isNullOrEmpty() }.file_format_info.ps!!
+        } catch (e: NoSuchElementException) {
+            "NaN"
+        }
     val audio: String
         get() = files.last { !it.download_url.endsWith(".zip") }.download_url
 }
