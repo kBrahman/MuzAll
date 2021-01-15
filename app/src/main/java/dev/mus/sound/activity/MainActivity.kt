@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.gesture.tapGestureFilter
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.setContent
@@ -52,6 +53,7 @@ import retrofit2.Response
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashMap
 
 
 class MainActivity : DaggerAppCompatActivity() {
@@ -60,6 +62,7 @@ class MainActivity : DaggerAppCompatActivity() {
         private val TAG = MainActivity::class.java.simpleName
     }
 
+    private lateinit var filteredTracks: List<Track>
     private lateinit var selections: List<Selection>
     private var selectionsAdapter: SelectionsAdapter? = null
     lateinit var adView: AdView
@@ -76,7 +79,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private var trackAdapter: TrackAdapter? = null
     private var searching = false
     private lateinit var uiState: MutableState<UIState>
-
+    private val imageCache = HashMap<String, Bitmap?>()
     private val callback = object : Callback<CollectionHolder<Track>> {
         override fun onFailure(call: Call<CollectionHolder<Track>>, t: Throwable) =
             t.printStackTrace()
@@ -130,15 +133,15 @@ class MainActivity : DaggerAppCompatActivity() {
         override fun onFailure(call: Call<List<Track>>, t: Throwable) = t.printStackTrace()
 
         override fun onResponse(call: Call<List<Track>>, response: Response<List<Track>>) {
-            val filtered = response.body()?.filter {
+            filteredTracks = response.body()?.filter {
                 it.media.transcodings.isNotEmpty() and it.media.transcodings.any { tr ->
                     tr.url.endsWith("/progressive")
                 }
-            }
-
-            trackAdapter = TrackAdapter(filtered?.toMutableList(), ::play)
-            binding.rv.adapter = trackAdapter
-            binding.pb.visibility = GONE
+            } ?: emptyList()
+            uiState.value = UIState.PLAYLIST
+//            trackAdapter = TrackAdapter(filtered?.toMutableList(), ::play)
+//            binding.rv.adapter = trackAdapter
+//            binding.pb.visibility = GONE
         }
     }
 
@@ -181,12 +184,32 @@ class MainActivity : DaggerAppCompatActivity() {
                             items(items = it.items.collection) { playlist ->
                                 val btp = remember { mutableStateOf<Bitmap?>(null) }
                                 getBitmap(btp, playlist.calculated_artwork_url)
-                                Card(Modifier.preferredSize(100.dp)) {
-                                    val bitmap = btp.value?.asImageBitmap()
-                                    if (bitmap != null) {
-                                        Image(bitmap, modifier = Modifier.fillMaxSize())
+                                Box(
+                                    Modifier
+                                        .padding(start = 4.dp)
+                                        .tapGestureFilter {
+                                            manager.tracksBy(
+                                                playlist.tracks
+                                                    .map { t -> t.id }
+                                                    .joinToString(","), selectionCallback)
+                                            uiState.value = UIState.PB
+                                        }) {
+                                    Card(Modifier.preferredSize(150.dp), elevation = 4.dp) {
+                                        val bitmap = btp.value?.asImageBitmap()
+                                        if (bitmap != null) {
+                                            Image(bitmap, modifier = Modifier.fillMaxSize())
+                                        }
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+                UIState.PLAYLIST -> {
+                    LazyColumn {
+                        items(filteredTracks) {
+                            Row {
+
                             }
                         }
                     }
@@ -226,8 +249,15 @@ class MainActivity : DaggerAppCompatActivity() {
 //        binding.bannerContainer.addView(adView)
     }
 
-    private fun getBitmap(btp: MutableState<Bitmap?>, url: String) = GlobalScope.launch {
-        btp.value = BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
+    private fun getBitmap(btp: MutableState<Bitmap?>, url: String) {
+        val bitmap = imageCache[url]
+        if (bitmap != null) {
+            btp.value = bitmap
+        } else GlobalScope.launch {
+            btp.value = BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
+            imageCache[url] = btp.value
+        }
+
     }
 
 
@@ -333,8 +363,9 @@ class MainActivity : DaggerAppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private enum class UIState {
+    private enum class UIState() {
         PB,
-        SELECTION
+        SELECTION,
+        PLAYLIST
     }
 }
