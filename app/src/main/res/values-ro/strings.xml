@@ -8,4 +8,5 @@
     <string name="service_unavailable">Serviciul nu este disponibil, încercați din nou mai târziu, vă rog</string>
     <string name="err_dir_create">Nu s-a putut crea directorul pentru muzică</string>
     <string name="no_net">"Fără conexiune internet "</string>
+    <string name="action_delete">Șterge</string>
 </resources>
