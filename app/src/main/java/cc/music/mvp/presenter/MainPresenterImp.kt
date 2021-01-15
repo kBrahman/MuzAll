@@ -66,7 +66,6 @@ class MainPresenterImp @Inject constructor(
     }
 
     private fun onContentFetched(response: List<Track>?) {
-        Log.i(TAG, "onContentFetched=>$response")
         if (response?.isEmpty() == true && !searching) {
             hideLoading()
             view?.showServiceUnavailable()

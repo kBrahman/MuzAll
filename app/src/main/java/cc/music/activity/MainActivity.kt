@@ -36,7 +36,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         private val TAG = MainActivity::class.java.simpleName
     }
 
-    internal lateinit var adView: AdView
+    internal var adView: AdView? = null
     private var timeOut = false
     private var finish = false
 
@@ -155,9 +155,10 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         Log.i(TAG, "set adapter and banner")
         hideLoading()
         binding.rv.adapter = trackAdapter
+        if (adView != null) return
         adView = AdView(this, getString(R.string.banner_id), AdSize.BANNER_HEIGHT_50)
         binding.bannerContainer.addView(adView)
-        adView.loadAd()
+        adView?.loadAd()
     }
 
     override fun addAndShow(tracks: List<Track>?) {

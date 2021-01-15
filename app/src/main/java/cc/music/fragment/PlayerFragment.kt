@@ -130,7 +130,7 @@ class PlayerFragment : DialogFragment(), PlayerView, MediaPlayer.OnPreparedListe
 
     private fun setVisibility(visibility: Int) {
         if (activity is MainActivity) {
-            (activity as MainActivity).adView.visibility = visibility
+            (activity as MainActivity).adView?.visibility = visibility
         } else if (activity is MusicActivity) {
             (activity as MusicActivity).adView.visibility = visibility
         }
