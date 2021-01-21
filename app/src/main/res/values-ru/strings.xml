@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="duration">Продолжительность: %s</string>
-    <string name="released">Дата выпуска: %s</string>
+    <string name="duration">Длительность: %s</string>
+    <string name="released">Выпуск: %s</string>
     <string name="folder">Музыка</string>
     <string name="my_music">Моя музыка</string>
     <string name="could_not_play_file">Не удалось воспроизести трэк, извините.</string>
