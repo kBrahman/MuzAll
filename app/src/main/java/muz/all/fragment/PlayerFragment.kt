@@ -34,7 +34,6 @@ import muz.all.mvp.view.PlayerView
 import muz.all.util.TRACK
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileNotFoundException
 import javax.inject.Inject
 
 class PlayerFragment : DaggerDialogFragment(), PlayerView,
@@ -82,23 +81,17 @@ class PlayerFragment : DaggerDialogFragment(), PlayerView,
             mp.setDataSource(audio)
             binding.name.text = track.name
         } else if (track is File && track.exists()) {
-            try {
-                val fos = FileInputStream(track)
-                mp.setDataSource(fos.fd, 0, track.length())
-                fos.close()
-            } catch (ex: FileNotFoundException) {
-                Toast.makeText(context, R.string.could_not_play_file, LENGTH_LONG).show()
-                return
-            }
+            FileInputStream(track)
+                .use { mp.setDataSource(it.fd, 0, track.length()) }
             binding.download.visibility = GONE
             binding.name.text = track.name
         } else {
             Toast.makeText(context, R.string.could_not_play_file, LENGTH_LONG).show()
             return
         }
-        mp?.setOnPreparedListener(this)
-        mp?.prepareAsync()
-        mp?.setOnCompletionListener {
+        mp.setOnPreparedListener(this)
+        mp.prepareAsync()
+        mp.setOnCompletionListener {
             binding.play.setImageResource(R.drawable.ic_play_arrow_24)
             handler.removeCallbacks(this)
             binding.seekBar.progress = 0
@@ -122,7 +115,7 @@ class PlayerFragment : DaggerDialogFragment(), PlayerView,
             }
 
             override fun onAdFailedToLoad(error: LoadAdError?) {
-               Log.i(TAG,"err=>$error")
+                Log.i(TAG, "err=>$error")
             }
         }
         binding.recBanner.loadAd(AdRequest.Builder().build())
@@ -179,9 +172,9 @@ class PlayerFragment : DaggerDialogFragment(), PlayerView,
     }
 
     override fun run() {
-        if (mp == null || !isPrepared) return
-        val currentPosition = mp?.currentPosition ?: 0
-        var dur = mp?.duration ?: 1
+        if (!isPrepared) return
+        val currentPosition = mp.currentPosition
+        var dur = mp.duration
         if (dur != 0) dur = currentPosition.times(100).div(dur)
         binding.seekBar.progress = dur
         startSeekBar()
@@ -190,7 +183,7 @@ class PlayerFragment : DaggerDialogFragment(), PlayerView,
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         if (fromUser) {
             seekBar?.progress = progress
-            mp?.seekTo(progress.times(mp?.duration ?: 0).div(100))
+            mp.seekTo(progress.times(mp.duration).div(100))
         }
     }
 
@@ -200,8 +193,8 @@ class PlayerFragment : DaggerDialogFragment(), PlayerView,
 
     override fun onDismiss(dialog: DialogInterface) {
         handler.removeCallbacks(this)
-        if (isPrepared) mp?.stop()
-        mp?.release()
+        if (isPrepared) mp.stop()
+        mp.release()
         binding.seekBar.progress = 0
         setVisibility(VISIBLE)
         isPrepared = false
