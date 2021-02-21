@@ -8,7 +8,7 @@ data class Track(
     val title: String,
     val duration: Int,
     val created_at: String,
-    val artwork_url: String,
+    val artwork_url: String?,
     val stream_url: String,
     val user: User,
     val id: Int,

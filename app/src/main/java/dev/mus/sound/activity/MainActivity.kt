@@ -1,11 +1,13 @@
 package dev.mus.sound.activity
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +15,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.activity.compose.setContent
 import androidx.appcompat.widget.SearchView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -27,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.gesture.tapGestureFilter
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -174,16 +177,18 @@ class MainActivity : DaggerAppCompatActivity() {
 
                 }
                 UIState.SELECTION -> LazyColumn(Modifier.padding(start = 4.dp, end = 4.dp)) {
-                    items(items = selections) {
+                    items(count = selections.size) {
+                        val selection = selections[it]
                         Text(
-                            it.title,
+                            selection.title,
                             fontSize = 20.sp,
                             style = TextStyle(fontWeight = FontWeight.Bold)
                         )
                         LazyRow {
-                            items(items = it.items.collection) { playlist ->
+                            items(count = selection.items.collection.size) { i ->
                                 val btp = remember { mutableStateOf<Bitmap?>(null) }
-                                getBitmap(btp, playlist.calculated_artwork_url)
+                                val playlist = selection.items.collection[i]
+                                setBitmap(btp, playlist.calculated_artwork_url)
                                 Box(
                                     Modifier
                                         .padding(start = 4.dp)
@@ -197,7 +202,7 @@ class MainActivity : DaggerAppCompatActivity() {
                                     Card(Modifier.preferredSize(150.dp), elevation = 4.dp) {
                                         val bitmap = btp.value?.asImageBitmap()
                                         if (bitmap != null) {
-                                            Image(bitmap, modifier = Modifier.fillMaxSize())
+                                            Image(bitmap, null, modifier = Modifier.fillMaxSize())
                                         }
                                     }
                                 }
@@ -206,39 +211,42 @@ class MainActivity : DaggerAppCompatActivity() {
                     }
                 }
                 UIState.PLAYLIST -> {
-                    LazyColumn {
-                        items(filteredTracks) {
+                    LazyColumn(contentPadding = PaddingValues(4.dp)) {
+                        items(count = filteredTracks.size) {
+                            Spacer(Modifier.preferredHeight(4.dp))
                             Row {
+                                val btp = remember { mutableStateOf<Bitmap?>(null) }
+                                val track = filteredTracks[it]
+                                val url = track.artwork_url
+                                if (url != null) {
+                                    setBitmap(btp, url)
+                                    val bitmap = btp.value?.asImageBitmap()
+                                    if (bitmap != null) {
+                                        Image(
+                                            bitmap,
+                                            null,
+                                            modifier = Modifier
+                                                .preferredSize(100.dp)
+                                        )
+                                    }
+                                } else Image(
+                                    painterResource(R.drawable.ic_music_note_black_24dp),
+                                    null, modifier = Modifier
+                                        .preferredSize(100.dp)
+                                )
 
+                                Spacer(Modifier.width(4.dp))
+                                Column {
+                                    Text(track.title, fontSize = 15.sp)
+                                    Text(getString(R.string.uploaded, track.created_at))
+                                    Text(getString(R.string.duration, track.duration))
+                                }
                             }
                         }
                     }
                 }
             }
         }
-//        binding = ActivityMainBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-//        binding.rv.setHasFixedSize(true)
-//        binding.rv.addOnScrollListener(object :
-//            androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-//            override fun onScrolled(
-//                recyclerView: androidx.recyclerview.widget.RecyclerView,
-//                dx: Int,
-//                dy: Int
-//            ) {
-//                val layoutManager =
-//                    recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
-//                if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
-//                    if (!loading && searching) {
-//                        binding.pb.visibility = VISIBLE
-//                        offset += 25
-//                        search(q, offset)
-//                        loading = true
-//                    }
-//                }
-//            }
-//        })
-//        setSupportActionBar(binding.toolbar)
         getMixedSelections()
         setTimer()
         AudienceNetworkAds.initialize(this)
@@ -246,20 +254,35 @@ class MainActivity : DaggerAppCompatActivity() {
         val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
         ad?.loadAd(conf)
         adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
-//        binding.bannerContainer.addView(adView)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
-    private fun getBitmap(btp: MutableState<Bitmap?>, url: String) {
+    private fun setBitmap(btp: MutableState<Bitmap?>, url: String) {
+        Log.i(TAG, "url=>$url")
         val bitmap = imageCache[url]
         if (bitmap != null) {
             btp.value = bitmap
-        } else GlobalScope.launch {
+        }
+//        else if (url == null) {
+//            btp.value = getBitmapFromVectorDrawable(this, R.mipmap.ic_launcher)
+//        }
+        else GlobalScope.launch {
             btp.value = BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
             imageCache[url] = btp.value
         }
-
     }
 
+    private fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap? {
+        val drawable = ContextCompat.getDrawable(context, drawableId)
+        val bitmap = Bitmap.createBitmap(
+            drawable!!.intrinsicWidth,
+            drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight())
+        drawable.draw(canvas)
+        return bitmap
+    }
 
     private val value = object : InterstitialAdListener {
         override fun onInterstitialDisplayed(ad: Ad) {
@@ -320,6 +343,13 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun search(q: String, offset: Int) {
         manager.search(q, offset, callback)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.i(TAG, "select")
+        if (uiState.value == UIState.SELECTION) onBackPressed()
+        else uiState.value = UIState.SELECTION
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
