@@ -4,4 +4,9 @@
     <string name="released">Datum vydání: %s</string>
     <string name="folder">Hudební složka</string>
     <string name="my_music">Moje hudba</string>
+    <string name="action_delete">Vymazat</string>
+    <string name="could_not_play_file">Přehrát skladbu se nezdařilo, je mi líto</string>
+    <string name="service_unavailable">Služba není k dispozici, zkuste to prosím později</string>
+    <string name="err_dir_create">Nelze vytvořit adresář pro hudbu</string>
+    <string name="no_net">Žádné internetové připojení</string>
 </resources>
