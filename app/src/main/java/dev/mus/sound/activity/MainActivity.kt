@@ -8,6 +8,7 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -18,10 +19,13 @@ import android.view.View.VISIBLE
 import androidx.activity.compose.setContent
 import androidx.appcompat.widget.SearchView
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +44,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.facebook.ads.*
 import dagger.android.support.DaggerAppCompatActivity
+import dev.mus.sound.BuildConfig
 import dev.mus.sound.R
 import dev.mus.sound.adapter.SelectionsAdapter
 import dev.mus.sound.adapter.TrackAdapter
@@ -48,8 +53,10 @@ import dev.mus.sound.manager.ApiManager
 import dev.mus.sound.model.CollectionHolder
 import dev.mus.sound.model.Selection
 import dev.mus.sound.model.Track
+import dev.mus.sound.util.milliSecondsToTime
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -76,6 +83,9 @@ class MainActivity : DaggerAppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     @Inject
+    lateinit var mp: MediaPlayer
+
+    @Inject
     lateinit var manager: ApiManager
     private var offset: Int = 0
     private var loading = false
@@ -93,10 +103,10 @@ class MainActivity : DaggerAppCompatActivity() {
         ) {
             val collection = response.body()?.collection?.filter { it.media != null }
             if (trackAdapter == null && timeOut) {
-                trackAdapter = TrackAdapter(collection?.toMutableList(), ::play)
+//                trackAdapter = TrackAdapter(collection?.toMutableList(), ::Player)
                 binding.rv.adapter = trackAdapter
             } else if (trackAdapter == null) {
-                trackAdapter = TrackAdapter(collection?.toMutableList(), ::play)
+//                trackAdapter = TrackAdapter(collection?.toMutableList(), ::Player)
             } else {
                 trackAdapter?.addData(collection?.toMutableList())
             }
@@ -148,12 +158,82 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
-    private fun play(track: Track?) {
-        setContent {
-            Dialog(onDismissRequest = { /*TODO*/ }) {
-                Text(text = "TEST")
+    @Composable
+    private fun Player(playerState: MutableState<Track?>) {
+        val track = playerState.value!!
+        val showPlayButton = remember { mutableStateOf(false) }
+        play(track, showPlayButton)
+        Dialog(onDismissRequest = { playerState.value = null }) {
+            Column(
+                Modifier
+                    .background(Color.White)
+                    .padding(4.dp)
+            ) {
+                val colorPrimary = Color(
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        getColor(R.color.colorPrimary)
+                    } else {
+                        resources.getColor(R.color.colorPrimary)
+                    }
+                )
+                Text(track.title, fontSize = 20.sp)
+                Spacer(Modifier.preferredHeight(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Button(
+                        onClick = { /*TODO*/ },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = colorPrimary),
+                        modifier = Modifier.preferredWidth(48.dp)
+                    ) {
+                        Image(
+                            painterResource(id = if (showPlayButton.value) R.drawable.ic_play_24 else R.drawable.ic_pause_24),
+                            null
+                        )
+                    }
+                    Spacer(Modifier.preferredWidth(4.dp))
+                    LinearProgressIndicator(
+                        color = colorPrimary,
+                    )
+                }
             }
         }
+    }
+
+    private fun play(track: Track, showPlayButton: MutableState<Boolean>) {
+        val url = track.media.transcodings.find { it.url.endsWith("/progressive") }?.url
+        val urlLocation = url + "?client_id=" + BuildConfig.ClIENT_ID
+        GlobalScope.launch {
+            mp.setDataSource(getStreamLink(urlLocation))
+            configureMp(showPlayButton)
+        }
+    }
+
+    private fun configureMp(showPlayButton: MutableState<Boolean>) {
+        mp.prepareAsync()
+        mp.setOnPreparedListener(MediaPlayer::start)
+        mp.setOnCompletionListener {
+            showPlayButton.value = true
+//            handler.removeCallbacks(this)
+//            binding.sb.progress = 0
+        }
+//        binding.sb.setOnSeekBarChangeListener(this)
+//        binding.play.setOnClickListener {
+//            if (mp.isPlaying) {
+//                mp.pause()
+//                binding.play.setImageResource(R.drawable.ic_play_24)
+//            } else {
+//                mp.start()
+//                binding.play.setImageResource(android.R.drawable.ic_media_pause)
+//            }
+//        }
+    }
+
+    private fun getStreamLink(urlLocation: String): String {
+        val connection = URL(urlLocation).openConnection()
+        connection.connect()
+        val stream = connection.getInputStream()
+        val s = Scanner(stream).useDelimiter("\\A")
+        val result = if (s.hasNext()) s.next() else ""
+        return JSONObject(result).getString("url")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -211,12 +291,13 @@ class MainActivity : DaggerAppCompatActivity() {
                     }
                 }
                 UIState.PLAYLIST -> {
+                    val playerState = remember { mutableStateOf<Track?>(null) }
                     LazyColumn(contentPadding = PaddingValues(4.dp)) {
                         items(count = filteredTracks.size) {
                             Spacer(Modifier.preferredHeight(4.dp))
-                            Row {
+                            val track = filteredTracks[it]
+                            Row(Modifier.clickable { playerState.value = track }) {
                                 val btp = remember { mutableStateOf<Bitmap?>(null) }
-                                val track = filteredTracks[it]
                                 val url = track.artwork_url
                                 if (url != null) {
                                     setBitmap(btp, url)
@@ -237,13 +318,24 @@ class MainActivity : DaggerAppCompatActivity() {
 
                                 Spacer(Modifier.width(4.dp))
                                 Column {
-                                    Text(track.title, fontSize = 15.sp)
-                                    Text(getString(R.string.uploaded, track.created_at))
-                                    Text(getString(R.string.duration, track.duration))
+                                    Text(track.title, fontSize = 22.sp)
+                                    Text(
+                                        getString(
+                                            R.string.uploaded,
+                                            track.created_at.replace(Regex("T.+"), "")
+                                        )
+                                    )
+                                    Text(
+                                        getString(
+                                            R.string.duration,
+                                            milliSecondsToTime(track.duration)
+                                        )
+                                    )
                                 }
                             }
                         }
                     }
+                    if (playerState.value != null) Player(playerState)
                 }
             }
         }
@@ -396,6 +488,6 @@ class MainActivity : DaggerAppCompatActivity() {
     private enum class UIState() {
         PB,
         SELECTION,
-        PLAYLIST
+        PLAYLIST,
     }
 }

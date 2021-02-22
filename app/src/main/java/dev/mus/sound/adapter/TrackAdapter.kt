@@ -2,12 +2,10 @@ package dev.mus.sound.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import dev.mus.sound.R
 import dev.mus.sound.databinding.ItemTrackBinding
-import dev.mus.sound.fragment.PlayerFragment
 import dev.mus.sound.model.Track
 import dev.mus.sound.util.milliSecondsToTime
 
@@ -16,9 +14,6 @@ class TrackAdapter(
     private val onClick: (track: Track?) -> Unit
 ) :
     RecyclerView.Adapter<TrackAdapter.VH>() {
-
-    private val player: DialogFragment = PlayerFragment()
-
     override fun onCreateViewHolder(group: ViewGroup, p1: Int) =
         VH(ItemTrackBinding.inflate(LayoutInflater.from(group.context), group, false))
 
