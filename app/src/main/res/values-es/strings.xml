@@ -3,5 +3,8 @@
     <string name="duration">Duración: %s</string>
     <string name="uploaded">Fecha de carga: %s</string>
     <string name="my_music">Mi música</string>
-    <string name="mixed_selections">selecciones mixtas</string>
+    <string name="mixed_selections">Selecciones mixtas</string>
+    <string name="action_delete">Borrar</string>
+    <string name="no_inet">Sin acceso a Internet</string>
+    <string name="refresh">Actualizar</string>
 </resources>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">sMusic</string>
-    <string name="action_delete">Delete</string>
     <string name="fb_banner_id">2766903800218516_2766905796884983</string>
     <string name="banner_rec_id">2766903800218516_2766909356884627</string>
     <string name="fb_int_id">2766903800218516_2766908440218052</string>

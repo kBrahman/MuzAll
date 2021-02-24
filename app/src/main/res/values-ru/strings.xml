@@ -3,4 +3,8 @@
     <string name="duration">Продолжительность: %s</string>
     <string name="uploaded">Загружено: %s</string>
     <string name="my_music">Моя музыка</string>
+    <string name="action_delete">Удалить</string>
+    <string name="mixed_selections">Избранное</string>
+    <string name="no_inet">Нет интернета</string>
+    <string name="refresh">Обновить</string>
 </resources>

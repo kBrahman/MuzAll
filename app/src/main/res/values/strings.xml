@@ -5,4 +5,5 @@
     <string name="mixed_selections">Mixed selections</string>
     <string name="no_inet">No internet access</string>
     <string name="refresh">Refresh</string>
+    <string name="action_delete">Delete</string>
 </resources>
