@@ -14,8 +14,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import androidx.activity.compose.setContent
 import androidx.appcompat.widget.SearchView
 import androidx.compose.foundation.Image
@@ -34,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.gesture.tapGestureFilter
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,15 +43,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.facebook.ads.*
 import dagger.android.support.DaggerAppCompatActivity
-import dev.mus.sound.BuildConfig
+import dev.mus.sound.BuildConfig.ClIENT_ID
 import dev.mus.sound.R
-import dev.mus.sound.adapter.SelectionsAdapter
-import dev.mus.sound.adapter.TrackAdapter
-import dev.mus.sound.databinding.ActivityMainBinding
 import dev.mus.sound.manager.ApiManager
 import dev.mus.sound.model.CollectionHolder
 import dev.mus.sound.model.Selection
 import dev.mus.sound.model.Track
+import dev.mus.sound.util.isNetworkConnected
 import dev.mus.sound.util.milliSecondsToTime
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -64,7 +61,7 @@ import java.net.URL
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.HashMap
-
+import kotlin.concurrent.schedule
 
 class MainActivity : DaggerAppCompatActivity() {
 
@@ -72,28 +69,24 @@ class MainActivity : DaggerAppCompatActivity() {
         private val TAG = MainActivity::class.java.simpleName
     }
 
-    private lateinit var filteredTracks: List<Track>
+    private var filteredTracks = mutableListOf<Track>()
     private lateinit var selections: List<Selection>
-    private var selectionsAdapter: SelectionsAdapter? = null
     lateinit var adView: AdView
     private var timeOut = false
 
     var ad: InterstitialAd? = null
     private lateinit var q: String
-    private lateinit var binding: ActivityMainBinding
 
     @Inject
     lateinit var mp: MediaPlayer
 
     @Inject
     lateinit var manager: ApiManager
-    private var offset: Int = 0
-    private var loading = false
-    private var trackAdapter: TrackAdapter? = null
+    private lateinit var loading: MutableState<Boolean>
     private var searching = false
     private lateinit var uiState: MutableState<UIState>
     private val imageCache = HashMap<String, Bitmap?>()
-    private val callback = object : Callback<CollectionHolder<Track>> {
+    private val searchCallback = object : Callback<CollectionHolder<Track>> {
         override fun onFailure(call: Call<CollectionHolder<Track>>, t: Throwable) =
             t.printStackTrace()
 
@@ -101,17 +94,12 @@ class MainActivity : DaggerAppCompatActivity() {
             call: Call<CollectionHolder<Track>>,
             response: Response<CollectionHolder<Track>>
         ) {
-            val collection = response.body()?.collection?.filter { it.media != null }
-            if (trackAdapter == null && timeOut) {
-//                trackAdapter = TrackAdapter(collection?.toMutableList(), ::Player)
-                binding.rv.adapter = trackAdapter
-            } else if (trackAdapter == null) {
-//                trackAdapter = TrackAdapter(collection?.toMutableList(), ::Player)
-            } else {
-                trackAdapter?.addData(collection?.toMutableList())
-            }
-            binding.pb.visibility = GONE
-            loading = false
+            val data =
+                (response.body()?.collection?.filter { it.media != null }?.toMutableList()
+                    ?: mutableListOf())
+            filteredTracks.addAll(data)
+            uiState.value = UIState.PLAYLIST
+            loading.value = false
         }
     }
 
@@ -129,16 +117,10 @@ class MainActivity : DaggerAppCompatActivity() {
                     response.body()?.collection?.filter { it.items.collection.any { e -> !e.tracks.isNullOrEmpty() } }
                         ?: emptyList()
                 uiState.value = UIState.SELECTION
-                selections.let {
-                    selectionsAdapter = SelectionsAdapter(it) { ids, name ->
-                        binding.pb.visibility = VISIBLE
-                        manager.tracksBy(ids, selectionCallback)
-                        title = name
-                    }
-                }
                 if (timeOut) {
                     setAdapterAndBanner()
                 }
+                loading.value = false
             }
         }
 
@@ -150,37 +132,37 @@ class MainActivity : DaggerAppCompatActivity() {
                 it.media.transcodings.isNotEmpty() and it.media.transcodings.any { tr ->
                     tr.url.endsWith("/progressive")
                 }
-            } ?: emptyList()
+            }?.toMutableList() ?: mutableListOf()
             uiState.value = UIState.PLAYLIST
-//            trackAdapter = TrackAdapter(filtered?.toMutableList(), ::play)
-//            binding.rv.adapter = trackAdapter
-//            binding.pb.visibility = GONE
+            loading.value = false
         }
     }
 
     @Composable
-    private fun Player(playerState: MutableState<Track?>) {
+    private fun Player(playerState: MutableState<Track?>, colorPrimary: Color) {
         val track = playerState.value!!
         val showPlayButton = remember { mutableStateOf(false) }
-        play(track, showPlayButton)
-        Dialog(onDismissRequest = { playerState.value = null }) {
+        val isProgressDeterminate = remember { mutableStateOf(false) }
+        val progress = remember { mutableStateOf(0F) }
+        play(track, showPlayButton, isProgressDeterminate, progress)
+        Dialog(onDismissRequest = {
+            mp.stop()
+            mp.reset()
+            playerState.value = null
+        }) {
             Column(
                 Modifier
                     .background(Color.White)
                     .padding(4.dp)
             ) {
-                val colorPrimary = Color(
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        getColor(R.color.colorPrimary)
-                    } else {
-                        resources.getColor(R.color.colorPrimary)
-                    }
-                )
                 Text(track.title, fontSize = 20.sp)
                 Spacer(Modifier.preferredHeight(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                            if (mp.isPlaying) mp.pause() else mp.start()
+                            showPlayButton.value = !mp.isPlaying
+                        },
                         colors = ButtonDefaults.buttonColors(backgroundColor = colorPrimary),
                         modifier = Modifier.preferredWidth(48.dp)
                     ) {
@@ -190,42 +172,73 @@ class MainActivity : DaggerAppCompatActivity() {
                         )
                     }
                     Spacer(Modifier.preferredWidth(4.dp))
-                    LinearProgressIndicator(
-                        color = colorPrimary,
-                    )
+                    if (isProgressDeterminate.value) {
+                        var w = 0
+                        LinearProgressIndicator(progress = progress.value,
+                            color = colorPrimary,
+                            modifier = Modifier
+                                .layout { measurable, constraints ->
+                                    val placeable = measurable.measure(constraints)
+                                    w = placeable.width
+                                    layout(placeable.width, placeable.height) {
+                                        placeable.placeRelative(0, 0)
+                                    }
+                                }
+                                .tapGestureFilter {
+                                    progress.value = it.x / w
+                                    mp.seekTo(
+                                        (progress.value * mp.duration).toInt()
+                                    )
+                                })
+                    } else {
+                        LinearProgressIndicator(
+                            color = colorPrimary,
+                        )
+                    }
                 }
             }
         }
     }
 
-    private fun play(track: Track, showPlayButton: MutableState<Boolean>) {
+    private fun play(
+        track: Track,
+        showPlayButton: MutableState<Boolean>,
+        isProgressDeterminate: MutableState<Boolean>,
+        progress: MutableState<Float>
+    ) {
         val url = track.media.transcodings.find { it.url.endsWith("/progressive") }?.url
-        val urlLocation = url + "?client_id=" + BuildConfig.ClIENT_ID
+        val urlLocation = "$url?client_id=$ClIENT_ID"
         GlobalScope.launch {
             mp.setDataSource(getStreamLink(urlLocation))
-            configureMp(showPlayButton)
+            configureMp(showPlayButton, isProgressDeterminate, progress)
         }
     }
 
-    private fun configureMp(showPlayButton: MutableState<Boolean>) {
+    private fun configureMp(
+        showPlayButton: MutableState<Boolean>,
+        isProgressDeterminate: MutableState<Boolean>,
+        progress: MutableState<Float>
+    ) {
         mp.prepareAsync()
-        mp.setOnPreparedListener(MediaPlayer::start)
+        mp.setOnPreparedListener {
+            it.start()
+            isProgressDeterminate.value = true
+            startProgress(progress)
+        }
         mp.setOnCompletionListener {
             showPlayButton.value = true
-//            handler.removeCallbacks(this)
-//            binding.sb.progress = 0
+            progress.value = 0F
         }
-//        binding.sb.setOnSeekBarChangeListener(this)
-//        binding.play.setOnClickListener {
-//            if (mp.isPlaying) {
-//                mp.pause()
-//                binding.play.setImageResource(R.drawable.ic_play_24)
-//            } else {
-//                mp.start()
-//                binding.play.setImageResource(android.R.drawable.ic_media_pause)
-//            }
-//        }
     }
+
+    private fun startProgress(progress: MutableState<Float>) {
+        Timer("progress timer", false).schedule(500L) {
+            if (!mp.isPlaying) return@schedule
+            progress.value = progress.value + 500F / mp.duration
+            startProgress(progress)
+        }
+    }
+
 
     private fun getStreamLink(urlLocation: String): String {
         val connection = URL(urlLocation).openConnection()
@@ -238,17 +251,126 @@ class MainActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            val colorPrimary = Color(
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    getColor(R.color.colorPrimary)
-                } else {
-                    resources.getColor(R.color.colorPrimary)
+        init()
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun init() {
+        val colorPrimary = Color(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                getColor(R.color.colorPrimary)
+            } else {
+                resources.getColor(R.color.colorPrimary)
+            }
+        )
+        if (isNetworkConnected(this)) {
+            setContent {
+                val colorPrimary = Color(
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        getColor(R.color.colorPrimary)
+                    } else {
+                        resources.getColor(R.color.colorPrimary)
+                    }
+                )
+                uiState = remember { mutableStateOf(UIState.UNDEFINED) }
+                loading = remember { mutableStateOf(true) }
+                var size = remember { mutableStateOf(0) }
+                when (uiState.value) {
+                    UIState.SELECTION -> LazyColumn(Modifier.padding(start = 4.dp, end = 4.dp)) {
+                        items(count = selections.size) {
+                            val selection = selections[it]
+                            Text(
+                                selection.title,
+                                fontSize = 20.sp,
+                                style = TextStyle(fontWeight = FontWeight.Bold)
+                            )
+                            LazyRow {
+                                items(count = selection.items.collection.size) { i ->
+                                    val btp = remember { mutableStateOf<Bitmap?>(null) }
+                                    val playlist = selection.items.collection[i]
+                                    setBitmap(btp, playlist.calculated_artwork_url)
+                                    Box(
+                                        Modifier
+                                            .padding(start = 4.dp)
+                                            .tapGestureFilter {
+                                                manager.tracksBy(
+                                                    playlist.tracks
+                                                        .map { t -> t.id }
+                                                        .joinToString(","), selectionCallback)
+                                                loading.value = true
+                                            }) {
+                                        Card(Modifier.preferredSize(150.dp), elevation = 4.dp) {
+                                            val bitmap = btp.value?.asImageBitmap()
+                                            if (bitmap != null) {
+                                                Image(
+                                                    bitmap,
+                                                    null,
+                                                    modifier = Modifier.fillMaxSize()
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    UIState.PLAYLIST -> {
+                        val playerState = remember { mutableStateOf<Track?>(null) }
+                        LazyColumn(contentPadding = PaddingValues(4.dp)) {
+                            items(count = filteredTracks.size) {
+                                Spacer(Modifier.preferredHeight(4.dp))
+                                val track = filteredTracks[it]
+                                Row(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .clickable { playerState.value = track }) {
+                                    val btp = remember { mutableStateOf<Bitmap?>(null) }
+                                    val url = track.artwork_url
+                                    if (url != null) {
+                                        setBitmap(btp, url)
+                                        val bitmap = btp.value?.asImageBitmap()
+                                        if (bitmap != null) {
+                                            Image(
+                                                bitmap,
+                                                null,
+                                                modifier = Modifier
+                                                    .preferredSize(100.dp)
+                                            )
+                                        }
+                                    } else Image(
+                                        painterResource(R.drawable.ic_music_note_black_24dp),
+                                        null, modifier = Modifier
+                                            .preferredSize(100.dp)
+                                    )
+
+                                    Spacer(Modifier.width(4.dp))
+                                    Column {
+                                        Text(track!!.title, fontSize = 22.sp)
+                                        Text(
+                                            getString(
+                                                R.string.uploaded,
+                                                track.created_at.replace(Regex("T.+"), "")
+                                            )
+                                        )
+                                        Text(
+                                            getString(
+                                                R.string.duration,
+                                                milliSecondsToTime(track.duration)
+                                            )
+                                        )
+                                    }
+                                }
+                                if (!loading.value && searching && it == filteredTracks.size - 1) {
+                                    Log.i(TAG, "filtered size=>${filteredTracks.size}")
+                                    loading.value = true
+                                    search(q, (filteredTracks.size / 25 + 1) * 25)
+                                }
+                            }
+                        }
+                        if (playerState.value != null) Player(playerState, colorPrimary)
+                    }
                 }
-            )
-            uiState = remember { mutableStateOf(UIState.PB) }
-            when (uiState.value) {
-                UIState.PB -> Box(Modifier.fillMaxSize()) {
+                if (loading.value) Box(Modifier.fillMaxSize()) {
                     CircularProgressIndicator(
                         color = colorPrimary, modifier = Modifier.align(
                             Alignment.Center
@@ -256,109 +378,38 @@ class MainActivity : DaggerAppCompatActivity() {
                     )
 
                 }
-                UIState.SELECTION -> LazyColumn(Modifier.padding(start = 4.dp, end = 4.dp)) {
-                    items(count = selections.size) {
-                        val selection = selections[it]
-                        Text(
-                            selection.title,
-                            fontSize = 20.sp,
-                            style = TextStyle(fontWeight = FontWeight.Bold)
-                        )
-                        LazyRow {
-                            items(count = selection.items.collection.size) { i ->
-                                val btp = remember { mutableStateOf<Bitmap?>(null) }
-                                val playlist = selection.items.collection[i]
-                                setBitmap(btp, playlist.calculated_artwork_url)
-                                Box(
-                                    Modifier
-                                        .padding(start = 4.dp)
-                                        .tapGestureFilter {
-                                            manager.tracksBy(
-                                                playlist.tracks
-                                                    .map { t -> t.id }
-                                                    .joinToString(","), selectionCallback)
-                                            uiState.value = UIState.PB
-                                        }) {
-                                    Card(Modifier.preferredSize(150.dp), elevation = 4.dp) {
-                                        val bitmap = btp.value?.asImageBitmap()
-                                        if (bitmap != null) {
-                                            Image(bitmap, null, modifier = Modifier.fillMaxSize())
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                UIState.PLAYLIST -> {
-                    val playerState = remember { mutableStateOf<Track?>(null) }
-                    LazyColumn(contentPadding = PaddingValues(4.dp)) {
-                        items(count = filteredTracks.size) {
-                            Spacer(Modifier.preferredHeight(4.dp))
-                            val track = filteredTracks[it]
-                            Row(Modifier.clickable { playerState.value = track }) {
-                                val btp = remember { mutableStateOf<Bitmap?>(null) }
-                                val url = track.artwork_url
-                                if (url != null) {
-                                    setBitmap(btp, url)
-                                    val bitmap = btp.value?.asImageBitmap()
-                                    if (bitmap != null) {
-                                        Image(
-                                            bitmap,
-                                            null,
-                                            modifier = Modifier
-                                                .preferredSize(100.dp)
-                                        )
-                                    }
-                                } else Image(
-                                    painterResource(R.drawable.ic_music_note_black_24dp),
-                                    null, modifier = Modifier
-                                        .preferredSize(100.dp)
-                                )
-
-                                Spacer(Modifier.width(4.dp))
-                                Column {
-                                    Text(track.title, fontSize = 22.sp)
-                                    Text(
-                                        getString(
-                                            R.string.uploaded,
-                                            track.created_at.replace(Regex("T.+"), "")
-                                        )
-                                    )
-                                    Text(
-                                        getString(
-                                            R.string.duration,
-                                            milliSecondsToTime(track.duration)
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    if (playerState.value != null) Player(playerState)
+            }
+            getMixedSelections()
+            setTimer()
+            AudienceNetworkAds.initialize(this)
+            ad = InterstitialAd(this, getString(R.string.fb_int_id))
+            val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
+            ad?.loadAd(conf)
+            adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
+        } else setContent {
+            Column(
+                Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(getString(R.string.no_inet), fontSize = 23.sp)
+                Button(
+                    ::init,
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = colorPrimary,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(getString(R.string.refresh))
                 }
             }
         }
-        getMixedSelections()
-        setTimer()
-        AudienceNetworkAds.initialize(this)
-        ad = InterstitialAd(this, getString(R.string.fb_int_id))
-        val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
-        ad?.loadAd(conf)
-        adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun setBitmap(btp: MutableState<Bitmap?>, url: String) {
-        Log.i(TAG, "url=>$url")
         val bitmap = imageCache[url]
         if (bitmap != null) {
             btp.value = bitmap
-        }
-//        else if (url == null) {
-//            btp.value = getBitmapFromVectorDrawable(this, R.mipmap.ic_launcher)
-//        }
-        else GlobalScope.launch {
+        } else GlobalScope.launch {
             btp.value = BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
             imageCache[url] = btp.value
         }
@@ -378,12 +429,10 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private val value = object : InterstitialAdListener {
         override fun onInterstitialDisplayed(ad: Ad) {
-            // Interstitial ad displayed callback
             Log.e(TAG, "Interstitial ad displayed.")
         }
 
         override fun onInterstitialDismissed(ad: Ad) {
-            // Interstitial dismissed callback
             Log.e(TAG, "Interstitial ad dismissed.")
         }
 
@@ -398,12 +447,10 @@ class MainActivity : DaggerAppCompatActivity() {
         }
 
         override fun onAdClicked(ad: Ad) {
-            // Ad clicked callback
             Log.d(TAG, "Interstitial ad clicked!")
         }
 
         override fun onLoggingImpression(ad: Ad) {
-            // Ad impression logged callback
             Log.d(TAG, "Interstitial ad impression logged!")
         }
     }
@@ -412,35 +459,26 @@ class MainActivity : DaggerAppCompatActivity() {
         Timer().schedule(object : TimerTask() {
             override fun run() {
                 timeOut = true
-                if (selectionsAdapter != null) {
-                    runOnUiThread {
-                        setAdapterAndBanner()
-                        ad = null
-                    }
-                }
                 Log.i(TAG, "time out")
             }
         }, 7000L)
     }
 
     private fun setAdapterAndBanner() {
-        Log.i(TAG, "setAdapterAndBanner")
-//        binding.rv.adapter = selectionsAdapter
-//        binding.pb.visibility = GONE
         adView.loadAd()
     }
 
     private fun getMixedSelections() = manager.getMixedSelections(selectionsCallback)
 
-
     private fun search(q: String, offset: Int) {
-        manager.search(q, offset, callback)
+        Log.i(TAG, "search")
+        manager.search(q, offset, searchCallback)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Log.i(TAG, "select")
         if (uiState.value == UIState.SELECTION) onBackPressed()
         else uiState.value = UIState.SELECTION
+        searching = false
         return super.onOptionsItemSelected(item)
     }
 
@@ -451,11 +489,9 @@ class MainActivity : DaggerAppCompatActivity() {
                 override fun onQueryTextSubmit(q: String): Boolean {
                     if (q.isNotBlank()) {
                         this@MainActivity.q = q
-                        offset = 0
-                        trackAdapter = null
-                        binding.pb.visibility = VISIBLE
-                        search(q, offset)
                         searching = true
+                        search(q, 0)
+                        filteredTracks.clear()
                     }
                     return true
                 }
@@ -485,8 +521,8 @@ class MainActivity : DaggerAppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private enum class UIState() {
-        PB,
+    private enum class UIState {
+        UNDEFINED,
         SELECTION,
         PLAYLIST,
     }
