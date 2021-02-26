@@ -6,4 +6,7 @@
     <string name="my_music">"Ang aking Musika "</string>
     <string name="could_not_play_file">"Hindi ma-play ang track, sorry "</string>
     <string name="service_unavailable">"Hindi magagamit ang serbisyo, subukang muli ulit mamaya "</string>
+    <string name="no_net">Walang koneksyon sa internet</string>
+    <string name="err_dir_create">Hindi makalikha ng direktoryo para sa musika</string>
+    <string name="action_delete">Tanggalin</string>
 </resources>

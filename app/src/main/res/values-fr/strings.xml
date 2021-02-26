@@ -4,4 +4,9 @@
     <string name="released">Date de sortie: %s</string>
     <string name="folder">Dossier de musique</string>
     <string name="my_music">Ma musique</string>
+    <string name="could_not_play_file">Impossible de lire la piste, désolé</string>
+    <string name="service_unavailable">Service indisponible, réessayez plus tard s\'il vous plaît</string>
+    <string name="err_dir_create">Impossible de créer un répertoire pour la musique</string>
+    <string name="no_net">Pas de connexion Internet</string>
+    <string name="action_delete">Effacer</string>
 </resources>

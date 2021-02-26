@@ -7,4 +7,5 @@
     <string name="service_unavailable">Service unavailable, try again later please</string>
     <string name="err_dir_create">Could not create directory for music</string>
     <string name="no_net">No internet connection</string>
+    <string name="action_delete">Delete</string>
 </resources>
