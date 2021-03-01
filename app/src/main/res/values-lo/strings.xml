@@ -9,4 +9,6 @@
     <string name="err_dir_create">ບໍ່ສາມາດສ້າງໄດເລກະທໍລີ ສຳ ລັບເພງ</string>
     <string name="no_net">ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ</string>
     <string name="action_delete">ລົບ</string>
+    <string name="conn_err">ຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່</string>
+    <string name="refresh">ໂຫຼດຫນ້າຈໍຄືນ</string>
 </resources>
