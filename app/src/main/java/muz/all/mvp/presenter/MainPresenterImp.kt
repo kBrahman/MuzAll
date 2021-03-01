@@ -5,7 +5,9 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import muz.all.manager.ApiManager
 import muz.all.model.MuzResponse
+import java.net.ConnectException
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 class MainPresenterImp @Inject constructor(
@@ -48,7 +50,8 @@ class MainPresenterImp @Inject constructor(
     }
 
     private fun onError(t: Throwable) =
-        if (t is SocketTimeoutException) view?.connectionErr() else t.printStackTrace()
+        if (t is SocketTimeoutException || t is UnknownHostException || t is ConnectException)
+            view?.connectionErr() else t.printStackTrace()
 
 
     override fun onQueryTextSubmit(q: String) {

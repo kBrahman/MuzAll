@@ -3,6 +3,7 @@ package muz.all.activity
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -13,14 +14,19 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.compose.setContent
 import androidx.appcompat.widget.SearchView
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
@@ -60,6 +66,10 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     internal lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        init()
+    }
+
+    private fun init() {
         if (!isNetworkConnected(this) && ContextCompat.checkSelfPermission(
                 this,
                 WRITE_EXTERNAL_STORAGE
@@ -109,7 +119,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
                 dy: Int
             ) {
                 val layoutManager =
-                    recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
+                    recyclerView.layoutManager as LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
                     presenter.onScrolled()
                 }
@@ -175,10 +185,36 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         viewModel.tracks = MutableLiveData<List<Track>>(tracks)
     }
 
-    override fun connectionErr() {
-        setContent {
-            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-//                Text(getString(R.string.conn_err))
+    override fun connectionErr() = setContent {
+        val colorPrimary = Color(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                getColor(R.color.colorPrimary)
+            } else {
+                resources.getColor(R.color.colorPrimary)
+            }
+        )
+        TopAppBar(backgroundColor = colorPrimary) {
+            Column(
+                Modifier
+                    .fillMaxHeight()
+                    .padding(start = 4.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    getString(R.string.app_name),
+                    color = Color.White,
+                    fontSize = 20.sp
+                )
+            }
+        }
+        Column(
+            Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(getString(R.string.conn_err))
+            Button(onClick = ::init) {
+                Text(getString(R.string.refresh))
             }
         }
     }
