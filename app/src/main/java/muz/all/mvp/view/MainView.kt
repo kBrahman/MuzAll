@@ -8,4 +8,5 @@ interface MainView : MVPView {
     fun showServiceUnavailable()
     fun show(tracks: MutableList<Track>?)
     fun addAndShow(tracks: List<Track>?)
+    fun connectionErr()
 }

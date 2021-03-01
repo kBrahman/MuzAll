@@ -8,4 +8,5 @@
     <string name="err_dir_create">Could not create directory for music</string>
     <string name="no_net">No internet connection</string>
     <string name="action_delete">Delete</string>
+    <string name="conn_err">Connection error</string>
 </resources>

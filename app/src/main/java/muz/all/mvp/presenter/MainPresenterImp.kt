@@ -1,13 +1,11 @@
 package muz.all.mvp.presenter
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import muz.all.manager.ApiManager
-import muz.all.model.AppViewModel
 import muz.all.model.MuzResponse
-import muz.all.model.Track
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 class MainPresenterImp @Inject constructor(
@@ -49,7 +47,8 @@ class MainPresenterImp @Inject constructor(
             .subscribe(::onContentFetched, ::onError)
     }
 
-    private fun onError(t: Throwable) = t.printStackTrace()
+    private fun onError(t: Throwable) =
+        if (t is SocketTimeoutException) view?.connectionErr() else t.printStackTrace()
 
 
     override fun onQueryTextSubmit(q: String) {

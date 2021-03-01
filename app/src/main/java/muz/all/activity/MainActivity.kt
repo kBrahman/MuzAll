@@ -11,7 +11,13 @@ import android.view.View
 import android.view.View.VISIBLE
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
+import androidx.activity.compose.setContent
 import androidx.appcompat.widget.SearchView
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Text
+import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
@@ -167,6 +173,14 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     override fun addAndShow(tracks: List<Track>?) {
         trackAdapter?.addData(tracks)
         viewModel.tracks = MutableLiveData<List<Track>>(tracks)
+    }
+
+    override fun connectionErr() {
+        setContent {
+            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+//                Text(getString(R.string.conn_err))
+            }
+        }
     }
 
     override fun showLoading() {

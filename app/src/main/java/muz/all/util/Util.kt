@@ -2,12 +2,20 @@ package muz.all.util
 
 import android.content.Context
 import android.net.ConnectivityManager
-import androidx.core.content.ContextCompat.getSystemService
-
+import android.net.NetworkCapabilities
+import android.os.Build
+import androidx.core.content.ContextCompat
 
 const val TRACK = "track"
 
 fun isNetworkConnected(ctx: Context): Boolean {
-    val cm = getSystemService(ctx, ConnectivityManager::class.java)
-    return cm?.activeNetworkInfo != null && cm.activeNetworkInfo!!.isConnected
+    val cm = ContextCompat.getSystemService(ctx, ConnectivityManager::class.java)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val activeNetwork = cm?.activeNetwork ?: return false
+        val networkCapabilities = cm.getNetworkCapabilities(activeNetwork)
+        return !(networkCapabilities == null
+                || !networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
+    }
+    val activeNetworkInfo = cm?.activeNetworkInfo
+    return activeNetworkInfo != null && activeNetworkInfo.isConnected
 }
