@@ -52,6 +52,7 @@ import dev.mus.sound.model.Track
 import dev.mus.sound.util.isNetworkConnected
 import dev.mus.sound.util.milliSecondsToTime
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import retrofit2.Call
@@ -70,11 +71,10 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private var filteredTracks = mutableListOf<Track>()
-    private lateinit var selections: List<Selection>
+    private var selections: List<Selection>? = null
     lateinit var adView: AdView
-    private var timeOut = false
 
-    var ad: InterstitialAd? = null
+    var interstitialAd: InterstitialAd? = null
     private lateinit var q: String
 
     @Inject
@@ -116,11 +116,12 @@ class MainActivity : DaggerAppCompatActivity() {
                 selections =
                     response.body()?.collection?.filter { it.items.collection.any { e -> !e.tracks.isNullOrEmpty() } }
                         ?: emptyList()
-                uiState.value = UIState.SELECTION
-                if (timeOut) {
-                    setAdapterAndBanner()
+                if (interstitialAd == null) {
+                    uiState.value = UIState.SELECTION
+                    loading.value = false
                 }
-                loading.value = false
+                adView.loadAd()
+                Log.i(TAG, "selections resp")
             }
         }
 
@@ -265,20 +266,12 @@ class MainActivity : DaggerAppCompatActivity() {
         )
         if (isNetworkConnected(this)) {
             setContent {
-                val colorPrimary = Color(
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        getColor(R.color.colorPrimary)
-                    } else {
-                        resources.getColor(R.color.colorPrimary)
-                    }
-                )
                 uiState = remember { mutableStateOf(UIState.UNDEFINED) }
                 loading = remember { mutableStateOf(true) }
-                var size = remember { mutableStateOf(0) }
                 when (uiState.value) {
                     UIState.SELECTION -> LazyColumn(Modifier.padding(start = 4.dp, end = 4.dp)) {
-                        items(count = selections.size) {
-                            val selection = selections[it]
+                        items(count = selections!!.size) {
+                            val selection = selections!![it]
                             Text(
                                 selection.title,
                                 fontSize = 20.sp,
@@ -345,7 +338,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
                                     Spacer(Modifier.width(4.dp))
                                     Column {
-                                        Text(track!!.title, fontSize = 22.sp)
+                                        Text(track.title, fontSize = 22.sp)
                                         Text(
                                             getString(
                                                 R.string.uploaded,
@@ -380,12 +373,17 @@ class MainActivity : DaggerAppCompatActivity() {
                 }
             }
             getMixedSelections()
-            setTimer()
             AudienceNetworkAds.initialize(this)
-            ad = InterstitialAd(this, getString(R.string.fb_int_id))
-            val conf = ad?.buildLoadAdConfig()?.withAdListener(value)?.build()
-            ad?.loadAd(conf)
+            interstitialAd = InterstitialAd(this, getString(R.string.fb_int_id))
+            val conf = interstitialAd?.buildLoadAdConfig()?.withAdListener(adListener)?.build()
+            interstitialAd?.loadAd(conf)
             adView = AdView(this, getString(R.string.fb_banner_id), AdSize.BANNER_HEIGHT_50)
+            GlobalScope.launch {
+                delay(7000)
+                interstitialAd = null
+                setUI()
+                Log.i(TAG, "time out")
+            }
         } else setContent {
             Column(
                 Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center,
@@ -427,9 +425,10 @@ class MainActivity : DaggerAppCompatActivity() {
         return bitmap
     }
 
-    private val value = object : InterstitialAdListener {
+    private val adListener = object : InterstitialAdListener {
         override fun onInterstitialDisplayed(ad: Ad) {
             Log.e(TAG, "Interstitial ad displayed.")
+            setUI()
         }
 
         override fun onInterstitialDismissed(ad: Ad) {
@@ -437,13 +436,15 @@ class MainActivity : DaggerAppCompatActivity() {
         }
 
         override fun onError(ad: Ad, adError: AdError) {
-            timeOut = true
+            interstitialAd = null
+            setUI()
             Log.e(TAG, "Interstitial ad failed to load: " + adError.errorMessage)
         }
 
         override fun onAdLoaded(ad: Ad) {
             Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!")
-            this@MainActivity.ad?.show()
+            this@MainActivity.interstitialAd?.show()
+            interstitialAd = null
         }
 
         override fun onAdClicked(ad: Ad) {
@@ -455,17 +456,11 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
-    private fun setTimer() {
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
-                timeOut = true
-                Log.i(TAG, "time out")
-            }
-        }, 7000L)
-    }
-
-    private fun setAdapterAndBanner() {
-        adView.loadAd()
+    private fun setUI() {
+        if (selections != null) {
+            uiState.value = UIState.SELECTION
+            loading.value = false
+        }
     }
 
     private fun getMixedSelections() = manager.getMixedSelections(selectionsCallback)
