@@ -26,7 +26,9 @@ import cc.music.mvp.view.MainView
 import cc.music.util.isNetworkConnected
 import com.facebook.ads.*
 import dagger.android.support.DaggerAppCompatActivity
-import java.util.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -119,16 +121,15 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     }
 
     private fun setTimer() {
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
-                timeOut = true
-                if (trackAdapter != null) {
-                    runOnUiThread { setAdapterAndBanner() }
-                }
-                interstitialAd = null
-                Log.i(TAG, "time out")
+        GlobalScope.launch {
+            delay(7000)
+            timeOut = true
+            if (trackAdapter != null) {
+                runOnUiThread { setAdapterAndBanner() }
             }
-        }, 6000L)
+            interstitialAd = null
+            Log.i(TAG, "time out")
+        }
     }
 
     override fun onRetainCustomNonConfigurationInstance() = presenter
