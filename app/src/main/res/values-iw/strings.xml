@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">מֶשֶׁך: %s</string>
+    <string name="uploaded">תאריך העלאה: %s</string>
+    <string name="my_music">המוסיקה שלי</string>
+    <string name="mixed_selections">בחירות מעורבות</string>
+    <string name="no_inet">אין גישה לאינטרנט</string>
+    <string name="refresh">לְרַעֲנֵן</string>
+    <string name="action_delete">לִמְחוֹק</string>
+</resources>

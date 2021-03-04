@@ -3,4 +3,8 @@
     <string name="duration">अवधि: %s</string>
     <string name="uploaded">अपलोड किया गया: %s</string>
     <string name="my_music">मेरा संगीत</string>
+    <string name="mixed_selections">मिश्रित चयन</string>
+    <string name="no_inet">इंटरनेट की सुविधा नहीं है</string>
+    <string name="refresh">ताज़ा करना</string>
+    <string name="action_delete">हटाएं</string>
 </resources>
