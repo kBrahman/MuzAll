@@ -100,6 +100,7 @@ class MainActivity : DaggerAppCompatActivity() {
             filteredTracks.addAll(data)
             uiState.value = UIState.PLAYLIST
             loading.value = false
+            Log.i(TAG, "search resp")
         }
     }
 
@@ -309,7 +310,9 @@ class MainActivity : DaggerAppCompatActivity() {
                     }
                     UIState.PLAYLIST -> {
                         val playerState = remember { mutableStateOf<Track?>(null) }
+                        Log.i(TAG, "size=>${filteredTracks.size}")
                         LazyColumn(contentPadding = PaddingValues(4.dp)) {
+//                            filteredTracks = mutableListOf()
                             items(count = filteredTracks.size) {
                                 Spacer(Modifier.preferredHeight(4.dp))
                                 val track = filteredTracks[it]
@@ -353,7 +356,7 @@ class MainActivity : DaggerAppCompatActivity() {
                                         )
                                     }
                                 }
-                                if (!loading.value && searching && it == filteredTracks.size - 1) {
+                                if (it == filteredTracks.size - 1 && !loading.value && searching) {
                                     Log.i(TAG, "filtered size=>${filteredTracks.size}")
                                     loading.value = true
                                     search(q, (filteredTracks.size / 25 + 1) * 25)
@@ -467,6 +470,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun search(q: String, offset: Int) {
         Log.i(TAG, "search")
+        loading.value = true
         manager.search(q, offset, searchCallback)
     }
 
@@ -485,8 +489,9 @@ class MainActivity : DaggerAppCompatActivity() {
                     if (q.isNotBlank()) {
                         this@MainActivity.q = q
                         searching = true
-                        search(q, 0)
                         filteredTracks.clear()
+                        Log.i(TAG, "clear")
+                        search(q, 0)
                     }
                     return true
                 }
