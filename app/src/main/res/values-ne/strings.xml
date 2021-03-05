@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">अवधि: %s</string>
+    <string name="my_music">मेरो संगीत</string>
+    <string name="released">जारी मिति: %s</string>
+    <string name="folder">संगीत फोल्डर</string>
+    <string name="could_not_play_file">माफ गर्नुहोस्, ट्र्याक खेल्न सकेन</string>
+    <string name="service_unavailable">सेवा अनुपलब्ध छ, कृपया फेरि प्रयास गर्नुहोस्</string>
+    <string name="err_dir_create">संगीतका लागि डाइरेक्टरी सिर्जना गर्न सकेन</string>
+    <string name="no_net">कुनै इन्टरनेट जडान छैन</string>
+    <string name="action_delete">मेटाउन</string>
+</resources>
