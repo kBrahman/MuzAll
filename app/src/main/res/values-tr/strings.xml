@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="conn_err">Bağlantı hatası</string>
+    <string name="refresh">Yenile</string>
+</resources>
