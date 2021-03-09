@@ -30,9 +30,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import dagger.android.support.DaggerAppCompatActivity
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import muz.all.BuildConfig
 import muz.all.R
 import muz.all.adapter.TrackAdapter
 import muz.all.databinding.ActivityMainBinding
@@ -70,11 +76,8 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     }
 
     private fun init() {
-        if (!isNetworkConnected(this) && ContextCompat.checkSelfPermission(
-                this,
-                WRITE_EXTERNAL_STORAGE
-            ) == PERMISSION_GRANTED
-        ) {
+        if (!isNetworkConnected(this) && ContextCompat
+                        .checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
             Toast.makeText(this, R.string.no_net, LENGTH_SHORT).show()
             openMusic(null)
             finish()
@@ -87,39 +90,29 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         MobileAds.initialize(this) {}
-        val interstitialAd = InterstitialAd(this)
-        interstitialAd.adUnitId = getString(R.string.int_id)
-        interstitialAd.loadAd(AdRequest.Builder().build())
-        interstitialAd.adListener = object : AdListener() {
-            override fun onAdFailedToLoad(p0: Int) {
-                timeOut = true
-                Log.i(TAG, "ad failed=>$p0")
-            }
-
-            override fun onAdClosed() {
+        InterstitialAd.load(this, getString(if (BuildConfig.DEBUG) R.string.int_test_id else R.string.int_id),
+                AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                Log.d(TAG, adError.message)
                 timeOut = true
             }
 
-            override fun onAdLoaded() {
-                if (!timeOut) interstitialAd.show()
+            override fun onAdLoaded(ad: InterstitialAd) {
+                Log.d(TAG, "Ad was loaded.")
+                if (!timeOut) ad.show(this@MainActivity)
+                timeOut = true
             }
-        }
+        })
         if (viewModel.tracks != null) {
             presenter.results = viewModel.tracks?.value?.toMutableList()
-            timeOut = true
         } else {
             setTimer()
         }
         presenter.view = this
         binding.rv.setHasFixedSize(true)
         binding.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(
-                recyclerView: RecyclerView,
-                dx: Int,
-                dy: Int
-            ) {
-                val layoutManager =
-                    recyclerView.layoutManager as LinearLayoutManager
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
                     presenter.onScrolled()
                 }
@@ -127,16 +120,12 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         })
     }
 
-    private fun setTimer() {
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
-                timeOut = true
-                if (trackAdapter != null) {
-                    runOnUiThread { setAdapterAndBanner() }
-                }
-                Log.i(TAG, "time out")
-            }
-        }, 6000L)
+    private fun setTimer() = GlobalScope.launch {
+        delay(7000)
+        timeOut = true
+        if (trackAdapter != null) {
+            runOnUiThread { setAdapterAndBanner() }
+        }
     }
 
     override fun onRetainCustomNonConfigurationInstance() = presenter
@@ -160,6 +149,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             player.show(supportFragmentManager, "player")
             player.showsDialog = true
         }
+        Log.i(TAG, "get popular")
         if (timeOut) {
             setAdapterAndBanner()
         }
@@ -186,32 +176,19 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     }
 
     override fun connectionErr() = setContent {
-        val colorPrimary = Color(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                getColor(R.color.colorPrimary)
-            } else {
-                resources.getColor(R.color.colorPrimary)
-            }
-        )
+        val colorPrimary = Color(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getColor(R.color.colorPrimary)
+        } else {
+            resources.getColor(R.color.colorPrimary)
+        })
         TopAppBar(backgroundColor = colorPrimary) {
-            Column(
-                Modifier
+            Column(Modifier
                     .fillMaxHeight()
-                    .padding(start = 4.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    getString(R.string.app_name),
-                    color = Color.White,
-                    fontSize = 20.sp
-                )
+                    .padding(start = 4.dp), verticalArrangement = Arrangement.Center) {
+                Text(getString(R.string.app_name), color = Color.White, fontSize = 20.sp)
             }
         }
-        Column(
-            Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
             Text(getString(R.string.conn_err))
             Button(onClick = ::init) {
                 Text(getString(R.string.refresh))
@@ -233,19 +210,18 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-        (menu?.findItem(R.id.action_search)?.actionView as SearchView)
-            .setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(q: String): Boolean {
-                    if (q.isNotBlank()) {
-                        presenter.onQueryTextSubmit(q)
-                        trackAdapter = null
-                    }
-                    return true
+        (menu?.findItem(R.id.action_search)?.actionView as SearchView).setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(q: String): Boolean {
+                if (q.isNotBlank()) {
+                    presenter.onQueryTextSubmit(q)
+                    trackAdapter = null
                 }
+                return true
+            }
 
-                override fun onQueryTextChange(p0: String?) = false
+            override fun onQueryTextChange(p0: String?) = false
 
-            })
+        })
         return true
     }
 
@@ -257,11 +233,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == 1 && (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED)) {
             openMusic(null)
             if (finish) finish()
