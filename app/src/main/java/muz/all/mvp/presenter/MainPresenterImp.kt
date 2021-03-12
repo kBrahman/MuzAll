@@ -44,7 +44,6 @@ class MainPresenterImp @Inject constructor(
     }
 
     private fun getPopular(offset: Int) {
-        Log.d(TAG, "getPopular id=>${manager.clientId}")
         disposable += manager.getPopular(offset)
             .subscribe(::onContentFetched, ::onError)
     }

@@ -25,25 +25,23 @@ class MainActivityModule {
         private val TAG = MainActivityModule::class.java.simpleName
     }
 
-    private var iterator: Iterator<String>? = null
-
     @Provides
     fun provideMuzApiManager(manager: MuzApiManager): ApiManager = manager
 
     @Provides
     fun provideViewModel(owner: MainActivity) =
-        ViewModelProvider(owner).get(AppViewModel::class.java)
+            ViewModelProvider(owner).get(AppViewModel::class.java)
 
     @Provides
     fun provideMainPresenter(presenter: MainPresenterImp): MainPresenter = presenter
 
     @Provides
     fun provideApiService(): MuzApiManager.APIService = Retrofit.Builder()
-        .client(OkHttpClient.Builder().readTimeout(14, TimeUnit.SECONDS).build())
-        .baseUrl(SERVER)
-        .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .build().create(MuzApiManager.APIService::class.java)
+            .client(OkHttpClient.Builder().readTimeout(14, TimeUnit.SECONDS).build())
+            .baseUrl(SERVER)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build().create(MuzApiManager.APIService::class.java)
 
     @Provides
     fun provideDisposable() = CompositeDisposable()
