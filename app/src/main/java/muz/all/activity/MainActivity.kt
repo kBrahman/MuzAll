@@ -20,6 +20,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import muz.all.BuildConfig
+import muz.all.R
 import muz.all.adapter.TrackAdapter
 import muz.all.databinding.ActivityMainBinding
 import muz.all.fragment.PlayerFragment
@@ -88,13 +90,25 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     }
 
     private fun init() {
+        val colorPrimary = Color(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                getColor(R.color.colorPrimary)
+            } else {
+                resources.getColor(R.color.colorPrimary)
+            }
+        )
         val stateVal = if (!isNetworkConnected(this)) UIState.MY_MUSIC else {
             apiManager.getPopular(0)
             UIState.MAIN
         }
         if (stateVal == UIState.MY_MUSIC && ContextCompat
-                        .checkSelfPermission(this, READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(READ_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE_READ)
+                .checkSelfPermission(this, READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(READ_EXTERNAL_STORAGE),
+                REQUEST_CODE_STORAGE_READ
+            )
             Toast.makeText(this, R.string.no_net, LENGTH_SHORT).show()
             return
         }
@@ -102,13 +116,13 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             uiState = remember { mutableStateOf(stateVal) }
             loadingState = remember { mutableStateOf(true) }
             when (uiState.value) {
-//                UIState.MAIN ->
+                UIState.MAIN -> MainScreen()
             }
             if (loadingState.value) Box(Modifier.fillMaxSize()) {
                 CircularProgressIndicator(
-                        color = colorPrimary, modifier = Modifier.align(
+                    color = colorPrimary, modifier = Modifier.align(
                         Alignment.Center
-                )
+                    )
                 )
 
             }
@@ -122,20 +136,20 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         setSupportActionBar(binding.toolbar)
         MobileAds.initialize(this) {}
         InterstitialAd.load(this,
-                getString(if (BuildConfig.DEBUG) R.string.int_test_id else R.string.int_id),
-                AdRequest.Builder().build(),
-                object : InterstitialAdLoadCallback() {
-                    override fun onAdFailedToLoad(adError: LoadAdError) {
-                        Log.d(TAG, adError.message)
-                        timeOut = true
-                    }
+            getString(if (BuildConfig.DEBUG) R.string.int_test_id else R.string.int_id),
+            AdRequest.Builder().build(),
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(TAG, adError.message)
+                    timeOut = true
+                }
 
-                    override fun onAdLoaded(ad: InterstitialAd) {
-                        Log.d(TAG, "Ad was loaded.")
-                        if (!timeOut) ad.show(this@MainActivity)
-                        timeOut = true
-                    }
-                })
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    Log.d(TAG, "Ad was loaded.")
+                    if (!timeOut) ad.show(this@MainActivity)
+                    timeOut = true
+                }
+            })
         if (viewModel.tracks != null) {
             presenter.results = viewModel.tracks?.value?.toMutableList()
         } else {
@@ -151,6 +165,11 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
                 }
             }
         })
+    }
+
+    @Composable
+    private fun MainScreen() {
+
     }
 
     private fun setTimer() = GlobalScope.launch {
@@ -210,25 +229,25 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
 
     override fun connectionErr() = setContent {
         val colorPrimary = Color(
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    getColor(R.color.colorPrimary)
-                } else {
-                    resources.getColor(R.color.colorPrimary)
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                getColor(R.color.colorPrimary)
+            } else {
+                resources.getColor(R.color.colorPrimary)
+            }
         )
         TopAppBar(backgroundColor = colorPrimary) {
             Column(
-                    Modifier
-                            .fillMaxHeight()
-                            .padding(start = 4.dp), verticalArrangement = Arrangement.Center
+                Modifier
+                    .fillMaxHeight()
+                    .padding(start = 4.dp), verticalArrangement = Arrangement.Center
             ) {
                 Text(getString(R.string.app_name), color = Color.White, fontSize = 20.sp)
             }
         }
         Column(
-                Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+            Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(getString(R.string.conn_err))
             Button(onClick = ::init) {
@@ -252,7 +271,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         (menu?.findItem(R.id.action_search)?.actionView as SearchView).setOnQueryTextListener(object :
-                SearchView.OnQueryTextListener {
+            SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(q: String): Boolean {
                 if (q.isNotBlank()) {
                     presenter.onQueryTextSubmit(q)
@@ -274,7 +293,11 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             REQUEST_CODE_STORAGE_READ -> if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED)
                 init()
