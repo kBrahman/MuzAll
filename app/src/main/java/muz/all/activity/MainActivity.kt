@@ -5,6 +5,7 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -61,6 +62,7 @@ import muz.all.mvp.presenter.MainPresenter
 import muz.all.mvp.view.MainView
 import muz.all.util.TRACK
 import muz.all.util.isNetworkConnected
+import java.net.URL
 import java.util.*
 import javax.inject.Inject
 
@@ -224,6 +226,16 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
                     search(q, (tracks.size / 25 + 1) * 25)
                 }
             }
+        }
+    }
+
+    private fun setBitmap(btp: MutableState<Bitmap?>, url: String) {
+        val bitmap = imageCache[url]
+        if (bitmap != null) {
+            btp.value = bitmap
+        } else GlobalScope.launch {
+            btp.value = BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
+            imageCache[url] = btp.value
         }
     }
 
