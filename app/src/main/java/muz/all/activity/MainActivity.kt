@@ -47,6 +47,8 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -57,12 +59,16 @@ import muz.all.databinding.ActivityMainBinding
 import muz.all.fragment.PlayerFragment
 import muz.all.manager.ApiManager
 import muz.all.model.AppViewModel
+import muz.all.model.MuzResponse
 import muz.all.model.Track
 import muz.all.mvp.presenter.MainPresenter
 import muz.all.mvp.view.MainView
 import muz.all.util.TRACK
 import muz.all.util.isNetworkConnected
+import java.net.ConnectException
+import java.net.SocketTimeoutException
 import java.net.URL
+import java.net.UnknownHostException
 import java.util.*
 import javax.inject.Inject
 
@@ -74,11 +80,18 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         private val REQUEST_CODE_STORAGE_READ = 1
     }
 
+    private var searching = false
+    private lateinit var q: String
     private var timeOut = false
     private var finish = false
     private lateinit var uiState: MutableState<UIState>
     private lateinit var loadingState: MutableState<Boolean>
     private var tracks = mutableListOf<Track>()
+    private val imageCache = HashMap<String, Bitmap?>()
+    private val disposable = CompositeDisposable()
+
+    @Inject
+    lateinit var idIterator: Iterator<String>
 
     @Inject
     lateinit var presenter: MainPresenter
@@ -106,7 +119,9 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             }
         )
         val stateVal = if (!isNetworkConnected(this)) UIState.MY_MUSIC else {
-            apiManager.getPopular(0)
+            disposable += apiManager.getPopular(0).subscribe(::onContentFetched, ::onError)
+
+            Log.i(TAG, "get popular")
             UIState.MAIN
         }
         if (stateVal == UIState.MY_MUSIC && ContextCompat
@@ -123,8 +138,17 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         setContent {
             uiState = remember { mutableStateOf(stateVal) }
             loadingState = remember { mutableStateOf(true) }
-            when (uiState.value) {
-                UIState.MAIN -> MainScreen()
+            Column {
+                TopAppBar(
+                    backgroundColor = colorPrimary,
+                    contentPadding = PaddingValues(8.dp),
+                    contentColor = Color.White
+                ) {
+                    Text(getString(R.string.app_name), fontSize = 21.sp)
+                }
+                when (uiState.value) {
+                    UIState.MAIN -> MainScreen()
+                }
             }
             if (loadingState.value) Box(Modifier.fillMaxSize()) {
                 CircularProgressIndicator(
@@ -140,7 +164,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             finish = true
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+//        setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         MobileAds.initialize(this) {}
         InterstitialAd.load(this,
@@ -163,7 +187,6 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         } else {
             setTimer()
         }
-        presenter.view = this
         binding.rv.setHasFixedSize(true)
         binding.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -191,12 +214,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
                     setBitmap(btp, url)
                     val bitmap = btp.value?.asImageBitmap()
                     if (bitmap != null) {
-                        Image(
-                            bitmap,
-                            null,
-                            modifier = Modifier
-                                .height(100.dp)
-                        )
+                        Image(bitmap, null, modifier = Modifier.height(100.dp))
                     }
 //                    else Image(
 //                        painterResource(R.drawable.ic_music_note_black_24dp),
@@ -206,26 +224,41 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
 
                     Spacer(Modifier.width(4.dp))
                     Column {
-                        Text(track.title, fontSize = 22.sp)
-                        Text(
-                            getString(
-                                R.string.uploaded,
-                                track.created_at.replace(Regex("T.+"), "")
-                            )
-                        )
-                        Text(
-                            getString(
-                                R.string.duration,
-                                milliSecondsToTime(track.duration)
-                            )
-                        )
+                        Text(track.name, fontSize = 21.sp)
+                        Text(track.artist_name)
+                        Text(getString(R.string.released, track.releasedate))
+                        Text(getString(R.string.duration, track.duration))
                     }
                 }
-                if (it == tracks.size - 1 && !loading.value && searching) {
-                    loading.value = true
-                    search(q, (tracks.size / 25 + 1) * 25)
+                if (it == tracks.size - 1 && !loadingState.value) {
+                    loadingState.value = true
+                    val offset = (tracks.size / 25 + 1) * 25
+                    (if (searching) apiManager.search(q, offset)
+                    else apiManager.search(q, offset)).subscribe(::onContentFetched, ::onError)
                 }
             }
+        }
+    }
+
+    override fun onStop() {
+        disposable.clear()
+        super.onStop()
+    }
+
+    private fun onError(t: Throwable) =
+        if (t is SocketTimeoutException || t is UnknownHostException || t is ConnectException)
+            connectionErr() else t.printStackTrace()
+
+    private fun onContentFetched(response: MuzResponse?) {
+        if (response?.results?.isEmpty() == true && !searching && idIterator.hasNext()) {
+            apiManager.clientId = idIterator.next()
+            apiManager.getPopular((tracks.size / 25 + 1) * 25)
+        } else if (response?.results?.isEmpty() == true && !searching) {
+            loadingState.value = false
+            showServiceUnavailable()
+        } else {
+            tracks.addAll(response?.results ?: emptyList())
+            loadingState.value = false
         }
     }
 
@@ -268,7 +301,6 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             player.show(supportFragmentManager, "player")
             player.showsDialog = true
         }
-        Log.i(TAG, "get popular")
         if (timeOut) {
             setAdapterAndBanner()
         }
