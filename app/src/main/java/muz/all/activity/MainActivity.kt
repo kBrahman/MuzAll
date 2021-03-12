@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -176,6 +175,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
 
     @Composable
     private fun MainScreen() {
+        val playerState = remember { mutableStateOf<Track?>(null) }
         LazyColumn(contentPadding = PaddingValues(4.dp)) {
             items(count = tracks.size) {
                 Spacer(Modifier.height(4.dp))
@@ -185,23 +185,22 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
                         .fillMaxWidth()
                         .clickable { playerState.value = track }) {
                     val btp = remember { mutableStateOf<Bitmap?>(null) }
-                    val url = track.artwork_url
-                    if (url != null) {
-                        setBitmap(btp, url)
-                        val bitmap = btp.value?.asImageBitmap()
-                        if (bitmap != null) {
-                            Image(
-                                bitmap,
-                                null,
-                                modifier = Modifier
-                                    .preferredSize(100.dp)
-                            )
-                        }
-                    } else Image(
-                        painterResource(R.drawable.ic_music_note_black_24dp),
-                        null, modifier = Modifier
-                            .preferredSize(100.dp)
-                    )
+                    val url = track.image
+                    setBitmap(btp, url)
+                    val bitmap = btp.value?.asImageBitmap()
+                    if (bitmap != null) {
+                        Image(
+                            bitmap,
+                            null,
+                            modifier = Modifier
+                                .height(100.dp)
+                        )
+                    }
+//                    else Image(
+//                        painterResource(R.drawable.ic_music_note_black_24dp),
+//                        null, modifier = Modifier
+//                            .preferredSize(100.dp)
+//                    )
 
                     Spacer(Modifier.width(4.dp))
                     Column {
