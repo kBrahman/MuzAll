@@ -17,6 +17,7 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.widget.SearchView
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.MutableState
@@ -43,7 +44,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import muz.all.BuildConfig
-import muz.all.R
 import muz.all.adapter.TrackAdapter
 import muz.all.databinding.ActivityMainBinding
 import muz.all.fragment.PlayerFragment
@@ -104,7 +104,14 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             when (uiState.value) {
 //                UIState.MAIN ->
             }
-            if(loadingState.value)
+            if (loadingState.value) Box(Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                        color = colorPrimary, modifier = Modifier.align(
+                        Alignment.Center
+                )
+                )
+
+            }
         }
         if (!isNetworkConnected(this)) {
             openMusic(null)
