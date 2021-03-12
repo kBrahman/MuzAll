@@ -4,6 +4,7 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -15,7 +16,10 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.compose.setContent
 import androidx.appcompat.widget.SearchView
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
@@ -27,6 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -169,7 +175,56 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
 
     @Composable
     private fun MainScreen() {
+        LazyColumn(contentPadding = PaddingValues(4.dp)) {
+            items(count = filteredTracks.size) {
+                Spacer(Modifier.preferredHeight(4.dp))
+                val track = filteredTracks[it]
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { playerState.value = track }) {
+                    val btp = remember { mutableStateOf<Bitmap?>(null) }
+                    val url = track.artwork_url
+                    if (url != null) {
+                        setBitmap(btp, url)
+                        val bitmap = btp.value?.asImageBitmap()
+                        if (bitmap != null) {
+                            Image(
+                                bitmap,
+                                null,
+                                modifier = Modifier
+                                    .preferredSize(100.dp)
+                            )
+                        }
+                    } else Image(
+                        painterResource(R.drawable.ic_music_note_black_24dp),
+                        null, modifier = Modifier
+                            .preferredSize(100.dp)
+                    )
 
+                    Spacer(Modifier.width(4.dp))
+                    Column {
+                        Text(track.title, fontSize = 22.sp)
+                        Text(
+                            getString(
+                                R.string.uploaded,
+                                track.created_at.replace(Regex("T.+"), "")
+                            )
+                        )
+                        Text(
+                            getString(
+                                R.string.duration,
+                                milliSecondsToTime(track.duration)
+                            )
+                        )
+                    }
+                }
+                if (it == filteredTracks.size - 1 && !loading.value && searching) {
+                    loading.value = true
+                    search(q, (filteredTracks.size / 25 + 1) * 25)
+                }
+            }
+        }
     }
 
     private fun setTimer() = GlobalScope.launch {
