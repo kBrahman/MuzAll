@@ -9,8 +9,6 @@ import muz.all.activity.MainActivity
 import muz.all.manager.ApiManager
 import muz.all.manager.MuzApiManager
 import muz.all.model.AppViewModel
-import muz.all.mvp.presenter.MainPresenter
-import muz.all.mvp.presenter.MainPresenterImp
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -30,18 +28,15 @@ class MainActivityModule {
 
     @Provides
     fun provideViewModel(owner: MainActivity) =
-            ViewModelProvider(owner).get(AppViewModel::class.java)
-
-    @Provides
-    fun provideMainPresenter(presenter: MainPresenterImp): MainPresenter = presenter
+        ViewModelProvider(owner).get(AppViewModel::class.java)
 
     @Provides
     fun provideApiService(): MuzApiManager.APIService = Retrofit.Builder()
-            .client(OkHttpClient.Builder().readTimeout(14, TimeUnit.SECONDS).build())
-            .baseUrl(SERVER)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build().create(MuzApiManager.APIService::class.java)
+        .client(OkHttpClient.Builder().readTimeout(14, TimeUnit.SECONDS).build())
+        .baseUrl(SERVER)
+        .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .build().create(MuzApiManager.APIService::class.java)
 
     @Provides
     fun provideDisposable() = CompositeDisposable()

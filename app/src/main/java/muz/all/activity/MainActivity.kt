@@ -1,8 +1,6 @@
 package muz.all.activity
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -10,9 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.View.VISIBLE
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.compose.setContent
@@ -21,10 +16,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -32,15 +24,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.FixedScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
@@ -54,16 +45,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import muz.all.BuildConfig
 import muz.all.R
-import muz.all.adapter.TrackAdapter
-import muz.all.databinding.ActivityMainBinding
-import muz.all.fragment.PlayerFragment
 import muz.all.manager.ApiManager
-import muz.all.model.AppViewModel
 import muz.all.model.MuzResponse
 import muz.all.model.Track
-import muz.all.mvp.presenter.MainPresenter
-import muz.all.mvp.view.MainView
-import muz.all.util.TRACK
 import muz.all.util.isNetworkConnected
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -73,17 +57,16 @@ import java.util.*
 import javax.inject.Inject
 
 
-class MainActivity : DaggerAppCompatActivity(), MainView {
+class MainActivity : DaggerAppCompatActivity() {
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
-        private val REQUEST_CODE_STORAGE_READ = 1
+        private const val REQUEST_CODE_STORAGE_READ = 1
     }
 
     private var searching = false
     private lateinit var q: String
     private var timeOut = false
-    private var finish = false
     private lateinit var uiState: MutableState<UIState>
     private lateinit var loadingState: MutableState<Boolean>
     private var tracks = mutableListOf<Track>()
@@ -94,16 +77,8 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     lateinit var idIterator: Iterator<String>
 
     @Inject
-    lateinit var presenter: MainPresenter
-
-    @Inject
     lateinit var apiManager: ApiManager
-
-    @Inject
-    lateinit var viewModel: AppViewModel
     private var isPaused = false
-    override var trackAdapter: TrackAdapter? = null
-    internal lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,7 +95,6 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         )
         val stateVal = if (!isNetworkConnected(this)) UIState.MY_MUSIC else {
             disposable += apiManager.getPopular(0).subscribe(::onContentFetched, ::onError)
-
             Log.i(TAG, "get popular")
             UIState.MAIN
         }
@@ -138,16 +112,36 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         setContent {
             uiState = remember { mutableStateOf(stateVal) }
             loadingState = remember { mutableStateOf(true) }
+            var showSearchView: MutableState<Boolean> by remember { mutableStateOf(false) }
             Column {
                 TopAppBar(
                     backgroundColor = colorPrimary,
                     contentPadding = PaddingValues(8.dp),
                     contentColor = Color.White
                 ) {
-                    Text(getString(R.string.app_name), fontSize = 21.sp)
+                    Row(Modifier.fillMaxWidth()) {
+                        Text(getString(R.string.app_name), fontSize = 21.sp)
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                            IconButton(onClick = { }) {
+                                Image(
+                                    painter = painterResource(id = android.R.drawable.ic_menu_search),
+                                    contentDescription = getString(R.string.my_music),
+                                    contentScale = FixedScale(0.7F),
+                                    colorFilter = ColorFilter.tint(Color.White)
+                                )
+                            }
+                            IconButton(onClick = { uiState.value = UIState.MY_MUSIC }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_folder_24dp),
+                                    contentDescription = getString(R.string.my_music)
+                                )
+                            }
+                        }
+                    }
                 }
                 when (uiState.value) {
                     UIState.MAIN -> MainScreen()
+                    UIState.MY_MUSIC -> MyMusicScreen()
                 }
             }
             if (loadingState.value) Box(Modifier.fillMaxSize()) {
@@ -159,13 +153,6 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
 
             }
         }
-        if (!isNetworkConnected(this)) {
-            openMusic(null)
-            finish = true
-        }
-        binding = ActivityMainBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
         MobileAds.initialize(this) {}
         InterstitialAd.load(this,
             getString(if (BuildConfig.DEBUG) R.string.int_test_id else R.string.int_id),
@@ -182,20 +169,11 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
                     timeOut = true
                 }
             })
-        if (viewModel.tracks != null) {
-            presenter.results = viewModel.tracks?.value?.toMutableList()
-        } else {
-            setTimer()
-        }
-        binding.rv.setHasFixedSize(true)
-        binding.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
-                    presenter.onScrolled()
-                }
-            }
-        })
+    }
+
+    @Composable
+    private fun MyMusicScreen() {
+
     }
 
     @Composable
@@ -234,7 +212,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
                     loadingState.value = true
                     val offset = (tracks.size / 25 + 1) * 25
                     (if (searching) apiManager.search(q, offset)
-                    else apiManager.search(q, offset)).subscribe(::onContentFetched, ::onError)
+                    else apiManager.getPopular(offset)).subscribe(::onContentFetched, ::onError)
                 }
             }
         }
@@ -250,7 +228,8 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             connectionErr() else t.printStackTrace()
 
     private fun onContentFetched(response: MuzResponse?) {
-        if (response?.results?.isEmpty() == true && !searching && idIterator.hasNext()) {
+        Log.i(TAG, "on content fetched")
+        if (response?.results?.isEmpty() == true && tracks.isEmpty() && !searching && idIterator.hasNext()) {
             apiManager.clientId = idIterator.next()
             apiManager.getPopular((tracks.size / 25 + 1) * 25)
         } else if (response?.results?.isEmpty() == true && !searching) {
@@ -275,12 +254,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     private fun setTimer() = GlobalScope.launch {
         delay(7000)
         timeOut = true
-        if (trackAdapter != null) {
-            runOnUiThread { setAdapterAndBanner() }
-        }
     }
-
-    override fun onRetainCustomNonConfigurationInstance() = presenter
 
     override fun onPause() {
         isPaused = true
@@ -292,41 +266,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         isPaused = false
     }
 
-    override fun show(tracks: MutableList<Track>?) {
-        trackAdapter = TrackAdapter(tracks) {
-            val bundle = Bundle()
-            bundle.putSerializable(TRACK, it)
-            val player = PlayerFragment()
-            player.arguments = bundle
-            player.show(supportFragmentManager, "player")
-            player.showsDialog = true
-        }
-        if (timeOut) {
-            setAdapterAndBanner()
-        }
-        viewModel.tracks = MutableLiveData<List<Track>>(trackAdapter?.getAll())
-    }
-
-    private fun setAdapterAndBanner() {
-        hideLoading()
-        binding.rv.adapter = trackAdapter
-        binding.adView.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                Log.i(TAG, "ad loaded")
-                if (supportFragmentManager.findFragmentByTag("player")?.isVisible != true) {
-                    binding.adView.visibility = VISIBLE
-                }
-            }
-        }
-        binding.adView.loadAd(AdRequest.Builder().build())
-    }
-
-    override fun addAndShow(tracks: List<Track>?) {
-        trackAdapter?.addData(tracks)
-        viewModel.tracks = MutableLiveData<List<Track>>(tracks)
-    }
-
-    override fun connectionErr() = setContent {
+    fun connectionErr() = setContent {
         val colorPrimary = Color(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 getColor(R.color.colorPrimary)
@@ -355,15 +295,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
         }
     }
 
-    override fun showLoading() {
-        binding.pb.visibility = VISIBLE
-    }
-
-    override fun hideLoading() {
-        binding.pb.visibility = View.GONE
-    }
-
-    override fun showServiceUnavailable() {
+    fun showServiceUnavailable() {
         Toast.makeText(this, R.string.service_unavailable, Toast.LENGTH_LONG).show()
     }
 
@@ -373,8 +305,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
             SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(q: String): Boolean {
                 if (q.isNotBlank()) {
-                    presenter.onQueryTextSubmit(q)
-                    trackAdapter = null
+
                 }
                 return true
             }
@@ -383,13 +314,6 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
 
         })
         return true
-    }
-
-    fun openMusic(item: MenuItem?) {
-        if (ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
-            startActivity(Intent(this, MusicActivity::class.java))
-        } else {
-        }
     }
 
     override fun onRequestPermissionsResult(
@@ -406,7 +330,6 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     }
 
     private enum class UIState {
-        UNDEFINED,
         MAIN,
         MY_MUSIC
     }
