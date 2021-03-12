@@ -77,6 +77,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     private var finish = false
     private lateinit var uiState: MutableState<UIState>
     private lateinit var loadingState: MutableState<Boolean>
+    private var tracks = mutableListOf<Track>()
 
     @Inject
     lateinit var presenter: MainPresenter
@@ -176,9 +177,9 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     @Composable
     private fun MainScreen() {
         LazyColumn(contentPadding = PaddingValues(4.dp)) {
-            items(count = filteredTracks.size) {
-                Spacer(Modifier.preferredHeight(4.dp))
-                val track = filteredTracks[it]
+            items(count = tracks.size) {
+                Spacer(Modifier.height(4.dp))
+                val track = tracks[it]
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -219,9 +220,9 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
                         )
                     }
                 }
-                if (it == filteredTracks.size - 1 && !loading.value && searching) {
+                if (it == tracks.size - 1 && !loading.value && searching) {
                     loading.value = true
-                    search(q, (filteredTracks.size / 25 + 1) * 25)
+                    search(q, (tracks.size / 25 + 1) * 25)
                 }
             }
         }
