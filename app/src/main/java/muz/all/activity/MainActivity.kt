@@ -4,6 +4,7 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -82,6 +83,9 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var idIterator: Iterator<String>
+
+    @Inject
+    lateinit var mp: MediaPlayer
 
     @Inject
     lateinit var apiManager: ApiManager
