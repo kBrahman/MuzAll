@@ -354,6 +354,20 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
+    private fun play(
+        track: Track,
+        showPlayButton: MutableState<Boolean>,
+        isProgressDeterminate: MutableState<Boolean>,
+        progress: MutableState<Float>
+    ) {
+        val url = track.audio
+        val urlLocation = "$url?client_id=${apiManager.clientId}"
+        GlobalScope.launch {
+            mp.setDataSource(url)
+            configureMp(showPlayButton, isProgressDeterminate, progress)
+        }
+    }
+
     override fun onStop() {
         disposable.clear()
         super.onStop()
