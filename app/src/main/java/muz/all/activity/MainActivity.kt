@@ -368,6 +368,23 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
+    private fun configureMp(
+        showPlayButton: MutableState<Boolean>,
+        isProgressDeterminate: MutableState<Boolean>,
+        progress: MutableState<Float>
+    ) {
+        mp.prepareAsync()
+        mp.setOnPreparedListener {
+            it.start()
+            isProgressDeterminate.value = true
+            startProgress(progress)
+        }
+        mp.setOnCompletionListener {
+            showPlayButton.value = true
+            progress.value = 0F
+        }
+    }
+
     override fun onStop() {
         disposable.clear()
         super.onStop()
