@@ -16,7 +16,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.TextFieldDefaults.textFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -24,12 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.FixedScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.AdRequest
@@ -65,7 +69,7 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private var searching = false
-    private lateinit var q: String
+    private lateinit var q: MutableState<String>
     private var timeOut = false
     private lateinit var uiState: MutableState<UIState>
     private lateinit var loadingState: MutableState<Boolean>
@@ -112,30 +116,42 @@ class MainActivity : DaggerAppCompatActivity() {
         setContent {
             uiState = remember { mutableStateOf(stateVal) }
             loadingState = remember { mutableStateOf(true) }
-            var showSearchView: MutableState<Boolean> by remember { mutableStateOf(false) }
+            q = remember { mutableStateOf("") }
+            val showSearchView = remember { mutableStateOf(false) }
             Column {
                 TopAppBar(
                     backgroundColor = colorPrimary,
-                    contentPadding = PaddingValues(8.dp),
                     contentColor = Color.White
                 ) {
-                    Row(Modifier.fillMaxWidth()) {
-                        Text(getString(R.string.app_name), fontSize = 21.sp)
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                            IconButton(onClick = { }) {
-                                Image(
-                                    painter = painterResource(id = android.R.drawable.ic_menu_search),
-                                    contentDescription = getString(R.string.my_music),
-                                    contentScale = FixedScale(0.7F),
-                                    colorFilter = ColorFilter.tint(Color.White)
-                                )
-                            }
-                            IconButton(onClick = { uiState.value = UIState.MY_MUSIC }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_folder_24dp),
-                                    contentDescription = getString(R.string.my_music)
-                                )
-                            }
+                    ConstraintLayout(Modifier.fillMaxSize()) {
+                        val (fB, title) = createRefs()
+                        Text(
+                            getString(R.string.app_name),
+                            fontSize = 21.sp,
+                            modifier = Modifier.constrainAs(title) {
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                            })
+                        SearchView(showSearchView,
+                            Modifier
+                                .fillMaxHeight()
+                                .constrainAs(createRef()) {
+                                    end.linkTo(fB.start)
+                                    top.linkTo(parent.top)
+                                    bottom.linkTo(parent.bottom)
+                                    if (showSearchView.value) start.linkTo(title.end, 16.dp)
+                                }
+                        )
+                        IconButton(modifier = Modifier.constrainAs(fB) {
+                            end.linkTo(parent.end)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                        },
+                            onClick = { uiState.value = UIState.MY_MUSIC }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_folder_24dp),
+                                contentDescription = getString(R.string.my_music)
+                            )
                         }
                     }
                 }
@@ -169,6 +185,57 @@ class MainActivity : DaggerAppCompatActivity() {
                     timeOut = true
                 }
             })
+    }
+
+    @Composable
+    private fun SearchView(showSearchView: MutableState<Boolean>, modifier: Modifier) {
+        if (showSearchView.value) TextField(modifier = modifier,
+            value = q.value,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(onSearch = {
+                loadingState.value = true
+                tracks.clear()
+                apiManager.search(q.value, (tracks.size / 25 + 1) * 25)
+                    .subscribe(::onContentFetched, ::onError)
+            }),
+            singleLine = true,
+            shape = MaterialTheme.shapes.large,
+            colors = textFieldColors(
+                cursorColor = Color.White,
+                backgroundColor = Color.Transparent,
+                focusedIndicatorColor = Color.White
+            ),
+            textStyle = TextStyle(fontSize = 18.sp),
+            onValueChange = { q.value = it },
+            trailingIcon = {
+                Icon(
+                    painterResource(id = android.R.drawable.ic_menu_close_clear_cancel),
+                    contentDescription = getString(R.string.close_search_view),
+                    Modifier.clickable {
+                        showSearchView.value = false
+                        q.value = ""
+                    },
+                    tint = Color.White
+                )
+            }
+        ) else Icon(
+            painterResource(id = R.drawable.ic_search),
+            contentDescription = getString(R.string.close_search_view),
+            modifier.clickable { showSearchView.value = true },
+        )
+
+//            IconButton(
+//            modifier = modifier.padding((0).dp),
+//            onClick = { showSearchView.value = true }) {
+//            Image(
+//                painter = painterResource(
+//                    id = android.R.drawable.ic_menu_search
+//                ),
+//                contentDescription = getString(R.string.my_music),
+//                contentScale = FixedScale(0.7F),
+//                colorFilter = ColorFilter.tint(Color.White)
+//            )
+//        }
     }
 
     @Composable
@@ -211,7 +278,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 if (it == tracks.size - 1 && !loadingState.value) {
                     loadingState.value = true
                     val offset = (tracks.size / 25 + 1) * 25
-                    (if (searching) apiManager.search(q, offset)
+                    (if (searching) apiManager.search(q.value, offset)
                     else apiManager.getPopular(offset)).subscribe(::onContentFetched, ::onError)
                 }
             }
@@ -231,7 +298,9 @@ class MainActivity : DaggerAppCompatActivity() {
         Log.i(TAG, "on content fetched")
         if (response?.results?.isEmpty() == true && tracks.isEmpty() && !searching && idIterator.hasNext()) {
             apiManager.clientId = idIterator.next()
-            apiManager.getPopular((tracks.size / 25 + 1) * 25)
+            disposable.clear()
+            disposable += apiManager.getPopular((tracks.size / 25 + 1) * 25)
+                .subscribe(::onContentFetched, ::onError)
         } else if (response?.results?.isEmpty() == true && !searching) {
             loadingState.value = false
             showServiceUnavailable()

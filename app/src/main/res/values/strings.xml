@@ -10,4 +10,5 @@
     <string name="action_delete">Delete</string>
     <string name="conn_err">Connection error</string>
     <string name="refresh">Refresh</string>
+    <string name="close_search_view">Close search view</string>
 </resources>
