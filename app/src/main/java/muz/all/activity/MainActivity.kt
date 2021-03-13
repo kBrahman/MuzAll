@@ -13,6 +13,7 @@ import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.compose.setContent
 import androidx.appcompat.widget.SearchView
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,11 +29,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -280,6 +283,68 @@ class MainActivity : DaggerAppCompatActivity() {
                     val offset = (tracks.size / 25 + 1) * 25
                     (if (searching) apiManager.search(q.value, offset)
                     else apiManager.getPopular(offset)).subscribe(::onContentFetched, ::onError)
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun Player(playerState: MutableState<Track?>, colorPrimary: Color) {
+        val track = playerState.value!!
+        val showPlayButton = remember { mutableStateOf(false) }
+        val isProgressDeterminate = remember { mutableStateOf(false) }
+        val progress = remember { mutableStateOf(0F) }
+        play(track, showPlayButton, isProgressDeterminate, progress)
+        Dialog(onDismissRequest = {
+            mp.stop()
+            mp.reset()
+            playerState.value = null
+        }) {
+            Column(
+                Modifier
+                    .background(Color.White)
+                    .padding(4.dp)
+            ) {
+                Text(track.title, fontSize = 20.sp)
+                Spacer(Modifier.preferredHeight(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Button(
+                        onClick = {
+                            if (mp.isPlaying) mp.pause() else mp.start()
+                            showPlayButton.value = !mp.isPlaying
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = colorPrimary),
+                        modifier = Modifier.preferredWidth(48.dp)
+                    ) {
+                        Image(
+                            painterResource(id = if (showPlayButton.value) R.drawable.ic_play_24 else R.drawable.ic_pause_24),
+                            null
+                        )
+                    }
+                    Spacer(Modifier.preferredWidth(4.dp))
+                    if (isProgressDeterminate.value) {
+                        var w = 0
+                        LinearProgressIndicator(progress = progress.value,
+                            color = colorPrimary,
+                            modifier = Modifier
+                                .layout { measurable, constraints ->
+                                    val placeable = measurable.measure(constraints)
+                                    w = placeable.width
+                                    layout(placeable.width, placeable.height) {
+                                        placeable.placeRelative(0, 0)
+                                    }
+                                }
+                                .tapGestureFilter {
+                                    progress.value = it.x / w
+                                    mp.seekTo(
+                                        (progress.value * mp.duration).toInt()
+                                    )
+                                })
+                    } else {
+                        LinearProgressIndicator(
+                            color = colorPrimary,
+                        )
+                    }
                 }
             }
         }
