@@ -18,7 +18,6 @@ import dagger.android.support.DaggerAppCompatActivity
 import muz.all.R
 import muz.all.adapter.MusicAdapter
 import muz.all.databinding.ActivityMusicBinding
-import muz.all.fragment.PlayerFragment
 import muz.all.util.TRACK
 import java.io.File
 
@@ -61,10 +60,10 @@ class MusicActivity : DaggerAppCompatActivity() {
     private fun onItemClick(files: List<File>?, it: Int) {
         val bundle = Bundle()
         bundle.putSerializable(TRACK, files?.get(it))
-        val player = PlayerFragment()
-        player.arguments = bundle
-        player.show(supportFragmentManager, "player")
-        player.showsDialog = true
+//        val player = PlayerFragment()
+//        player.arguments = bundle
+//        player.show(supportFragmentManager, "player")
+//        player.showsDialog = true
     }
 
     private fun isDirOk(directory: File): Boolean {

@@ -31,7 +31,7 @@ class MusicAdapter(private val list: Array<File>?, val onClick: (pos: Int) -> Un
         } catch (e: RuntimeException) {
             e.printStackTrace()
         }
-        val data = retriever.embeddedPicture;
+        val data = retriever.embeddedPicture
         if (data != null) {
             val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
             holder.binding.imgMusicItem.setImageBitmap(bitmap)

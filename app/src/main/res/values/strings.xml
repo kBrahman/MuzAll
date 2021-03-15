@@ -11,4 +11,6 @@
     <string name="conn_err">Connection error</string>
     <string name="refresh">Refresh</string>
     <string name="close_search_view">Close search view</string>
+    <string name="back">Back</string>
+    <string name="music_icon">Music icon</string>
 </resources>

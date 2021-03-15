@@ -1,5 +1,7 @@
 package muz.all.module
 
+import android.media.AudioAttributes
+import android.media.MediaPlayer
 import androidx.lifecycle.ViewModelProvider
 import dagger.Module
 import dagger.Provides
@@ -46,4 +48,16 @@ class MainActivityModule {
 
     @Provides
     fun provideClientId(idIterator: Iterator<String>) = idIterator.next()
+
+    @Provides
+    fun provideMediaPlayer(): MediaPlayer {
+        val mp = MediaPlayer()
+        mp.setAudioAttributes(
+            AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).setUsage(
+                AudioAttributes.USAGE_MEDIA
+            )
+                .build()
+        )
+        return mp
+    }
 }
