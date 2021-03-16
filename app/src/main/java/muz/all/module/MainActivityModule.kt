@@ -10,7 +10,6 @@ import muz.all.BuildConfig
 import muz.all.activity.MainActivity
 import muz.all.manager.ApiManager
 import muz.all.manager.MuzApiManager
-import muz.all.model.AppViewModel
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -27,10 +26,6 @@ class MainActivityModule {
 
     @Provides
     fun provideMuzApiManager(manager: MuzApiManager): ApiManager = manager
-
-    @Provides
-    fun provideViewModel(owner: MainActivity) =
-        ViewModelProvider(owner).get(AppViewModel::class.java)
 
     @Provides
     fun provideApiService(): MuzApiManager.APIService = Retrofit.Builder()

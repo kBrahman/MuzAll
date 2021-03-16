@@ -1,6 +1,5 @@
 package muz.all.manager
 
-import androidx.lifecycle.ViewModel
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -13,7 +12,7 @@ import javax.inject.Inject
 class MuzApiManager @Inject constructor(
     private val apiService: APIService,
     override var clientId: String
-) : ApiManager, ViewModel() {
+) : ApiManager {
 
     companion object {
         private val TAG = MuzApiManager::class.java.simpleName
@@ -21,14 +20,14 @@ class MuzApiManager @Inject constructor(
     }
 
     override fun search(q: String, offset: Int) =
-        apiService.search(q, offset, clientId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            apiService.search(q, offset, clientId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
 
     override fun getPopular(offset: Int) =
-        apiService.getPopular(offset, clientId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            apiService.getPopular(offset, clientId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
 
     interface APIService {
 

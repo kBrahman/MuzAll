@@ -6,8 +6,6 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.core.content.ContextCompat
 
-const val TRACK = "track"
-
 fun isNetworkConnected(ctx: Context): Boolean {
     val cm = ContextCompat.getSystemService(ctx, ConnectivityManager::class.java)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
