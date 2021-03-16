@@ -5,4 +5,13 @@
     <string name="folder">Dossier de musique</string>
     <string name="my_music">Ma musique</string>
     <string name="could_not_play_file">Impossible de lire la piste, désolé</string>
+    <string name="service_unavailable">Service indisponible, réessayez plus tard s\'il vous plaît</string>
+    <string name="err_dir_create">Impossible de créer un répertoire pour la musique</string>
+    <string name="no_net">Pas de connexion Internet</string>
+    <string name="action_delete">Effacer</string>
+    <string name="conn_err">Erreur de connexion</string>
+    <string name="refresh">Rafraîchir</string>
+    <string name="close_search_view">Fermer la vue de recherche</string>
+    <string name="back">Retour</string>
+    <string name="music_icon">Icône de la musique</string>
 </resources>

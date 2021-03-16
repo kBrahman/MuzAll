@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">ხანგრძლივობა: %s</string>
+    <string name="released">Გამოშვების თარიღი: %s</string>
+    <string name="folder">საქაღალდის მუსიკა</string>
+    <string name="my_music">Ჩემი მუსიკა</string>
+    <string name="could_not_play_file">ტრეკის დაკვრა ვერ მოხერხდა, უკაცრავად</string>
+    <string name="service_unavailable">სერვისი მიუწვდომელია, გთხოვთ, სცადოთ მოგვიანებით</string>
+    <string name="err_dir_create">მუსიკის დირექტორია ვერ შექმნა</string>
+    <string name="no_net">Არ არის ინტერნეტ კავშირი</string>
+    <string name="action_delete">წაშლა</string>
+    <string name="conn_err">Კავშირის შეცდომა</string>
+    <string name="refresh">განახლება</string>
+    <string name="close_search_view">დახურეთ ძიების ხედი</string>
+    <string name="back">უკან</string>
+    <string name="music_icon">მუსიკის ხატი</string>
+</resources>
