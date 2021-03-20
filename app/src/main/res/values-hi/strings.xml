@@ -6,4 +6,12 @@
     <string name="my_music">मेरा संगीत</string>
     <string name="could_not_play_file">ट्रैक नहीं चला सका, क्षमा करें</string>
     <string name="service_unavailable">सेवा अनुपलब्ध है, कृपया बाद में पुनः प्रयास करें</string>
+    <string name="err_dir_create">संगीत के लिए निर्देशिका नहीं बना सका</string>
+    <string name="action_delete">हटाएं</string>
+    <string name="conn_err">कनेक्शन त्रुटि</string>
+    <string name="no_net">कोई इंटरनेट कनेक्शन नहीं</string>
+    <string name="refresh">ताज़ा करना</string>
+    <string name="close_search_view">खोज दृश्य बंद करें</string>
+    <string name="back">वापस</string>
+    <string name="music_icon">संगीत आइकन</string>
 </resources>
