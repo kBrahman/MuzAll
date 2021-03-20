@@ -5,4 +5,8 @@
     <string name="folder">Folda ya Muziki</string>
     <string name="could_not_play_file">Haikuweza kucheza wimbo, samahani</string>
     <string name="my_music">Muziki wangu</string>
+    <string name="err_dir_create">Haikuweza kuunda saraka ya muziki</string>
+    <string name="action_delete">Futa</string>
+    <string name="service_unavailable">Huduma haipatikani, jaribu tena baadaye tafadhali</string>
+    <string name="no_net">Hakuna muunganisho wa mtandao</string>
 </resources>

@@ -53,7 +53,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     private var interstitialAd: InterstitialAd? = null
     private val adListener = object : InterstitialAdListener {
         override fun onError(p0: Ad?, error: AdError?) {
-            Log.i(TAG, "int ad err=>$error")
+            Log.i(TAG, "int ad err=>${error?.errorMessage}")
         }
 
         override fun onAdLoaded(ad: Ad?) {
