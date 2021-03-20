@@ -154,7 +154,6 @@ class MainActivity : DaggerAppCompatActivity() {
                         UIState.MAIN -> MainScreen(playerState, colorPrimary, showSearchView, scrollState)
                         UIState.MY_MUSIC -> MyMusicScreen(playerState, colorPrimary)
                     }
-
                 }
                 if (playerState.value == null && timeOut) Banner(AdSize.BANNER)
             }
@@ -340,9 +339,8 @@ class MainActivity : DaggerAppCompatActivity() {
                 }
             }
         }
-        Column {
+        Column(Modifier.fillMaxHeight()) {
             var i = 0
-            Log.i(TAG, "filteredFiles=>$filteredFiles")
             val size = filteredFiles.size
             while (i < size) {
                 Row(
@@ -449,7 +447,7 @@ class MainActivity : DaggerAppCompatActivity() {
     @ExperimentalFoundationApi
     @Composable
     private fun MainScreen(playerState: MutableState<Any?>, colorPrimary: Color, showSearchView: MutableState<Boolean>, scrollState: LazyListState) {
-        MuzAppBar(colorPrimary, showSearchView)
+        if (loadingState?.value != true) MuzAppBar(colorPrimary, showSearchView)
         LazyColumn(contentPadding = PaddingValues(4.dp), state = scrollState) {
             items(count = tracks.size) {
                 Spacer(Modifier.height(4.dp))
