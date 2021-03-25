@@ -1,7 +1,7 @@
 package muz.all.activity
 
-import android.Manifest
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -79,8 +79,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
-        private const val REQUEST_CODE_STORAGE_READ = 1
-        private const val REQUEST_CODE_STORAGE_WRITE = 2
+        private const val REQUEST_CODE_STORAGE = 1
     }
 
     private var filteredFiles = mutableStateListOf<File>()
@@ -124,7 +123,6 @@ class MainActivity : DaggerAppCompatActivity() {
             }
         )
         val stateVal = if (!isNetworkConnected(this)) {
-            Log.i(TAG, "no net")
             updateFileList()
             UIState.MY_MUSIC
         } else {
@@ -133,7 +131,7 @@ class MainActivity : DaggerAppCompatActivity() {
         }
 
         if (stateVal == UIState.MY_MUSIC && ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(READ_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE_READ)
+            ActivityCompat.requestPermissions(this, arrayOf(READ_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE)
             Toast.makeText(this, R.string.no_net, LENGTH_SHORT).show()
             onPermissionGranted = ::init
             onPermissionDenied = ::finish
@@ -143,7 +141,6 @@ class MainActivity : DaggerAppCompatActivity() {
         setContent {
             uiState = remember { mutableStateOf(stateVal) }
             loadingState = remember { mutableStateOf(true) }
-            Log.i(TAG, "remembered loading state")
             q = remember { mutableStateOf("") }
             val showSearchView = remember { mutableStateOf(false) }
             val playerState = remember { mutableStateOf<Any?>(null) }
@@ -153,6 +150,7 @@ class MainActivity : DaggerAppCompatActivity() {
                     when (uiState.value) {
                         UIState.MAIN -> MainScreen(playerState, colorPrimary, showSearchView, scrollState)
                         UIState.MY_MUSIC -> MyMusicScreen(playerState, colorPrimary)
+                        UIState.DIR_ISSIUE -> DirIssueScreen()
                     }
                 }
                 if (playerState.value == null && timeOut) Banner(AdSize.BANNER)
@@ -186,6 +184,11 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     @Composable
+    private fun DirIssueScreen() {
+//        Text(text = getString(R.string.create_dir_manually))
+    }
+
+    @Composable
     private fun Banner(size: AdSize) = AndroidView({
         AdView(it).apply {
             adUnitId = if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/6300978111" else getString(R.string.banner_id)
@@ -200,7 +203,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun MuzAppBar(colorPrimary: Color, showSearchView: MutableState<Boolean>) {
         TopAppBar(backgroundColor = colorPrimary, contentColor = Color.White) {
             ConstraintLayout(Modifier.fillMaxSize()) {
-                val (fB, title) = createRefs()
+                val (btnMyMusic, title) = createRefs()
                 Text(
                     getString(R.string.app_name),
                     fontSize = 21.sp,
@@ -211,21 +214,20 @@ class MainActivity : DaggerAppCompatActivity() {
                 SearchView(showSearchView, Modifier
                     .fillMaxHeight()
                     .constrainAs(createRef()) {
-                        end.linkTo(fB.start)
+                        end.linkTo(btnMyMusic.start)
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                         if (showSearchView.value) start.linkTo(title.end, 16.dp)
                     })
-                IconButton(modifier = Modifier.constrainAs(fB) {
+                IconButton(modifier = Modifier.constrainAs(btnMyMusic) {
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                 }, onClick = {
-                    if (ContextCompat.checkSelfPermission(this@MainActivity, READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED
-                        || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) myMusic()
+                    if (ContextCompat.checkSelfPermission(this@MainActivity, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) myMusic()
                     else {
-                        ActivityCompat.requestPermissions(this@MainActivity, arrayOf(READ_EXTERNAL_STORAGE),
-                            REQUEST_CODE_STORAGE_READ)
+                        ActivityCompat.requestPermissions(this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE),
+                            REQUEST_CODE_STORAGE)
                         onPermissionGranted = ::myMusic
                         onPermissionDenied = {}
                     }
@@ -245,16 +247,30 @@ class MainActivity : DaggerAppCompatActivity() {
         updateFileList()
     }
 
-    private fun updateFileList() = GlobalScope.launch {
-        filteredFiles.clear()
-        val directory =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-        if (!directory.exists()) directory.mkdirs()
-        filteredFiles.addAll(
-            directory.listFiles().filter { it.extension == "mp3" || it.extension == "flac" })
-        Log.i(TAG, "updateFileList")
-    }
+    private fun updateFileList() {
+        GlobalScope.launch {
+            filteredFiles.clear()
+            val directory =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
 
+            Log.i(TAG, "dir=>$directory")
+            if (!directory.exists()
+                && ContextCompat.checkSelfPermission(this@MainActivity, WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE)
+                onPermissionGranted = ::updateFileList
+                onPermissionDenied = { uiState.value = UIState.MAIN }
+            } else {
+                if (!directory.exists()) {
+                    val create = directory.mkdirs()
+                    Log.i(TAG, "dir does not exist. created=$create")
+                }
+                Log.i(TAG, "dir  exists. is dir=>${directory.isDirectory}")
+                filteredFiles.addAll(
+                    directory.listFiles().filter { it.extension == "mp3" || it.extension == "flac" })
+            }
+            Log.i(TAG, "updateFileList")
+        }
+    }
 
     @ExperimentalFoundationApi
     @Composable
@@ -319,11 +335,11 @@ class MainActivity : DaggerAppCompatActivity() {
                 ) {
                     IconButton(onClick = {
                         if (ContextCompat.checkSelfPermission(this@MainActivity,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                                WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                             deleteAndUpdate()
                         else {
                             ActivityCompat.requestPermissions(this@MainActivity,
-                                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE_WRITE)
+                                arrayOf(WRITE_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE)
                             onPermissionGranted = ::deleteAndUpdate
                             onPermissionDenied = {}
                         }
@@ -411,7 +427,7 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun download(track: Track) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED
+        if (ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED
             || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
             val uri = Uri.parse(track.audio)
@@ -425,7 +441,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 }
             }, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE_WRITE)
+            ActivityCompat.requestPermissions(this, arrayOf(WRITE_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE)
             onPermissionGranted = {
                 Log.i(TAG, "onPermissionGranted download")
                 download(track)
@@ -708,6 +724,6 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private enum class UIState {
-        MAIN, MY_MUSIC
+        MAIN, MY_MUSIC, DIR_ISSIUE
     }
 }
