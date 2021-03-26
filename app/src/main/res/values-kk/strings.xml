@@ -5,4 +5,8 @@
     <string name="could_not_play_file">Кешіріңіз, трек ойнатыла алмады</string>
     <string name="folder">Музыка</string>
     <string name="my_music">Менің музыкам</string>
+    <string name="service_unavailable">Қызмет қол жетімді емес, кейінірек қайталап көріңіз</string>
+    <string name="err_dir_create">Музыкаға арналған каталог құрылмады</string>
+    <string name="no_net">Интернет байланысы жоқ</string>
+    <string name="action_delete">Жою</string>
 </resources>

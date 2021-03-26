@@ -4,4 +4,9 @@
     <string name="released">発売日：%s</string>
     <string name="folder">ミュージックフォルダ</string>
     <string name="my_music">私の音楽</string>
+    <string name="could_not_play_file">トラックを再生できませんでした、ごめんなさい</string>
+    <string name="service_unavailable">サービスを利用できません。しばらくしてからもう一度お試しください</string>
+    <string name="err_dir_create">音楽のディレクトリを作成できませんでした</string>
+    <string name="no_net">インターネットに接続できません</string>
+    <string name="action_delete">削除</string>
 </resources>
