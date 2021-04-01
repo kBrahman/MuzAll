@@ -8,4 +8,10 @@
     <string name="service_unavailable">"Serviço indisponível, tente novamente mais tarde por favor "</string>
     <string name="err_dir_create">Não foi possível criar diretório para música</string>
     <string name="no_net">Sem conexão de internet</string>
+    <string name="action_delete">Excluir</string>
+    <string name="conn_err">Erro de conexão</string>
+    <string name="refresh">Atualizar</string>
+    <string name="close_search_view">Fechar visualização de pesquisa</string>
+    <string name="back">De volta</string>
+    <string name="music_icon">Ícone da música</string>
 </resources>
