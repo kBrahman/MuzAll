@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.*
@@ -145,15 +146,26 @@ class MainActivity : DaggerAppCompatActivity() {
             val showSearchView = remember { mutableStateOf(false) }
             val playerState = remember { mutableStateOf<Any?>(null) }
             val scrollState = rememberLazyListState()
-            Box(contentAlignment = Alignment.BottomCenter) {
-                Column {
+            ConstraintLayout(Modifier.fillMaxHeight()) {
+                val bannerRef = createRef()
+                Column(Modifier.constrainAs(createRef()) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(bannerRef.top)
+                    height = fillToConstraints
+                }) {
                     when (uiState.value) {
                         UIState.MAIN -> MainScreen(playerState, colorPrimary, showSearchView, scrollState)
                         UIState.MY_MUSIC -> MyMusicScreen(playerState, colorPrimary)
                         UIState.DIR_ISSIUE -> DirIssueScreen()
                     }
                 }
-                if (playerState.value == null && timeOut) Banner(AdSize.BANNER)
+                if (playerState.value == null && timeOut) {
+                    Banner(Modifier.constrainAs(bannerRef) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }, AdSize.BANNER)
+                }
             }
             if (playerState.value != null) Player(playerState, colorPrimary, uiState.value == UIState.MAIN)
             if (loadingState?.value == true) Box(Modifier.fillMaxSize()) {
@@ -189,14 +201,13 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     @Composable
-    private fun Banner(size: AdSize) = AndroidView({
+    private fun Banner(modifier: Modifier, size: AdSize) = AndroidView({
         AdView(it).apply {
             adUnitId = if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/6300978111" else getString(R.string.banner_id)
             adSize = size
             loadAd(AdRequest.Builder().build())
         }
-    })
-
+    }, modifier)
 
     @ExperimentalFoundationApi
     @Composable
@@ -416,7 +427,6 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun vibrateAndShowDelItem(delItemVisible: MutableState<Boolean>) {
-        Log.i(TAG, "on long click")
         val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             v?.vibrate(VibrationEffect.createOneShot(70, 250))
@@ -478,12 +488,7 @@ class MainActivity : DaggerAppCompatActivity() {
                     val bitmap = btp.value?.asImageBitmap()
                     if (bitmap != null) {
                         Image(bitmap, null, modifier = Modifier.height(100.dp))
-                    } //                    else Image(
-                    //                        painterResource(R.drawable.ic_music_note_black_24dp),
-                    //                        null, modifier = Modifier
-                    //                            .preferredSize(100.dp)
-                    //                    )
-
+                    }
                     Spacer(Modifier.width(4.dp))
                     Column {
                         Text(track.name, fontSize = 21.sp)
@@ -524,7 +529,7 @@ class MainActivity : DaggerAppCompatActivity() {
                     .background(Color.White)
                     .padding(4.dp)
             ) {
-                Banner(AdSize.MEDIUM_RECTANGLE)
+                Banner(Modifier, AdSize.MEDIUM_RECTANGLE)
                 Text(name, fontSize = 20.sp)
                 Spacer(Modifier.height(4.dp))
                 Row(
@@ -659,10 +664,13 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun setBitmap(btp: MutableState<Bitmap?>, url: String) {
         val bitmap = imageCache[url]
-        if (bitmap != null) {
-            btp.value = bitmap
-        } else GlobalScope.launch {
-            btp.value = BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
+        if (bitmap != null) btp.value = bitmap
+        else GlobalScope.launch {
+            try {
+                btp.value = BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
+            } catch (ce: ConnectException) {
+                btp.value = BitmapFactory.decodeResource(resources, R.drawable.ic_music_note_black_24dp)
+            }
             imageCache[url] = btp.value
         }
     }
