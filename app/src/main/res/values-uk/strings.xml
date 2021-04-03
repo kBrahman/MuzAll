@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Тривалість: %s</string>
+    <string name="released">Випущено: %s</string>
+    <string name="folder">Музична папка</string>
+    <string name="my_music">Моя музика</string>
+    <string name="could_not_play_file">Не вдалося відтворити композицію, вибачте</string>
+    <string name="service_unavailable">Послуга недоступна, спробуйте пізніше, будь ласка</string>
+    <string name="err_dir_create">Не вдалося створити каталог для музики</string>
+    <string name="no_net">Немає підключення до Інтернету</string>
+    <string name="action_delete">Видалити</string>
+</resources>
