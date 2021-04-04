@@ -9,4 +9,9 @@
     <string name="err_dir_create">Hindi makalikha ng direktoryo para sa musika</string>
     <string name="no_net">Walang koneksyon sa internet</string>
     <string name="action_delete">Tanggalin</string>
+    <string name="conn_err">Error sa koneksyon</string>
+    <string name="refresh">Refresh</string>
+    <string name="close_search_view">Isara ang view ng paghahanap</string>
+    <string name="back">Bumalik</string>
+    <string name="music_icon">Icon ng musika</string>
 </resources>

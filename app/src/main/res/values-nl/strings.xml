@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Looptijd :%</string>
+    <string name="released">Vrijgelaten: %s</string>
+    <string name="folder">Muziekmap</string>
+    <string name="my_music">Mijn muziek</string>
+    <string name="could_not_play_file">Kan de track niet afspelen, sorry</string>
+    <string name="service_unavailable">Service niet beschikbaar, probeer het later opnieuw</string>
+    <string name="err_dir_create">Kan geen map voor muziek maken</string>
+    <string name="no_net">Geen internet verbinding</string>
+    <string name="action_delete">Verwijderen</string>
+    <string name="conn_err">Verbindingsfout</string>
+    <string name="refresh">Vernieuwen</string>
+    <string name="close_search_view">Zoekweergave sluiten</string>
+    <string name="back">Terug</string>
+    <string name="music_icon">Muziek icoon</string>
+</resources>

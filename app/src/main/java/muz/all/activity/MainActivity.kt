@@ -66,6 +66,7 @@ import muz.all.model.MuzResponse
 import muz.all.model.Track
 import muz.all.util.isNetworkConnected
 import java.io.File
+import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.URL
@@ -187,7 +188,6 @@ class MainActivity : DaggerAppCompatActivity() {
                 }
 
                 override fun onAdLoaded(ad: InterstitialAd) {
-                    Log.d(TAG, "Ad was loaded.")
                     if (!timeOut) ad.show(this@MainActivity)
                     timeOut = true
                 }
@@ -668,7 +668,7 @@ class MainActivity : DaggerAppCompatActivity() {
         else GlobalScope.launch {
             try {
                 btp.value = BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
-            } catch (ce: ConnectException) {
+            } catch (ce: IOException) {
                 btp.value = BitmapFactory.decodeResource(resources, R.drawable.ic_music_note_black_24dp)
             }
             imageCache[url] = btp.value
