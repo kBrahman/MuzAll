@@ -112,7 +112,7 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
                 dy: Int
             ) {
                 val layoutManager =
-                    recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
+                        recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
                 if (layoutManager.findLastVisibleItemPosition() == layoutManager.itemCount - 1) {
                     presenter.onScrolled()
                 }
@@ -153,7 +153,6 @@ class MainActivity : DaggerAppCompatActivity(), MainView {
     }
 
     private fun setAdapterAndBanner() {
-        Log.i(TAG, "set adapter and banner")
         hideLoading()
         binding.rv.adapter = trackAdapter
         if (adView != null) return

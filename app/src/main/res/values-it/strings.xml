@@ -6,4 +6,7 @@
     <string name="my_music">La mia musica</string>
     <string name="could_not_play_file">"Impossibile suonare la traccia, mi dispiace "</string>
     <string name="service_unavailable">"Servizio non disponibile, riprova più tardi per favore "</string>
+    <string name="err_dir_create">Impossibile creare una directory per la musica</string>
+    <string name="no_net">Nessuna connessione internet</string>
+    <string name="action_delete">Elimina</string>
 </resources>

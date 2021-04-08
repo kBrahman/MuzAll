@@ -22,8 +22,8 @@ android {
         applicationId localProperties["id_c_music"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 12
-        versionName '1.11'
+        versionCode 13
+        versionName '1.12'
         multiDexEnabled true
         buildConfigField "String", "SERVER", localProperties["cc_server"]
     }
