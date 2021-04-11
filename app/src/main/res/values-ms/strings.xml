@@ -11,4 +11,7 @@
     <string name="action_delete">Padam</string>
     <string name="conn_err">Kesalahan sambungan</string>
     <string name="refresh">Segarkan</string>
+    <string name="close_search_view">Tutup paparan carian</string>
+    <string name="back">Belakang</string>
+    <string name="music_icon">Ikon muzik</string>
 </resources>

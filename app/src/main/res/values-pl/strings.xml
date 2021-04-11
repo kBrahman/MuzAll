@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Trwanie: %s</string>
+    <string name="released">Data wydania: %s</string>
+    <string name="folder">Folder z muzyką</string>
+    <string name="my_music">Moja muzyka</string>
+    <string name="could_not_play_file">Nie można odtworzyć utworu, przepraszam</string>
+    <string name="service_unavailable">Usługa niedostępna, spróbuj ponownie później</string>
+    <string name="err_dir_create">Nie udało się utworzyć katalogu na muzykę</string>
+    <string name="no_net">Brak połączenia z internetem</string>
+    <string name="action_delete">Kasować</string>
+    <string name="conn_err">Błąd połączenia</string>
+    <string name="refresh">Odświeżać</string>
+    <string name="close_search_view">Zamknij widok wyszukiwania</string>
+    <string name="back">Z powrotem</string>
+    <string name="music_icon">Ikona muzyki</string>
+</resources>

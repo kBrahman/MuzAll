@@ -14,6 +14,7 @@ import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.*
+import android.os.Environment.DIRECTORY_MUSIC
 import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
@@ -211,8 +212,8 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @ExperimentalFoundationApi
     @Composable
-    private fun MuzAppBar(colorPrimary: Color, showSearchView: MutableState<Boolean>) {
-        TopAppBar(backgroundColor = colorPrimary, contentColor = Color.White) {
+    private fun MyMuzAppBar(colorPrimary: Color, showSearchView: MutableState<Boolean>) {
+        TopAppBar(contentColor = Color.White,backgroundColor = colorPrimary) {
             ConstraintLayout(Modifier.fillMaxSize()) {
                 val (btnMyMusic, title) = createRefs()
                 Text(
@@ -276,8 +277,12 @@ class MainActivity : DaggerAppCompatActivity() {
                     Log.i(TAG, "dir does not exist. created=$create")
                 }
                 Log.i(TAG, "dir  exists. is dir=>${directory.isDirectory}")
-                filteredFiles.addAll(
-                    directory.listFiles().filter { it.extension == "mp3" || it.extension == "flac" })
+                val files = directory.listFiles()
+                    ?: getExternalFilesDir(DIRECTORY_MUSIC)?.listFiles()
+
+                files?.filter { it.extension == "mp3" || it.extension == "flac" }?.let {
+                    filteredFiles.addAll(it)
+                }
             }
             Log.i(TAG, "updateFileList")
         }
@@ -473,7 +478,7 @@ class MainActivity : DaggerAppCompatActivity() {
     @ExperimentalFoundationApi
     @Composable
     private fun MainScreen(playerState: MutableState<Any?>, colorPrimary: Color, showSearchView: MutableState<Boolean>, scrollState: LazyListState) {
-        if (loadingState?.value != true) MuzAppBar(colorPrimary, showSearchView)
+        if (loadingState?.value != true) MyMuzAppBar(colorPrimary, showSearchView)
         LazyColumn(contentPadding = PaddingValues(4.dp), state = scrollState) {
             items(count = tracks.size) {
                 Spacer(Modifier.height(4.dp))
