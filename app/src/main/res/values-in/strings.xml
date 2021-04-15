@@ -5,4 +5,8 @@
     <string name="folder">Folder musik</string>
     <string name="my_music">"Lagu saya "</string>
     <string name="service_unavailable">Layanan tidak tersedia, coba lagi nanti</string>
+    <string name="could_not_play_file">"Tidak dapat memutar trek, maaf "</string>
+    <string name="err_dir_create">Tidak dapat membuat direktori untuk musik</string>
+    <string name="no_net">Tidak ada koneksi internet</string>
+    <string name="action_delete">Menghapus</string>
 </resources>

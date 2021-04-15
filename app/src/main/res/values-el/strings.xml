@@ -5,4 +5,8 @@
     <string name="folder">Φάκελος μουσικής</string>
     <string name="my_music">Η μουσική μου</string>
     <string name="could_not_play_file">Δεν ήταν δυνατή η αναπαραγωγή του κομματιού, συγνώμη</string>
+    <string name="service_unavailable">Η υπηρεσία δεν είναι διαθέσιμη, δοκιμάστε ξανά αργότερα</string>
+    <string name="err_dir_create">Δεν ήταν δυνατή η δημιουργία καταλόγου για μουσική</string>
+    <string name="no_net">Δεν υπάρχει σύνδεση στο διαδίκτυο</string>
+    <string name="action_delete">Διαγράφω</string>
 </resources>
