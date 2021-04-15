@@ -5,4 +5,12 @@
     <string name="could_not_play_file">Кешіріңіз, трек ойнатыла алмады</string>
     <string name="folder">Музыка</string>
     <string name="my_music">Менің музыкам</string>
+    <string name="no_net">Интернет жо</string>
+    <string name="back">Кері</string>
+    <string name="refresh">Жаңарту</string>
+    <string name="close_search_view">Жап</string>
+    <string name="err_dir_create">Музыка үшін папка жасай алмадым</string>
+    <string name="music_icon">Музыка суретшесі</string>
+    <string name="action_delete">Өшіру</string>
+    <string name="service_unavailable">Сервис дайын емес, кейнірек келіңіз</string>
 </resources>

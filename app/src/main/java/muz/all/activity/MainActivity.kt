@@ -54,6 +54,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -213,7 +214,7 @@ class MainActivity : DaggerAppCompatActivity() {
     @ExperimentalFoundationApi
     @Composable
     private fun MyMuzAppBar(colorPrimary: Color, showSearchView: MutableState<Boolean>) {
-        TopAppBar(contentColor = Color.White,backgroundColor = colorPrimary) {
+        TopAppBar(contentColor = Color.White, backgroundColor = colorPrimary) {
             ConstraintLayout(Modifier.fillMaxSize()) {
                 val (btnMyMusic, title) = createRefs()
                 Text(
@@ -263,11 +264,12 @@ class MainActivity : DaggerAppCompatActivity() {
         GlobalScope.launch {
             filteredFiles.clear()
             val directory =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
 
             Log.i(TAG, "dir=>$directory")
             if (!directory.exists()
-                && ContextCompat.checkSelfPermission(this@MainActivity, WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+                && ContextCompat.checkSelfPermission(this@MainActivity, WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED
+            ) {
                 ActivityCompat.requestPermissions(this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE)
                 onPermissionGranted = ::updateFileList
                 onPermissionDenied = { uiState.value = UIState.MAIN }
@@ -351,7 +353,8 @@ class MainActivity : DaggerAppCompatActivity() {
                 ) {
                     IconButton(onClick = {
                         if (ContextCompat.checkSelfPermission(this@MainActivity,
-                                WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                                WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                        )
                             deleteAndUpdate()
                         else {
                             ActivityCompat.requestPermissions(this@MainActivity,
@@ -443,7 +446,8 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun download(track: Track) {
         if (ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED
-            || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        ) {
             val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
             val uri = Uri.parse(track.audio)
             val request = DownloadManager.Request(uri)
@@ -605,10 +609,12 @@ class MainActivity : DaggerAppCompatActivity() {
         progress: MutableState<Float>
     ) {
         if (t is Track) {
+            FirebaseCrashlytics.getInstance().setCustomKey("track", t.toString())
             val url = t.audio
             val urlLocation = "$url?client_id=${apiManager.clientId}"
             mp.setDataSource(urlLocation)
         } else if (t is File) {
+            FirebaseCrashlytics.getInstance().setCustomKey("file", t.path)
             mp.setDataSource(t.path)
         }
         GlobalScope.launch {
@@ -648,7 +654,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @ExperimentalFoundationApi
     private fun onError(t: Throwable) =
-            if (t is SocketTimeoutException || t is UnknownHostException || t is ConnectException) connectionErr() else t.printStackTrace()
+        if (t is SocketTimeoutException || t is UnknownHostException || t is ConnectException) connectionErr() else t.printStackTrace()
 
     @ExperimentalFoundationApi
     private fun onContentFetched(response: MuzResponse?) {

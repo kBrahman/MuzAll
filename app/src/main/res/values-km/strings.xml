@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">រយៈពេល៖ %s</string>
+    <string name="released">ចេញផ្សាយ៖%s</string>
+    <string name="folder">ថតតន្ត្រី</string>
+    <string name="my_music">តន្ត្រីរបស់ខ្ញុំ</string>
+    <string name="could_not_play_file">មិនអាចលេងបទបានទេសុំទោស</string>
+    <string name="service_unavailable">សេវាកម្មមិនមានទេសូមព្យាយាមម្តងទៀតនៅពេលក្រោយ</string>
+    <string name="err_dir_create">មិនអាចបង្កើតថតឯកសារសម្រាប់តន្ត្រីបានទេ</string>
+    <string name="no_net">គ្មានការភ្ជាប់អ៊ីនធឺណិត</string>
+    <string name="action_delete">លុប</string>
+    <string name="conn_err">កំហុសក្នុងការភ្ជាប់</string>
+    <string name="refresh">ធ្វើ​ឱ្យ​ស្រស់</string>
+    <string name="close_search_view">បិទទិដ្ឋភាពស្វែងរក</string>
+    <string name="back">ថយក្រោយ</string>
+    <string name="music_icon">រូបតំណាងតន្ត្រី</string>
+</resources>
