@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Időtartam: %s</string>
+    <string name="released">Kiadási dátum: %s</string>
+    <string name="folder">Zene mappa</string>
+    <string name="my_music">Én zeném</string>
+    <string name="could_not_play_file">Nem sikerült lejátszani a számot, sajnálom</string>
+    <string name="service_unavailable">A szolgáltatás nem érhető el, próbálkozzon újra később</string>
+    <string name="err_dir_create">Nem sikerült könyvtárat létrehozni a zenéhez</string>
+    <string name="no_net">Nincs internetkapcsolat</string>
+    <string name="action_delete">Töröl</string>
+    <string name="conn_err">Kapcsolati hiba</string>
+    <string name="refresh">Frissítés</string>
+    <string name="close_search_view">Zárja be a keresési nézetet</string>
+    <string name="back">Vissza</string>
+    <string name="music_icon">Zene ikonra</string>
+</resources>

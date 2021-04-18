@@ -611,8 +611,7 @@ class MainActivity : DaggerAppCompatActivity() {
         if (t is Track) {
             FirebaseCrashlytics.getInstance().setCustomKey("track", t.toString())
             val url = t.audio
-            val urlLocation = "$url?client_id=${apiManager.clientId}"
-            mp.setDataSource(urlLocation)
+            mp.setDataSource(url)
         } else if (t is File) {
             FirebaseCrashlytics.getInstance().setCustomKey("file", t.path)
             mp.setDataSource(t.path)
