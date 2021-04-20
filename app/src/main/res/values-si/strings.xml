@@ -8,4 +8,5 @@
     <string name="service_unavailable">සේවාව ලබා ගත නොහැක, කරුණාකර පසුව නැවත උත්සාහ කරන්න</string>
     <string name="err_dir_create">සංගීතය සඳහා නාමාවලිය නිර්මාණය කිරීමට නොහැකි විය</string>
     <string name="no_net">අන්තර්ජාල සම්බන්ධතාවයක් නොමැත</string>
+    <string name="action_delete">මකන්න</string>
 </resources>
