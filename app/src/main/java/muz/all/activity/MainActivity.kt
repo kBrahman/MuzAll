@@ -334,7 +334,6 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun MyMusicScreen(playerState: MutableState<Any?>, colorPrimary: Color) {
         val width = screenWidth().dp - 20.dp
         val delItemVisible = remember { mutableStateOf(false) }
-        Log.i(TAG, "w=>$width")
         TopAppBar(contentColor = Color.White, backgroundColor = colorPrimary) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = {

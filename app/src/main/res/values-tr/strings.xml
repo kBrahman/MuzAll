@@ -9,4 +9,9 @@
     <string name="err_dir_create">"Müzik dizini oluşturulamadı "</string>
     <string name="no_net">"İnternet bağlantısı yok "</string>
     <string name="action_delete">Sil</string>
+    <string name="conn_err">Connection error</string>
+    <string name="refresh">Yenile</string>
+    <string name="close_search_view">Arama görünümünü kapat</string>
+    <string name="back">Geri</string>
+    <string name="music_icon">Müzik simgesi</string>
 </resources>
