@@ -22,8 +22,8 @@ android {
         applicationId localProperties["id_c_music"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 15
-        versionName '1.14'
+        versionCode 16
+        versionName '1.15'
         multiDexEnabled true
         buildConfigField "String", "SERVER", localProperties["cc_server"]
     }
@@ -65,7 +65,7 @@ dependencies {
     kapt 'com.google.dagger:dagger-compiler:2.34.1'
     kapt 'com.google.dagger:dagger-android-processor:2.34.1'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.facebook.android:audience-network-sdk:6.3.0'
+    implementation 'com.facebook.android:audience-network-sdk:6.4.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
