@@ -4,4 +4,9 @@
     <string name="released">行时间: %s</string>
     <string name="folder">"音乐文件夹 "</string>
     <string name="my_music">"我的音乐 "</string>
+    <string name="could_not_play_file">无法播放曲目，对不起</string>
+    <string name="service_unavailable">服务不可用，请稍后再试</string>
+    <string name="err_dir_create">无法创建音乐目录</string>
+    <string name="no_net">没有网络连接</string>
+    <string name="action_delete">删除</string>
 </resources>
