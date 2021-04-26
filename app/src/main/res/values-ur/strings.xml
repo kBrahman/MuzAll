@@ -9,4 +9,9 @@
     <string name="err_dir_create">موسیقی کے لئے ڈائریکٹری تشکیل نہیں دے سکی</string>
     <string name="no_net">انٹرنیٹ کنکشن نہیں ہے</string>
     <string name="action_delete">حذف کریں</string>
+    <string name="conn_err">رابطے میں خرابی</string>
+    <string name="refresh">ریفریش</string>
+    <string name="close_search_view">تلاش کا نظارہ بند کریں</string>
+    <string name="back">پیچھے</string>
+    <string name="music_icon">موسیقی کا آئیکن</string>
 </resources>

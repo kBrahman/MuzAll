@@ -546,7 +546,11 @@ class MainActivity : DaggerAppCompatActivity() {
                 ) {
                     Button(
                         onClick = {
-                            if (mp.isPlaying) mp.pause() else mp.start()
+                            if (mp.isPlaying) mp.pause()
+                            else {
+                                startProgress(progress)
+                                mp.start()
+                            }
                             showPlayButton.value = !mp.isPlaying
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = colorPrimary),
@@ -601,12 +605,8 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
-    private fun <T> play(
-        t: T,
-        showPlayButton: MutableState<Boolean>,
-        isProgressDeterminate: MutableState<Boolean>,
-        progress: MutableState<Float>
-    ) {
+    private fun <T> play(t: T, showPlayButton: MutableState<Boolean>, isProgressDeterminate: MutableState<Boolean>,
+                         progress: MutableState<Float>) {
         if (t is Track) {
             FirebaseCrashlytics.getInstance().setCustomKey("track", t.toString())
             val url = t.audio
@@ -615,9 +615,7 @@ class MainActivity : DaggerAppCompatActivity() {
             FirebaseCrashlytics.getInstance().setCustomKey("file", t.path)
             mp.setDataSource(t.path)
         }
-        GlobalScope.launch {
-            configureMp(showPlayButton, isProgressDeterminate, progress)
-        }
+        configureMp(showPlayButton, isProgressDeterminate, progress)
     }
 
     private fun configureMp(
@@ -634,6 +632,7 @@ class MainActivity : DaggerAppCompatActivity() {
         mp.setOnCompletionListener {
             showPlayButton.value = true
             progress.value = 0F
+            Log.i(TAG, "mp complete")
         }
     }
 

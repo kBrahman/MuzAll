@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Thời lượng: %s</string>
+    <string name="released">Phát hành: %s</string>
+    <string name="folder">Thư mục nhạc</string>
+    <string name="my_music">Nhạc của tôi</string>
+    <string name="could_not_play_file">Không thể phát bản nhạc, xin lỗi</string>
+    <string name="service_unavailable">Dịch vụ không khả dụng, vui lòng thử lại sau</string>
+    <string name="err_dir_create">Không thể tạo thư mục cho nhạc</string>
+    <string name="no_net">Không có kết nối Internet</string>
+    <string name="action_delete">Xóa bỏ</string>
+    <string name="conn_err">Lỗi kết nối</string>
+    <string name="refresh">Làm tươi</string>
+    <string name="close_search_view">Đóng chế độ xem tìm kiếm</string>
+    <string name="back">Trở lại</string>
+    <string name="music_icon">Biểu tượng âm nhạc</string>
+</resources>
