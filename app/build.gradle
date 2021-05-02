@@ -22,8 +22,8 @@ android {
         applicationId localProperties["app_id"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 109
-        versionName "2.9"
+        versionCode 110
+        versionName "2.10"
         buildConfigField "String[]", "IDS", "{$ids}"
         multiDexEnabled true
         buildConfigField "String", "SERVER", localProperties["server"]
@@ -52,7 +52,6 @@ android {
         checkReleaseBuilds false
     }
     composeOptions {
-        kotlinCompilerVersion "$kotlin_version"
         kotlinCompilerExtensionVersion '1.0.0-alpha12'
     }
     kotlinOptions {

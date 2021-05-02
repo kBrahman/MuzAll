@@ -398,11 +398,12 @@ class MainActivity : DaggerAppCompatActivity() {
                                     .width(width / 3)
                                     .combinedClickable(onClick = {
                                         playerState.value = f
-                                    },
-                                        onLongClick = {
-                                            fileToDel = f
-                                            vibrateAndShowDelItem(delItemVisible)
-                                        }),
+                                    }
+//                                        , onLongClick = {
+//                                            fileToDel = f
+//                                            vibrateAndShowDelItem(delItemVisible)
+//                                        }
+                                    ),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 if (data != null) Image(
