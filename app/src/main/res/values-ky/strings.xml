@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Узактыгы: %s</string>
+    <string name="released">Чыккан: %s</string>
+    <string name="folder">Музыкалык папка</string>
+    <string name="my_music">Менин музыкам</string>
+    <string name="could_not_play_file">Трек ойнотулбай койду, кечиресиз</string>
+    <string name="service_unavailable">Кызмат жеткиликсиз, кийинчерээк дагы аракет кылып көрүңүз</string>
+    <string name="err_dir_create">Музыка үчүн каталог түзүлгөн жок</string>
+    <string name="no_net">No internet connection</string>
+    <string name="action_delete">Жок кылуу</string>
+    <string name="conn_err">Туташуу катасы</string>
+    <string name="refresh">Жаңылоо</string>
+    <string name="close_search_view">Издөө көрүнүшүн жабуу</string>
+    <string name="back">Артка</string>
+    <string name="music_icon">Музыка сүрөтчөсү</string>
+</resources>

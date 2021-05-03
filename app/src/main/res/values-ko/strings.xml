@@ -9,4 +9,9 @@
     <string name="err_dir_create">"음악 디렉토리를 만들 수 없습니다. "</string>
     <string name="no_net">인터넷에 연결되지 않음</string>
     <string name="action_delete">지우다</string>
+    <string name="conn_err">연결 오류</string>
+    <string name="refresh">새롭게 하다</string>
+    <string name="close_search_view">검색보기 닫기</string>
+    <string name="back">뒤</string>
+    <string name="music_icon">음악 아이콘</string>
 </resources>
