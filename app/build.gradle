@@ -17,13 +17,13 @@ android {
         }
     }
     compileSdkVersion 30
-    buildToolsVersion = '30.0.2'
+    buildToolsVersion = '30.0.3'
     defaultConfig {
         applicationId localProperties["id_c_music"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 17
-        versionName '1.16'
+        versionCode 18
+        versionName '1.17'
         multiDexEnabled true
         buildConfigField "String", "SERVER", localProperties["cc_server"]
     }
