@@ -652,7 +652,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @ExperimentalFoundationApi
     private fun onError(t: Throwable) =
-        if (t is SocketTimeoutException || t is UnknownHostException || t is ConnectException) connectionErr() else t.printStackTrace()
+        if (t is SocketTimeoutException || t is UnknownHostException || t is ConnectException) connectionErr(t) else t.printStackTrace()
 
     @ExperimentalFoundationApi
     private fun onContentFetched(response: MuzResponse?) {
@@ -701,7 +701,8 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     @ExperimentalFoundationApi
-    private fun connectionErr() = setContent {
+    private fun connectionErr(t: Throwable) = setContent {
+        t.printStackTrace()
         val colorPrimary = Color(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 getColor(R.color.colorPrimary)
