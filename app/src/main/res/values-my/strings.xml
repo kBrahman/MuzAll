@@ -4,4 +4,9 @@
     <string name="released">ဖြန့်ချိသည့်ရက်: %s</string>
     <string name="folder">ဂီတဖိုင်တွဲ</string>
     <string name="my_music">အကြှနျုပျ၏ဂီတ</string>
+    <string name="could_not_play_file">စိတ်မကောင်းပါဘူး၊ လမ်းကြောင်းကိုမဖွင့်နိုင်ပါ</string>
+    <string name="service_unavailable">ဝန်ဆောင်မှုမရရှိသေးပါ၊ ကျေးဇူးပြုပြီးနောက်တစ်ကြိမ်ကြိုးစားပါ</string>
+    <string name="err_dir_create">ဂီတအတွက်လမ်းညွှန် ဖန်တီး၍ မရပါ</string>
+    <string name="no_net">အင်တာနက်ဆက်သွယ်မှုမရှိပါ</string>
+    <string name="action_delete">ဖျက်ပါ</string>
 </resources>
