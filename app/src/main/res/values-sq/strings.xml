@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Kohëzgjatja: %s</string>
+    <string name="released">Lëshuar: %s</string>
+    <string name="folder">Dosje muzikore</string>
+    <string name="my_music">Muzika ime</string>
+    <string name="could_not_play_file">Pjesa nuk mund të luhej, më vjen keq</string>
+    <string name="service_unavailable">Shërbimi nuk është i disponueshëm, provoni përsëri më vonë, ju lutem</string>
+    <string name="err_dir_create">Nuk mund të krijohej drejtoria për muzikë</string>
+    <string name="no_net">Nuk ka lidhje interneti</string>
+    <string name="action_delete">Fshij</string>
+    <string name="conn_err">Gabim në lidhje</string>
+    <string name="refresh">Rifresko</string>
+    <string name="close_search_view">Mbyll pamjen e kërkimit</string>
+    <string name="back">Mbrapa</string>
+    <string name="music_icon">Ikona e muzikës</string>
+</resources>

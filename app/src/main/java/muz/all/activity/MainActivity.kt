@@ -399,10 +399,10 @@ class MainActivity : DaggerAppCompatActivity() {
                                     .combinedClickable(onClick = {
                                         playerState.value = f
                                     }
-//                                        , onLongClick = {
-//                                            fileToDel = f
-//                                            vibrateAndShowDelItem(delItemVisible)
-//                                        }
+                                        , onLongClick = {
+                                            fileToDel = f
+                                            vibrateAndShowDelItem(delItemVisible)
+                                        }
                                     ),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {

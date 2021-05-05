@@ -9,4 +9,9 @@
     <string name="err_dir_create">تعذر إنشاء دليل للموسيقى</string>
     <string name="no_net">لا يوجد اتصال بالإنترنت</string>
     <string name="action_delete">حذف</string>
+    <string name="conn_err">خطأ في الإتصال</string>
+    <string name="refresh">تحديث</string>
+    <string name="close_search_view">إغلاق عرض البحث</string>
+    <string name="back">عودة</string>
+    <string name="music_icon">رمز الموسيقى</string>
 </resources>
