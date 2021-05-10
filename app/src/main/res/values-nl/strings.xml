@@ -4,7 +4,7 @@
     <string name="released">Vrijgelaten: %s</string>
     <string name="folder">Muziekmap</string>
     <string name="my_music">Mijn muziek</string>
-    <string name="could_not_play_file">Kan de track niet afspelen, sorry</string>
+    <string name="could_not_play_track">Kan de track niet afspelen, sorry</string>
     <string name="service_unavailable">Service niet beschikbaar, probeer het later opnieuw</string>
     <string name="err_dir_create">Kan geen map voor muziek maken</string>
     <string name="no_net">Geen internet verbinding</string>

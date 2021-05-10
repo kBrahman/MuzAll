@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Trvanie: %s</string>
+    <string name="released">Vydané: %s</string>
+    <string name="folder">Hudobný priečinok</string>
+    <string name="my_music">Moja hudba</string>
+    <string name="could_not_play_track">Skladbu sa nepodarilo prehrať, prepáčte</string>
+    <string name="service_unavailable">Služba nie je k dispozícii, skúste to znova neskôr</string>
+    <string name="err_dir_create">Nepodarilo sa vytvoriť adresár pre hudbu</string>
+    <string name="no_net">Nepodarilo sa vytvoriť adresár pre hudbu</string>
+    <string name="action_delete">Odstrániť</string>
+    <string name="conn_err">Chyba spojenia</string>
+    <string name="refresh">Obnoviť</string>
+    <string name="close_search_view">Zavrieť hľadanie</string>
+    <string name="back">späť</string>
+    <string name="music_icon">Hudobná ikona</string>
+</resources>

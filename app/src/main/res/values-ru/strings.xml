@@ -4,7 +4,7 @@
     <string name="released">Выпуск: %s</string>
     <string name="folder">Музыка</string>
     <string name="my_music">Моя музыка</string>
-    <string name="could_not_play_file">Не удалось воспроизести трэк, извините.</string>
+    <string name="could_not_play_track">Не удалось воспроизести трэк, извините.</string>
     <string name="service_unavailable">"Сервис временно не доступен, приходите еще раз позднее. "</string>
     <string name="err_dir_create">Не удалось создать папку для музыки.</string>
     <string name="no_net">Нет интернета</string>

@@ -4,7 +4,7 @@
     <string name="released">ចេញផ្សាយ៖%s</string>
     <string name="folder">ថតតន្ត្រី</string>
     <string name="my_music">តន្ត្រីរបស់ខ្ញុំ</string>
-    <string name="could_not_play_file">មិនអាចលេងបទបានទេសុំទោស</string>
+    <string name="could_not_play_track">មិនអាចលេងបទបានទេសុំទោស</string>
     <string name="service_unavailable">សេវាកម្មមិនមានទេសូមព្យាយាមម្តងទៀតនៅពេលក្រោយ</string>
     <string name="err_dir_create">មិនអាចបង្កើតថតឯកសារសម្រាប់តន្ត្រីបានទេ</string>
     <string name="no_net">គ្មានការភ្ជាប់អ៊ីនធឺណិត</string>

@@ -398,11 +398,10 @@ class MainActivity : DaggerAppCompatActivity() {
                                     .width(width / 3)
                                     .combinedClickable(onClick = {
                                         playerState.value = f
+                                    }, onLongClick = {
+                                        fileToDel = f
+                                        vibrateAndShowDelItem(delItemVisible)
                                     }
-                                        , onLongClick = {
-                                            fileToDel = f
-                                            vibrateAndShowDelItem(delItemVisible)
-                                        }
                                     ),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
@@ -527,7 +526,8 @@ class MainActivity : DaggerAppCompatActivity() {
         val showPlayButton = remember { mutableStateOf(false) }
         val isProgressDeterminate = remember { mutableStateOf(false) }
         val progress = remember { mutableStateOf(0F) }
-        play(value, showPlayButton, isProgressDeterminate, progress)
+        val showPlayErr = remember { mutableStateOf(false) }
+        play(value, showPlayButton, isProgressDeterminate, progress, showPlayErr)
         Dialog(onDismissRequest = {
             mp.stop()
             mp.reset()
@@ -547,12 +547,22 @@ class MainActivity : DaggerAppCompatActivity() {
                 ) {
                     Button(
                         onClick = {
-                            if (mp.isPlaying) mp.pause()
-                            else {
-                                startProgress(progress)
-                                mp.start()
+                            when {
+                                mp.isPlaying -> {
+                                    mp.pause()
+                                    showPlayButton.value = true
+                                }
+                                showPlayErr.value -> {
+                                    isProgressDeterminate.value = false
+                                    showPlayButton.value = false
+                                    play(value, showPlayButton, isProgressDeterminate, progress, showPlayErr)
+                                }
+                                else -> {
+                                    startProgress(progress)
+                                    mp.start()
+                                    showPlayButton.value = false
+                                }
                             }
-                            showPlayButton.value = !mp.isPlaying
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = colorPrimary),
                         modifier = Modifier.width(48.dp)
@@ -574,6 +584,7 @@ class MainActivity : DaggerAppCompatActivity() {
                         Image(painterResource(R.drawable.ic_file_download_24dp), null)
                     }
                 }
+                if (showPlayErr.value) Text(getString(R.string.could_not_play_track), color = Color.Red)
             }
         }
     }
@@ -607,11 +618,21 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun <T> play(t: T, showPlayButton: MutableState<Boolean>, isProgressDeterminate: MutableState<Boolean>,
-                         progress: MutableState<Float>) {
+                         progress: MutableState<Float>, showPlayErr: MutableState<Boolean>) {
         if (t is Track) {
             FirebaseCrashlytics.getInstance().setCustomKey("track", t.toString())
             val url = t.audio
-            mp.setDataSource(url)
+            try {
+                Log.i(TAG, "play")
+                mp.setDataSource(url)
+                showPlayErr.value = false
+            } catch (ex: IllegalStateException) {
+                isProgressDeterminate.value = true
+                showPlayButton.value = true
+                showPlayErr.value = true
+                Log.i(TAG, "caught exception")
+                return
+            }
         } else if (t is File) {
             FirebaseCrashlytics.getInstance().setCustomKey("file", t.path)
             mp.setDataSource(t.path)

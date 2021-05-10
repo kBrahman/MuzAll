@@ -4,7 +4,7 @@
     <string name="released">منتشر شد: %s</string>
     <string name="folder">پوشه موسیقی</string>
     <string name="my_music">موسیقی من</string>
-    <string name="could_not_play_file">آهنگ پخش نشد ، متأسفم</string>
+    <string name="could_not_play_track">آهنگ پخش نشد ، متأسفم</string>
     <string name="service_unavailable">سرویس در دسترس نیست ، لطفاً بعداً دوباره امتحان کنید</string>
     <string name="err_dir_create">دایرکتوری برای موسیقی ایجاد نشد</string>
     <string name="no_net">بدون اتصال به اینترنت</string>

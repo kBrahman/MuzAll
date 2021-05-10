@@ -4,7 +4,7 @@
     <string name="released">Data wydania: %s</string>
     <string name="folder">Folder z muzyką</string>
     <string name="my_music">Moja muzyka</string>
-    <string name="could_not_play_file">Nie można odtworzyć utworu, przepraszam</string>
+    <string name="could_not_play_track">Nie można odtworzyć utworu, przepraszam</string>
     <string name="service_unavailable">Usługa niedostępna, spróbuj ponownie później</string>
     <string name="err_dir_create">Nie udało się utworzyć katalogu na muzykę</string>
     <string name="no_net">Brak połączenia z internetem</string>

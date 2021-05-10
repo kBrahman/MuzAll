@@ -4,7 +4,7 @@
     <string name="released">প্রকাশিত: %s</string>
     <string name="folder">সঙ্গীত ফোল্ডার</string>
     <string name="my_music">আমার গান</string>
-    <string name="could_not_play_file">দুঃখিত, ট্র্যাক খেলতে পারেনি</string>
+    <string name="could_not_play_track">দুঃখিত, ট্র্যাক খেলতে পারেনি</string>
     <string name="service_unavailable">পরিষেবা অনুপলব্ধ, পরে আবার চেষ্টা করুন</string>
     <string name="err_dir_create">সংগীতের জন্য ডিরেক্টরি তৈরি করতে পারেনি</string>
     <string name="no_net">কোনও ইন্টারনেট সংযোগ নেই</string>

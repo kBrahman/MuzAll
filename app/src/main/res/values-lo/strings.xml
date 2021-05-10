@@ -4,7 +4,7 @@
     <string name="released">ປ່ອຍຕົວ: %s</string>
     <string name="folder">ໂຟນເດີເພງ</string>
     <string name="my_music">ເພງຂອງຂ້ອຍ</string>
-    <string name="could_not_play_file">ບໍ່ສາມາດຫຼີ້ນເພງໄດ້, ຂໍໂທດ</string>
+    <string name="could_not_play_track">ບໍ່ສາມາດຫຼີ້ນເພງໄດ້, ຂໍໂທດ</string>
     <string name="service_unavailable">ບໍ່ມີບໍລິການ, ກະລຸນາລອງ ໃໝ່ ພາຍຫຼັງ</string>
     <string name="err_dir_create">ບໍ່ສາມາດສ້າງໄດເລກະທໍລີ ສຳ ລັບເພງ</string>
     <string name="no_net">ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ</string>

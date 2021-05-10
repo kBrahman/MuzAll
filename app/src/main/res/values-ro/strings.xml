@@ -4,7 +4,7 @@
     <string name="released">Eliberată: %s</string>
     <string name="folder">"Dosar muzică "</string>
     <string name="my_music">"Muzica mea "</string>
-    <string name="could_not_play_file">Nu am putut reda piesa, îmi pare rău</string>
+    <string name="could_not_play_track">Nu am putut reda piesa, îmi pare rău</string>
     <string name="service_unavailable">Serviciul nu este disponibil, încercați din nou mai târziu, vă rog</string>
     <string name="err_dir_create">Nu s-a putut crea directorul pentru muzică</string>
     <string name="no_net">"Fără conexiune internet "</string>

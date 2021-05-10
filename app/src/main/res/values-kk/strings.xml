@@ -2,7 +2,7 @@
 <resources>
     <string name="duration">Ұзақтығы: %s</string>
     <string name="released">Шыққан  күні: %s</string>
-    <string name="could_not_play_file">Кешіріңіз, трек ойнатыла алмады</string>
+    <string name="could_not_play_track">Кешіріңіз, трек ойнатыла алмады</string>
     <string name="folder">Музыка</string>
     <string name="my_music">Менің музыкам</string>
     <string name="no_net">Интернет жо</string>

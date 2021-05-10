@@ -4,7 +4,7 @@
     <string name="released">Kiadási dátum: %s</string>
     <string name="folder">Zene mappa</string>
     <string name="my_music">Én zeném</string>
-    <string name="could_not_play_file">Nem sikerült lejátszani a számot, sajnálom</string>
+    <string name="could_not_play_track">Nem sikerült lejátszani a számot, sajnálom</string>
     <string name="service_unavailable">A szolgáltatás nem érhető el, próbálkozzon újra később</string>
     <string name="err_dir_create">Nem sikerült könyvtárat létrehozni a zenéhez</string>
     <string name="no_net">Nincs internetkapcsolat</string>

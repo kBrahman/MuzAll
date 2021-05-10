@@ -4,7 +4,7 @@
     <string name="released">מְשׁוּחרָר: %s</string>
     <string name="folder">תיקיית תיקיית מוסיקה</string>
     <string name="my_music">המוסיקה שלי</string>
-    <string name="could_not_play_file">לא הצלחנו לנגן את המסלול, מצטער</string>
+    <string name="could_not_play_track">לא הצלחנו לנגן את המסלול, מצטער</string>
     <string name="service_unavailable">השירות לא זמין, נסה שוב מאוחר יותר בבקשה</string>
     <string name="err_dir_create">לא ניתן ליצור ספרייה למוזיקה</string>
     <string name="no_net">אין חיבור אינטרנט</string>

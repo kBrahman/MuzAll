@@ -4,7 +4,7 @@
     <string name="released">Чыккан: %s</string>
     <string name="folder">Музыкалык папка</string>
     <string name="my_music">Менин музыкам</string>
-    <string name="could_not_play_file">Трек ойнотулбай койду, кечиресиз</string>
+    <string name="could_not_play_track">Трек ойнотулбай койду, кечиресиз</string>
     <string name="service_unavailable">Кызмат жеткиликсиз, кийинчерээк дагы аракет кылып көрүңүз</string>
     <string name="err_dir_create">Музыка үчүн каталог түзүлгөн жок</string>
     <string name="no_net">No internet connection</string>

@@ -4,7 +4,7 @@
     <string name="released">Tarikh keluaran: %s</string>
     <string name="folder">Folder muzik</string>
     <string name="my_music">Muzik saya</string>
-    <string name="could_not_play_file">Tidak dapat memainkan lagu, maaf</string>
+    <string name="could_not_play_track">Tidak dapat memainkan lagu, maaf</string>
     <string name="service_unavailable">Perkhidmatan tidak tersedia, sila cuba sebentar lagi</string>
     <string name="err_dir_create">Tidak dapat membuat direktori untuk muzik</string>
     <string name="no_net">No internet connection</string>
