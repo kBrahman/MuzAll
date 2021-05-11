@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Tempoh: %s</string>
+    <string name="released">Dikeluarkan: %s</string>
+    <string name="folder">Folder muzik</string>
+    <string name="my_music">Muzik saya</string>
+    <string name="could_not_play_file">Tidak dapat memainkan lagu, maaf</string>
+    <string name="service_unavailable">Perkhidmatan tidak tersedia, sila cuba sebentar lagi</string>
+    <string name="err_dir_create">Tidak dapat membuat direktori untuk muzik</string>
+    <string name="no_net">Tiada sambungan internet</string>
+    <string name="action_delete">Padam</string>
+</resources>
