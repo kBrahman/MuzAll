@@ -58,9 +58,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import muz.all.BuildConfig
 import muz.all.R
 import muz.all.manager.ApiManager
@@ -699,7 +697,9 @@ class MainActivity : DaggerAppCompatActivity() {
             try {
                 btp.value = BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
             } catch (ce: IOException) {
-                btp.value = BitmapFactory.decodeResource(resources, R.drawable.ic_music_note_black_24dp)
+                withContext(Dispatchers.Main) {
+                    btp.value = BitmapFactory.decodeResource(resources, R.drawable.ic_music_note_black_24dp)
+                }
             }
             imageCache[url] = btp.value
         }

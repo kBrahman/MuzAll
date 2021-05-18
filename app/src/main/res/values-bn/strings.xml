@@ -11,4 +11,7 @@
     <string name="action_delete">মুছে ফেলা</string>
     <string name="conn_err">সংযোগ ত্রুটি</string>
     <string name="refresh">রিফ্রেশ</string>
+    <string name="close_search_view">অনুসন্ধান দর্শন বন্ধ করুন</string>
+    <string name="back">পেছনে</string>
+    <string name="music_icon">সংগীত আইকন</string>
 </resources>

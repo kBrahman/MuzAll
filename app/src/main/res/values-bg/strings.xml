@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Продължителност: %s</string>
+    <string name="released">Издаден: %s</string>
+    <string name="folder">Музикална папка</string>
+    <string name="my_music">Моята музика</string>
+    <string name="could_not_play_track">Не може да се възпроизведе парчето, извинете</string>
+    <string name="service_unavailable">Услугата не е налична, опитайте отново по-късно, моля</string>
+    <string name="err_dir_create">Не можа да се създаде директория за музика</string>
+    <string name="no_net">Няма интернет връзка</string>
+    <string name="action_delete">Изтрий</string>
+    <string name="conn_err">Грешка във връзката</string>
+    <string name="refresh">Обнови</string>
+    <string name="close_search_view">Затворете изгледа за търсене</string>
+    <string name="back">обратно</string>
+    <string name="music_icon">Музикална икона</string>
+</resources>
