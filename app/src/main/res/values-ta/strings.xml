@@ -6,4 +6,12 @@
     <string name="my_music">என் இசை</string>
     <string name="could_not_play_track">"பாதையை இயக்க முடியவில்லை, மன்னிக்கவும் "</string>
     <string name="service_unavailable">"சேவை கிடைக்கவில்லை, பிறகு மீண்டும் முயற்சிக்கவும் "</string>
+    <string name="err_dir_create">இசைக்கான கோப்பகத்தை உருவாக்க முடியவில்லை</string>
+    <string name="no_net">இணைய இணைப்பு இல்லை</string>
+    <string name="action_delete">அழி</string>
+    <string name="conn_err">இணைப்பு பிழை</string>
+    <string name="refresh">புதுப்பிப்பு</string>
+    <string name="close_search_view">தேடல் காட்சியை மூடு</string>
+    <string name="back">மீண்டும்</string>
+    <string name="music_icon">இசை ஐகான்</string>
 </resources>

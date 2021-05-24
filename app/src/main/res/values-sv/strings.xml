@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Varaktighet: %s</string>
+    <string name="released">Släppte: %s</string>
+    <string name="folder">Musikmapp</string>
+    <string name="my_music">Min musik</string>
+    <string name="could_not_play_track">Det gick inte att spela spåret, tyvärr</string>
+    <string name="service_unavailable">Tjänsten är inte tillgänglig, försök igen senare tack</string>
+    <string name="err_dir_create">Det gick inte att skapa katalog för musik</string>
+    <string name="no_net">Ingen internetanslutning</string>
+    <string name="action_delete">Radera</string>
+    <string name="conn_err">Anslutningsfel</string>
+    <string name="refresh">Uppdatera</string>
+    <string name="close_search_view">Stäng sökvy</string>
+    <string name="back">Tillbaka</string>
+    <string name="music_icon">Musik ikon</string>
+</resources>

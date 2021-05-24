@@ -403,13 +403,14 @@ class MainActivity : DaggerAppCompatActivity() {
                                     ),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                if (data != null) Image(
-                                    BitmapFactory.decodeByteArray(data, 0, data.size)
-                                        .asImageBitmap(),
-                                    contentDescription = getString(R.string.music_icon),
-                                    modifier = Modifier.clip(CircleShape)
-                                )
-                                else Image(
+                                val byteArray = data?.let { d -> BitmapFactory.decodeByteArray(d, 0, d.size) }
+                                if (byteArray != null) {
+                                    Image(
+                                        byteArray.asImageBitmap(),
+                                        contentDescription = getString(R.string.music_icon),
+                                        modifier = Modifier.clip(CircleShape)
+                                    )
+                                } else Image(
                                     painterResource(id = R.drawable.ic_music_note_black_24dp),
                                     contentDescription = getString(R.string.my_music),
                                 )
