@@ -22,8 +22,8 @@ android {
         applicationId localProperties["id_c_music"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 22
-        versionName '1.22'
+        versionCode 23
+        versionName '1.23'
         multiDexEnabled true
         buildConfigField "String", "SERVER", localProperties["cc_server"]
     }
@@ -50,7 +50,7 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.3.0'
