@@ -16,7 +16,7 @@ class MuzApiManager @Inject constructor(
 
     companion object {
         private val TAG = MuzApiManager::class.java.simpleName
-        private const val PATH = "tracks/?format=json&limit=25"
+        private const val PATH = "tracks/?limit=25"
     }
 
     override fun search(q: String, offset: Int) =

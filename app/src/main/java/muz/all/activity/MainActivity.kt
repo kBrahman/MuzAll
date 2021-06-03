@@ -676,7 +676,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @ExperimentalFoundationApi
     private fun onContentFetched(response: MuzResponse?) {
-        Log.i(TAG, "on content fetched")
+        Log.i(TAG, "on content fetched resp=>$response")
         if (response?.results?.isEmpty() == true && tracks.isEmpty() && !searching && idIterator.hasNext()) {
             apiManager.clientId = idIterator.next()
             disposable.clear()
@@ -695,12 +695,13 @@ class MainActivity : DaggerAppCompatActivity() {
         val bitmap = imageCache[url]
         if (bitmap != null) btp.value = bitmap
         else GlobalScope.launch {
-            try {
-                btp.value = BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
+            val v = try {
+                BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
             } catch (ce: IOException) {
-                withContext(Dispatchers.Main) {
-                    btp.value = BitmapFactory.decodeResource(resources, R.drawable.ic_music_note_black_24dp)
-                }
+                BitmapFactory.decodeResource(resources, R.drawable.ic_music_note_black_24dp)
+            }
+            withContext(Dispatchers.Main) {
+                btp.value = v
             }
             imageCache[url] = btp.value
         }
