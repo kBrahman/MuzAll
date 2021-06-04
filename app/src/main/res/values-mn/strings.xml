@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Үргэлжлэх хугацаа: %s</string>
+    <string name="released">Гарсан: %s</string>
+    <string name="folder">Хөгжмийн хавтас</string>
+    <string name="my_music">Миний хөгжим</string>
+    <string name="could_not_play_track">Уучлаарай, дууг тоглуулж чадсангүй</string>
+    <string name="service_unavailable">Үйлчилгээ боломжгүй байна, дараа дахин оролдоно уу</string>
+    <string name="err_dir_create">Хөгжимд зориулсан директор үүсгэж чадсангүй</string>
+    <string name="no_net">No internet connection</string>
+    <string name="action_delete">Устгах</string>
+    <string name="conn_err">Холболтын алдаа</string>
+    <string name="refresh">Сэргээх</string>
+    <string name="close_search_view">Хайлтын харагдацыг хаах</string>
+    <string name="back">Буцах</string>
+    <string name="music_icon">Хөгжмийн дүрс</string>
+</resources>
