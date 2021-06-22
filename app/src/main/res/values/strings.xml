@@ -13,4 +13,5 @@
     <string name="close_search_view">Close search view</string>
     <string name="back">Back</string>
     <string name="music_icon">Music icon</string>
+    <string name="ad_attribution">Ad</string>
 </resources>

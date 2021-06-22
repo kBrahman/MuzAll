@@ -3,6 +3,6 @@ package muz.all.model
 import androidx.annotation.Keep
 
 @Keep
-data class MuzResponse(val results: List<Track>) {
-    constructor() : this(emptyList())
+data class MuzResponse(val results: MutableList<Track>) {
+//    constructor() : this(emptyList())
 }

@@ -17,6 +17,8 @@ import android.os.*
 import android.os.Environment.DIRECTORY_MUSIC
 import android.util.DisplayMetrics
 import android.util.Log
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.compose.setContent
@@ -24,8 +26,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -46,14 +46,16 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.nativead.NativeAdView
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
@@ -62,6 +64,7 @@ import kotlinx.coroutines.*
 import muz.all.BuildConfig
 import muz.all.R
 import muz.all.manager.ApiManager
+import muz.all.model.MuzNativeAd
 import muz.all.model.MuzResponse
 import muz.all.model.Track
 import muz.all.util.isNetworkConnected
@@ -84,6 +87,7 @@ class MainActivity : DaggerAppCompatActivity() {
         private const val REQUEST_CODE_STORAGE = 1
     }
 
+    private var nativeAd: NativeAd? = null
     private var filteredFiles = mutableStateListOf<File>()
     private var searching = false
     private lateinit var q: MutableState<String>
@@ -94,7 +98,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private val imageCache = HashMap<String, Bitmap?>()
     private val disposable = CompositeDisposable()
     private val retriever = MediaMetadataRetriever()
-    var fileToDel: File? = null
+    private var fileToDel: File? = null
     private val value = emptyIterator<File>()
     private lateinit var onPermissionGranted: () -> Unit
     private lateinit var onPermissionDenied: () -> Unit
@@ -112,6 +116,24 @@ class MainActivity : DaggerAppCompatActivity() {
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MobileAds.initialize(this) {}
+        AdLoader.Builder(this, "ca-app-pub-3940256099942544/2247696110")
+            .forNativeAd {
+                nativeAd = it
+                if (tracks.isNotEmpty()) {
+                    insertNatives(tracks.size, tracks)
+                }
+                Log.i(TAG, "native ad loaded tracks is empty=>${tracks.isEmpty()}, native=>${it.headline}")
+            }
+            .withAdListener(object : AdListener() {
+                override fun onAdFailedToLoad(err: LoadAdError) {
+                    Log.i(TAG, "onAdFailedToLoad=>${err.responseInfo}")
+                }
+
+                override fun onAdLoaded() {
+                    Log.i(TAG, "onAdLoaded")
+                }
+            }).build().loadAd(AdRequest.Builder().build())
         init()
     }
 
@@ -139,35 +161,40 @@ class MainActivity : DaggerAppCompatActivity() {
             onPermissionDenied = ::finish
             return
         }
-
         setContent {
-            uiState = remember { mutableStateOf(stateVal) }
-            loadingState = remember { mutableStateOf(true) }
             q = remember { mutableStateOf("") }
             val showSearchView = remember { mutableStateOf(false) }
             val playerState = remember { mutableStateOf<Any?>(null) }
-            val scrollState = rememberLazyListState()
-            ConstraintLayout(Modifier.fillMaxHeight()) {
-                val bannerRef = createRef()
-                Column(Modifier.constrainAs(createRef()) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(bannerRef.top)
-                    height = fillToConstraints
-                }) {
-                    when (uiState.value) {
-                        UIState.MAIN -> MainScreen(playerState, colorPrimary, showSearchView, scrollState)
-                        UIState.MY_MUSIC -> MyMusicScreen(playerState, colorPrimary)
-                        UIState.DIR_ISSIUE -> DirIssueScreen()
-                    }
-                }
-                if (playerState.value == null && timeOut) {
-                    Banner(Modifier.constrainAs(bannerRef) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }, AdSize.BANNER)
+            Log.i(TAG, "rec setContent")
+//            ConstraintLayout(constraintSet = ConstraintSet {
+//                val bannerRef = createRefFor("banner")
+//                constrain(bannerRef) {
+//                    bottom.linkTo(parent.bottom)
+//                    start.linkTo(parent.start)
+//                    end.linkTo(parent.end)
+//                }
+//                constrain(createRefFor("column")) {
+//                    top.linkTo(parent.top)
+//                    bottom.linkTo(bannerRef.top)
+//                    height = fillToConstraints
+//                }
+//
+//            }, Modifier.fillMaxHeight()) {
+            Log.i(TAG, "rec ConstraintLayout")
+            Column(Modifier.fillMaxHeight()) {
+                loadingState = remember { mutableStateOf(true) }
+                uiState = remember { mutableStateOf(stateVal) }
+                when (uiState.value) {
+                    UIState.MAIN -> MainScreen(Modifier, playerState, colorPrimary, showSearchView)
+                    UIState.MY_MUSIC -> MyMusicScreen(playerState, colorPrimary)
+                    UIState.DIR_ISSUE -> DirIssueScreen()
                 }
             }
+
+
+            Log.i(TAG, "finished composing ConstraintLayout")
+//            }
+
             if (playerState.value != null) Player(playerState, colorPrimary, uiState.value == UIState.MAIN)
             if (loadingState?.value == true) Box(Modifier.fillMaxSize()) {
                 CircularProgressIndicator(color = colorPrimary,
@@ -176,7 +203,6 @@ class MainActivity : DaggerAppCompatActivity() {
             }
 
         }
-        MobileAds.initialize(this) {}
         InterstitialAd.load(
             this,
             getString(if (BuildConfig.DEBUG) R.string.int_test_id else R.string.int_id),
@@ -336,7 +362,10 @@ class MainActivity : DaggerAppCompatActivity() {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = {
                     if (tracks.isEmpty()) finish()
-                    uiState.value = UIState.MAIN
+                    else {
+                        Log.i(TAG, "setting state to main")
+                        uiState.value = UIState.MAIN
+                    }
                 }) {
                     Icon(
                         painterResource(id = R.drawable.ic_arrow_back),
@@ -479,31 +508,30 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @ExperimentalFoundationApi
     @Composable
-    private fun MainScreen(playerState: MutableState<Any?>, colorPrimary: Color, showSearchView: MutableState<Boolean>, scrollState: LazyListState) {
-        if (loadingState?.value != true) MyMuzAppBar(colorPrimary, showSearchView)
-        LazyColumn(contentPadding = PaddingValues(4.dp), state = scrollState) {
+    private fun MainScreen(modifier: Modifier, playerState: MutableState<Any?>, colorPrimary: Color, showSearchView: MutableState<Boolean>) {
+        MyMuzAppBar(colorPrimary, showSearchView)
+        LazyColumn(modifier,
+            contentPadding = PaddingValues(4.dp)
+        ) {
             items(count = tracks.size) {
                 Spacer(Modifier.height(4.dp))
-                val track = tracks[it]
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable { playerState.value = track }) {
-                    val btp = remember { mutableStateOf<Bitmap?>(null) }
-                    val url = track.image
-                    setBitmap(btp, url)
-                    val bitmap = btp.value?.asImageBitmap()
-                    if (bitmap != null) {
-                        Image(bitmap, null, modifier = Modifier.height(100.dp))
+                val item = tracks[it]
+                if (item is MuzNativeAd) {
+                    AndroidViewBinding(){
+
                     }
-                    Spacer(Modifier.width(4.dp))
-                    Column {
-                        Text(track.name, fontSize = 21.sp)
-                        Text(track.artist_name)
-                        Text(getString(R.string.released, track.releasedate))
-                        Text(getString(R.string.duration, track.duration))
-                    }
-                }
+//                    AndroidView({ c ->
+//                        val adView = layoutInflater.inflate(R.layout.ad, null) as NativeAdView
+//                        adView.apply {
+//                            val iconView = findViewById<ImageView>(R.id.ad_app_icon)
+//                            iconView.setImageDrawable(item.ad?.icon?.drawable)
+//                            setIconView(iconView)
+//                            val headLine = findViewById<TextView>(R.id.ad_headline)
+//                            headLine.text = item.ad?.headline
+//                            headlineView = headLine
+//                        }
+//                    })
+                } else TrackView(playerState, item)
                 if (it == tracks.size - 1 && loadingState?.value == false) {
                     loadingState?.value = true
                     val offset = (tracks.size / 25 + 1) * 25
@@ -512,7 +540,32 @@ class MainActivity : DaggerAppCompatActivity() {
                 }
             }
         }
+        Log.i(TAG, "finish comp MainScreen")
     }
+
+
+    @Composable
+    private fun TrackView(playerState: MutableState<Any?>, item: Track) = Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable { playerState.value = item }
+    ) {
+        val btp = remember { mutableStateOf<Bitmap?>(null) }
+        val url = item.image
+        setBitmap(btp, url)
+        val bitmap = btp.value?.asImageBitmap()
+        if (bitmap != null) {
+            Image(bitmap, null, modifier = Modifier.height(100.dp))
+        }
+        Spacer(Modifier.width(4.dp))
+        Column {
+            Text(item.name, fontSize = 21.sp)
+            Text(item.artist_name)
+            Text(getString(R.string.released, item.releasedate))
+            Text(getString(R.string.duration, item.duration))
+        }
+    }
+
 
     @Composable
     private fun Player(
@@ -676,18 +729,27 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @ExperimentalFoundationApi
     private fun onContentFetched(response: MuzResponse?) {
-        Log.i(TAG, "on content fetched resp=>$response")
-        if (response?.results?.isEmpty() == true && tracks.isEmpty() && !searching && idIterator.hasNext()) {
+        val data = response?.results ?: emptyList()
+
+        if (data.isEmpty() && tracks.isEmpty() && !searching && idIterator.hasNext()) {
             apiManager.clientId = idIterator.next()
             disposable.clear()
             disposable += apiManager.getPopular((tracks.size / 25 + 1) * 25)
                 .subscribe(::onContentFetched, ::onError)
-        } else if (response?.results?.isEmpty() == true && !searching) {
+        } else if (data.isEmpty() && !searching) {
             loadingState?.value = false
             showServiceUnavailable()
         } else {
-            tracks.addAll(response?.results ?: emptyList())
+            val count = data.size
+            if (nativeAd != null) insertNatives(count, data)
+            tracks.addAll(data)
             if (timeOut) loadingState?.value = false
+        }
+    }
+
+    private fun insertNatives(count: Int, data: List<Track>) {
+        for (i in 5..count) {
+            if (i % 5 == 0) (data as MutableList).add(i, MuzNativeAd(nativeAd))
         }
     }
 
@@ -765,6 +827,6 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private enum class UIState {
-        MAIN, MY_MUSIC, DIR_ISSIUE
+        MAIN, MY_MUSIC, DIR_ISSUE
     }
 }
