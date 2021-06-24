@@ -17,8 +17,6 @@ import android.os.*
 import android.os.Environment.DIRECTORY_MUSIC
 import android.util.DisplayMetrics
 import android.util.Log
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.compose.setContent
@@ -55,7 +53,6 @@ import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdView
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
@@ -63,10 +60,12 @@ import io.reactivex.rxkotlin.plusAssign
 import kotlinx.coroutines.*
 import muz.all.BuildConfig
 import muz.all.R
+import muz.all.databinding.AdBinding
 import muz.all.manager.ApiManager
 import muz.all.model.MuzNativeAd
 import muz.all.model.MuzResponse
 import muz.all.model.Track
+import muz.all.util.ID_NATIVE
 import muz.all.util.isNetworkConnected
 import java.io.File
 import java.io.IOException
@@ -87,7 +86,7 @@ class MainActivity : DaggerAppCompatActivity() {
         private const val REQUEST_CODE_STORAGE = 1
     }
 
-    private var nativeAd: NativeAd? = null
+    private var nativeAds = mutableListOf<NativeAd>()
     private var filteredFiles = mutableStateListOf<File>()
     private var searching = false
     private lateinit var q: MutableState<String>
@@ -117,11 +116,11 @@ class MainActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MobileAds.initialize(this) {}
-        AdLoader.Builder(this, "ca-app-pub-3940256099942544/2247696110")
+        AdLoader.Builder(this, if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/2247696110" else ID_NATIVE)
             .forNativeAd {
-                nativeAd = it
+                nativeAds.add(it)
                 if (tracks.isNotEmpty()) {
-                    insertNatives(tracks.size, tracks)
+                    insertNative(tracks.size, tracks, it)
                 }
                 Log.i(TAG, "native ad loaded tracks is empty=>${tracks.isEmpty()}, native=>${it.headline}")
             }
@@ -133,9 +132,10 @@ class MainActivity : DaggerAppCompatActivity() {
                 override fun onAdLoaded() {
                     Log.i(TAG, "onAdLoaded")
                 }
-            }).build().loadAd(AdRequest.Builder().build())
+            }).build().loadAds(AdRequest.Builder().build(), 5)
         init()
     }
+
 
     @ExperimentalFoundationApi
     private fun init() {
@@ -517,20 +517,30 @@ class MainActivity : DaggerAppCompatActivity() {
                 Spacer(Modifier.height(4.dp))
                 val item = tracks[it]
                 if (item is MuzNativeAd) {
-                    AndroidViewBinding(){
-
+                    AndroidViewBinding(AdBinding::inflate) {
+                        val ad = item.ad
+                        adAppIcon.setImageDrawable(ad?.icon?.drawable)
+                        nativeAdView.iconView = adAppIcon
+                        adHeadline.text = ad?.headline
+                        nativeAdView.headlineView = adHeadline
+                        adAdvertiser.text = ad?.advertiser
+                        nativeAdView.advertiserView = adAdvertiser
+                        val rating = ad?.starRating?.toFloat() ?: 5F
+                        Log.i(TAG, "rating=>$rating")
+                        adStars.rating = rating
+                        nativeAdView.starRatingView = adStars
+                        adBody.text = ad?.body
+                        nativeAdView.bodyView = adBody
+//                        adMedia.setMediaContent(ad?.mediaContent)
+//                        nativeAdView.mediaView = adMedia
+                        adPrice.text = ad?.price
+                        nativeAdView.priceView = adPrice
+                        adStore.text = ad?.store
+                        nativeAdView.storeView = adStore
+                        adCallToAction.text = ad?.callToAction
+                        nativeAdView.callToActionView = adCallToAction
+                        nativeAdView.setNativeAd(ad)
                     }
-//                    AndroidView({ c ->
-//                        val adView = layoutInflater.inflate(R.layout.ad, null) as NativeAdView
-//                        adView.apply {
-//                            val iconView = findViewById<ImageView>(R.id.ad_app_icon)
-//                            iconView.setImageDrawable(item.ad?.icon?.drawable)
-//                            setIconView(iconView)
-//                            val headLine = findViewById<TextView>(R.id.ad_headline)
-//                            headLine.text = item.ad?.headline
-//                            headlineView = headLine
-//                        }
-//                    })
                 } else TrackView(playerState, item)
                 if (it == tracks.size - 1 && loadingState?.value == false) {
                     loadingState?.value = true
@@ -741,15 +751,30 @@ class MainActivity : DaggerAppCompatActivity() {
             showServiceUnavailable()
         } else {
             val count = data.size
-            if (nativeAd != null) insertNatives(count, data)
+            if (nativeAds.isNotEmpty()) insertNatives(count, data)
             tracks.addAll(data)
             if (timeOut) loadingState?.value = false
         }
     }
 
     private fun insertNatives(count: Int, data: List<Track>) {
+        nativeAds.reverse()
+        var iterator = nativeAds.iterator()
         for (i in 5..count) {
-            if (i % 5 == 0) (data as MutableList).add(i, MuzNativeAd(nativeAd))
+            if (i % 6 == 0) {
+                if (!iterator.hasNext()) iterator = nativeAds.iterator()
+                (data as MutableList).add(i, MuzNativeAd(iterator.next()))
+            }
+        }
+    }
+
+    private fun insertNative(count: Int, tracks: MutableList<Track>, ad: NativeAd) {
+        for (i in 6 until count) {
+            val t = tracks[i]
+            if (i % 6 == 0 && t !is MuzNativeAd) {
+                tracks.add(i, MuzNativeAd(ad))
+                return
+            }
         }
     }
 

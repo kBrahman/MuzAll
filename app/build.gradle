@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -22,8 +23,8 @@ android {
         applicationId localProperties["app_id"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 115
-        versionName "2.15"
+        versionCode 116
+        versionName "2.16"
         buildConfigField "String[]", "IDS", "{$ids}"
         multiDexEnabled true
         buildConfigField "String", "SERVER", localProperties["server"]
@@ -47,6 +48,7 @@ android {
     }
     buildFeatures {
         compose true
+        viewBinding true
     }
     lintOptions {
         checkReleaseBuilds false
@@ -96,7 +98,6 @@ dependencies {
     //ads
     implementation 'com.google.android.gms:play-services-ads:20.2.0'
 }
-apply plugin: 'com.google.gms.google-services'
 task copyFile(type: Copy) {
     from(rootProject.file('crashlytics/google-services_muz_all.json')) {
         rename 'google-services_muz_all.json', 'google-services.json'
