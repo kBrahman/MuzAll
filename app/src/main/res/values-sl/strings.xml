@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Trajanje: %s</string>
+    <string name="released">Izdano: %s</string>
+    <string name="folder">Glasbena mapa</string>
+    <string name="my_music">Moja glasba</string>
+    <string name="could_not_play_track">Skladbe ni bilo mogoče predvajati, žal</string>
+    <string name="service_unavailable">Storitev ni na voljo, poskusite znova pozneje</string>
+    <string name="err_dir_create">Ni bilo mogoče ustvariti imenika za glasbo</string>
+    <string name="no_net">No internet connection</string>
+    <string name="action_delete">Izbriši</string>
+    <string name="conn_err">Napaka v povezavi</string>
+    <string name="refresh">Osveži</string>
+    <string name="close_search_view">Zapri pogled iskanja</string>
+    <string name="back">Nazaj</string>
+    <string name="music_icon">Glasbena ikona</string>
+    <string name="ad_attribution">Oglas</string>
+</resources>

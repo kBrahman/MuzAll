@@ -23,8 +23,8 @@ android {
         applicationId localProperties["app_id"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 116
-        versionName "2.16"
+        versionCode 117
+        versionName "2.17"
         buildConfigField "String[]", "IDS", "{$ids}"
         multiDexEnabled true
         buildConfigField "String", "SERVER", localProperties["server"]
@@ -93,7 +93,7 @@ dependencies {
     implementation 'androidx.compose.material:material:1.0.0-beta08' //09 is bad
     implementation 'androidx.compose.runtime:runtime:1.0.0-beta09'
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha07' // 08 is bad
-    implementation group: 'androidx.compose.ui', name: 'ui-viewbinding', version: '1.0.0-beta08'
+    implementation group: 'androidx.compose.ui', name: 'ui-viewbinding', version: '1.0.0-beta08' //09 is bad
 
     //ads
     implementation 'com.google.android.gms:play-services-ads:20.2.0'

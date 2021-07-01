@@ -17,6 +17,8 @@ import android.os.*
 import android.os.Environment.DIRECTORY_MUSIC
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.View.GONE
+import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.compose.setContent
@@ -510,6 +512,10 @@ class MainActivity : DaggerAppCompatActivity() {
     @Composable
     private fun MainScreen(modifier: Modifier, playerState: MutableState<Any?>, colorPrimary: Color, showSearchView: MutableState<Boolean>) {
         MyMuzAppBar(colorPrimary, showSearchView)
+        val root = layoutInflater.inflate(R.layout.ad, null) as ViewGroup
+        val viewGroup = window.decorView.rootView as ViewGroup?
+        val list = (0..3).map { AdBinding.inflate(layoutInflater, viewGroup, false) }
+        var bindingsIterator = list.iterator()
         LazyColumn(modifier,
             contentPadding = PaddingValues(4.dp)
         ) {
@@ -517,17 +523,19 @@ class MainActivity : DaggerAppCompatActivity() {
                 Spacer(Modifier.height(4.dp))
                 val item = tracks[it]
                 if (item is MuzNativeAd) {
-                    AndroidViewBinding(AdBinding::inflate) {
-                        val ad = item.ad
+                    val ad = item.ad
+                    if (!bindingsIterator.hasNext()) bindingsIterator = list.iterator()
+                    AndroidViewBinding({ _, _, _ -> bindingsIterator.next() }) {
                         adAppIcon.setImageDrawable(ad?.icon?.drawable)
                         nativeAdView.iconView = adAppIcon
                         adHeadline.text = ad?.headline
                         nativeAdView.headlineView = adHeadline
                         adAdvertiser.text = ad?.advertiser
                         nativeAdView.advertiserView = adAdvertiser
-                        val rating = ad?.starRating?.toFloat() ?: 5F
+                        val rating = ad?.starRating?.toFloat()
                         Log.i(TAG, "rating=>$rating")
-                        adStars.rating = rating
+                        if (rating == null) adStars.visibility = GONE
+                        else adStars.rating = rating
                         nativeAdView.starRatingView = adStars
                         adBody.text = ad?.body
                         nativeAdView.bodyView = adBody
@@ -760,7 +768,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun insertNatives(count: Int, data: List<Track>) {
         nativeAds.reverse()
         var iterator = nativeAds.iterator()
-        for (i in 5..count) {
+        for (i in 6..count) {
             if (i % 6 == 0) {
                 if (!iterator.hasNext()) iterator = nativeAds.iterator()
                 (data as MutableList).add(i, MuzNativeAd(iterator.next()))
