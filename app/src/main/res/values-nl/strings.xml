@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="duration">Looptijd :%</string>
+    <string name="duration">Looptijd :%s</string>
     <string name="released">Vrijgelaten: %s</string>
     <string name="folder">Muziekmap</string>
     <string name="my_music">Mijn muziek</string>

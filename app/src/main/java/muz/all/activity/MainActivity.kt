@@ -512,7 +512,6 @@ class MainActivity : DaggerAppCompatActivity() {
     @Composable
     private fun MainScreen(modifier: Modifier, playerState: MutableState<Any?>, colorPrimary: Color, showSearchView: MutableState<Boolean>) {
         MyMuzAppBar(colorPrimary, showSearchView)
-        val root = layoutInflater.inflate(R.layout.ad, null) as ViewGroup
         val viewGroup = window.decorView.rootView as ViewGroup?
         val list = (0..3).map { AdBinding.inflate(layoutInflater, viewGroup, false) }
         var bindingsIterator = list.iterator()
@@ -748,7 +747,7 @@ class MainActivity : DaggerAppCompatActivity() {
     @ExperimentalFoundationApi
     private fun onContentFetched(response: MuzResponse?) {
         val data = response?.results ?: emptyList()
-
+        Log.i(TAG, "on content fetched=>$data")
         if (data.isEmpty() && tracks.isEmpty() && !searching && idIterator.hasNext()) {
             apiManager.clientId = idIterator.next()
             disposable.clear()
