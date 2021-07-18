@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Trajanje: %s</string>
     <string name="released">Izdano: %s</string>
-    <string name="folder">Glasbena mapa</string>
     <string name="my_music">Moja glasba</string>
     <string name="could_not_play_track">Skladbe ni bilo mogoče predvajati, žal</string>
     <string name="service_unavailable">Storitev ni na voljo, poskusite znova pozneje</string>

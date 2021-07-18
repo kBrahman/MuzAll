@@ -118,13 +118,19 @@ class MainActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MobileAds.initialize(this) {}
-        AdLoader.Builder(this, if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/2247696110" else ID_NATIVE)
+        AdLoader.Builder(
+            this,
+            if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/2247696110" else ID_NATIVE
+        )
             .forNativeAd {
                 nativeAds.add(it)
                 if (tracks.isNotEmpty()) {
                     insertNative(tracks.size, tracks, it)
                 }
-                Log.i(TAG, "native ad loaded tracks is empty=>${tracks.isEmpty()}, native=>${it.headline}")
+                Log.i(
+                    TAG,
+                    "native ad loaded tracks is empty=>${tracks.isEmpty()}, native=>${it.headline}"
+                )
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(err: LoadAdError) {
@@ -156,8 +162,16 @@ class MainActivity : DaggerAppCompatActivity() {
             UIState.MAIN
         }
 
-        if (stateVal == UIState.MY_MUSIC && ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(READ_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE)
+        if (stateVal == UIState.MY_MUSIC && ContextCompat.checkSelfPermission(
+                this,
+                READ_EXTERNAL_STORAGE
+            ) != PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(READ_EXTERNAL_STORAGE),
+                REQUEST_CODE_STORAGE
+            )
             Toast.makeText(this, R.string.no_net, LENGTH_SHORT).show()
             onPermissionGranted = ::init
             onPermissionDenied = ::finish
@@ -197,9 +211,31 @@ class MainActivity : DaggerAppCompatActivity() {
             Log.i(TAG, "finished composing ConstraintLayout")
 //            }
 
-            if (playerState.value != null) Player(playerState, colorPrimary, uiState.value == UIState.MAIN)
+            if (playerState.value != null) {
+                val adLoaded = remember { mutableStateOf(false) }
+                val ad = AdView(this@MainActivity).apply {
+                    adUnitId =
+                        if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/6300978111" else getString(
+                            R.string.banner_id
+                        )
+                    adSize = AdSize.MEDIUM_RECTANGLE
+                    loadAd(AdRequest.Builder().build())
+                    adListener = object : AdListener() {
+                        override fun onAdLoaded() {
+                            adLoaded.value = true
+                            Log.i(TAG, "onAdLoaded")
+                        }
+                    }
+                }
+                Player(
+                    playerState,
+                    colorPrimary,
+                    uiState.value == UIState.MAIN, adLoaded, ad
+                )
+            }
             if (loadingState?.value == true) Box(Modifier.fillMaxSize()) {
-                CircularProgressIndicator(color = colorPrimary,
+                CircularProgressIndicator(
+                    color = colorPrimary,
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
@@ -229,13 +265,7 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     @Composable
-    private fun Banner(modifier: Modifier, size: AdSize) = AndroidView({
-        AdView(it).apply {
-            adUnitId = if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/6300978111" else getString(R.string.banner_id)
-            adSize = size
-            loadAd(AdRequest.Builder().build())
-        }
-    }, modifier)
+    private fun Banner(modifier: Modifier, ad: AdView) = AndroidView({ ad }, modifier)
 
     @ExperimentalFoundationApi
     @Composable
@@ -263,10 +293,16 @@ class MainActivity : DaggerAppCompatActivity() {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                 }, onClick = {
-                    if (ContextCompat.checkSelfPermission(this@MainActivity, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) myMusic()
+                    if (ContextCompat.checkSelfPermission(
+                            this@MainActivity,
+                            WRITE_EXTERNAL_STORAGE
+                        ) == PERMISSION_GRANTED
+                    ) myMusic()
                     else {
-                        ActivityCompat.requestPermissions(this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE),
-                            REQUEST_CODE_STORAGE)
+                        ActivityCompat.requestPermissions(
+                            this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE),
+                            REQUEST_CODE_STORAGE
+                        )
                         onPermissionGranted = ::myMusic
                         onPermissionDenied = {}
                     }
@@ -294,9 +330,16 @@ class MainActivity : DaggerAppCompatActivity() {
 
             Log.i(TAG, "dir=>$directory")
             if (!directory.exists()
-                && ContextCompat.checkSelfPermission(this@MainActivity, WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(
+                    this@MainActivity,
+                    WRITE_EXTERNAL_STORAGE
+                ) != PERMISSION_GRANTED
             ) {
-                ActivityCompat.requestPermissions(this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE)
+                ActivityCompat.requestPermissions(
+                    this@MainActivity,
+                    arrayOf(WRITE_EXTERNAL_STORAGE),
+                    REQUEST_CODE_STORAGE
+                )
                 onPermissionGranted = ::updateFileList
                 onPermissionDenied = { uiState.value = UIState.MAIN }
             } else {
@@ -380,13 +423,17 @@ class MainActivity : DaggerAppCompatActivity() {
                     horizontalArrangement = Arrangement.End
                 ) {
                     IconButton(onClick = {
-                        if (ContextCompat.checkSelfPermission(this@MainActivity,
-                                WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                        if (ContextCompat.checkSelfPermission(
+                                this@MainActivity,
+                                WRITE_EXTERNAL_STORAGE
+                            ) == PERMISSION_GRANTED || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
                         )
                             deleteAndUpdate()
                         else {
-                            ActivityCompat.requestPermissions(this@MainActivity,
-                                arrayOf(WRITE_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE)
+                            ActivityCompat.requestPermissions(
+                                this@MainActivity,
+                                arrayOf(WRITE_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE
+                            )
                             onPermissionGranted = ::deleteAndUpdate
                             onPermissionDenied = {}
                         }
@@ -434,7 +481,8 @@ class MainActivity : DaggerAppCompatActivity() {
                                     ),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                val byteArray = data?.let { d -> BitmapFactory.decodeByteArray(d, 0, d.size) }
+                                val byteArray =
+                                    data?.let { d -> BitmapFactory.decodeByteArray(d, 0, d.size) }
                                 if (byteArray != null) {
                                     Image(
                                         byteArray.asImageBitmap(),
@@ -481,7 +529,12 @@ class MainActivity : DaggerAppCompatActivity() {
             val uri = Uri.parse(track.audio)
             val request = DownloadManager.Request(uri)
             val downloadId = downloadManager
-                .enqueue(request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, track.name + ".mp3"))
+                .enqueue(
+                    request.setDestinationInExternalPublicDir(
+                        Environment.DIRECTORY_MUSIC,
+                        track.name + ".mp3"
+                    )
+                )
             registerReceiver(object : BroadcastReceiver() {
                 override fun onReceive(context: Context?, intent: Intent) {
                     val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
@@ -489,7 +542,11 @@ class MainActivity : DaggerAppCompatActivity() {
                 }
             }, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         } else {
-            ActivityCompat.requestPermissions(this, arrayOf(WRITE_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(WRITE_EXTERNAL_STORAGE),
+                REQUEST_CODE_STORAGE
+            )
             onPermissionGranted = {
                 Log.i(TAG, "onPermissionGranted download")
                 download(track)
@@ -510,12 +567,18 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @ExperimentalFoundationApi
     @Composable
-    private fun MainScreen(modifier: Modifier, playerState: MutableState<Any?>, colorPrimary: Color, showSearchView: MutableState<Boolean>) {
+    private fun MainScreen(
+        modifier: Modifier,
+        playerState: MutableState<Any?>,
+        colorPrimary: Color,
+        showSearchView: MutableState<Boolean>
+    ) {
         MyMuzAppBar(colorPrimary, showSearchView)
         val viewGroup = window.decorView.rootView as ViewGroup?
         val list = (0..3).map { AdBinding.inflate(layoutInflater, viewGroup, false) }
         var bindingsIterator = list.iterator()
-        LazyColumn(modifier,
+        LazyColumn(
+            modifier,
             contentPadding = PaddingValues(4.dp)
         ) {
             items(count = tracks.size) {
@@ -588,8 +651,11 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun Player(
         playerState: MutableState<Any?>,
         colorPrimary: Color,
-        downloadable: Boolean
+        downloadable: Boolean,
+        adLoaded: MutableState<Boolean>,
+        ad: AdView
     ) {
+        Log.i(TAG, "player recomposed")
         val value = playerState.value!!
         val name = if (value is Track) value.name else (value as File).name
         val showPlayButton = remember { mutableStateOf(false) }
@@ -604,56 +670,79 @@ class MainActivity : DaggerAppCompatActivity() {
         }) {
             Column(
                 Modifier
-                    .background(Color.White)
+                    .background(Color.Transparent)
                     .padding(4.dp)
             ) {
-                Banner(Modifier, AdSize.MEDIUM_RECTANGLE)
-                Text(name, fontSize = 20.sp)
-                Spacer(Modifier.height(4.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Banner(Modifier.height(250.dp), ad)
+                Column(
+                    Modifier
+                        .background(Color.White)
+                        .width(300.dp)
                 ) {
-                    Button(
-                        onClick = {
-                            when {
-                                mp.isPlaying -> {
-                                    mp.pause()
-                                    showPlayButton.value = true
-                                }
-                                showPlayErr.value -> {
-                                    isProgressDeterminate.value = false
-                                    showPlayButton.value = false
-                                    play(value, showPlayButton, isProgressDeterminate, progress, showPlayErr)
-                                }
-                                else -> {
-                                    startProgress(progress)
-                                    mp.start()
-                                    showPlayButton.value = false
-                                }
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = colorPrimary),
-                        modifier = Modifier.width(48.dp)
+                    Text(name, fontSize = 20.sp)
+                    Spacer(Modifier.height(4.dp))
+                    Row(
+                        Modifier.padding(bottom = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Image(
-                            painterResource(id = if (showPlayButton.value) android.R.drawable.ic_media_play else R.drawable.ic_pause_24),
-                            null
+                        Spacer(Modifier.width(4.dp))
+                        Button(
+                            onClick = {
+                                when {
+                                    mp.isPlaying -> {
+                                        mp.pause()
+                                        showPlayButton.value = true
+                                    }
+                                    showPlayErr.value -> {
+                                        isProgressDeterminate.value = false
+                                        showPlayButton.value = false
+                                        play(
+                                            value,
+                                            showPlayButton,
+                                            isProgressDeterminate,
+                                            progress,
+                                            showPlayErr
+                                        )
+                                    }
+                                    else -> {
+                                        startProgress(progress)
+                                        mp.start()
+                                        showPlayButton.value = false
+                                    }
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = colorPrimary),
+                            modifier = Modifier.width(48.dp)
+                        ) {
+                            Image(
+                                painterResource(id = if (showPlayButton.value) android.R.drawable.ic_media_play else R.drawable.ic_pause_24),
+                                null
+                            )
+                        }
+                        Spacer(Modifier.width(4.dp))
+                        ProgressBar(
+                            isProgressDeterminate,
+                            progress,
+                            colorPrimary,
+                            Modifier.weight(1f)
                         )
-                    }
-                    Spacer(Modifier.width(4.dp))
-                    ProgressBar(isProgressDeterminate, progress, colorPrimary, Modifier.weight(1f))
-                    Spacer(Modifier.width(4.dp))
-                    if (downloadable) Button(
-                        onClick = { download(value as Track) },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = colorPrimary),
-                        modifier = Modifier
-                            .width(48.dp)
-                    ) {
-                        Image(painterResource(R.drawable.ic_file_download_24dp), null)
+                        Spacer(Modifier.width(4.dp))
+                        if (downloadable) Button(
+                            onClick = { download(value as Track) },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = colorPrimary),
+                            modifier = Modifier
+                                .width(48.dp)
+                        ) {
+                            Image(painterResource(R.drawable.ic_file_download_24dp), null)
+                        }
+                        Spacer(Modifier.width(4.dp))
                     }
                 }
-                if (showPlayErr.value) Text(getString(R.string.could_not_play_track), color = Color.Red)
+                if (showPlayErr.value) Text(
+                    getString(R.string.could_not_play_track),
+                    color = Color.Red
+                )
             }
         }
     }
@@ -686,8 +775,10 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
-    private fun <T> play(t: T, showPlayButton: MutableState<Boolean>, isProgressDeterminate: MutableState<Boolean>,
-                         progress: MutableState<Float>, showPlayErr: MutableState<Boolean>) {
+    private fun <T> play(
+        t: T, showPlayButton: MutableState<Boolean>, isProgressDeterminate: MutableState<Boolean>,
+        progress: MutableState<Float>, showPlayErr: MutableState<Boolean>
+    ) {
         if (t is Track) {
             FirebaseCrashlytics.getInstance().setCustomKey("track", t.toString())
             val url = t.audio
@@ -742,7 +833,9 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @ExperimentalFoundationApi
     private fun onError(t: Throwable) =
-        if (t is SocketTimeoutException || t is UnknownHostException || t is ConnectException) connectionErr(t) else t.printStackTrace()
+        if (t is SocketTimeoutException || t is UnknownHostException || t is ConnectException) connectionErr(
+            t
+        ) else t.printStackTrace()
 
     @ExperimentalFoundationApi
     private fun onContentFetched(response: MuzResponse?) {
@@ -852,7 +945,11 @@ class MainActivity : DaggerAppCompatActivity() {
         Toast.makeText(this, R.string.service_unavailable, Toast.LENGTH_LONG).show()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) onPermissionGranted()
         else onPermissionDenied()
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

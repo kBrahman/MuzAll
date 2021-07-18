@@ -3,7 +3,6 @@
     <string name="app_name">MuzAll</string>
     <string name="duration">Трајање: %s</string>
     <string name="released">Релеасед: %s</string>
-    <string name="folder">Музичка фасцикла</string>
     <string name="my_music">Моја музика</string>
     <string name="could_not_play_track">Није могуће пустити нумеру, извините</string>
     <string name="service_unavailable">Услуга није доступна, покушајте поново касније, молим вас</string>

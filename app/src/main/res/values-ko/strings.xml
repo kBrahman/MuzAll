@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">지속: %s</string>
     <string name="released">출시일: %s</string>
-    <string name="folder">음악 폴더</string>
     <string name="my_music">내 음악</string>
     <string name="could_not_play_track">"트랙을 재생할 수 없습니다. 죄송합니다. "</string>
     <string name="service_unavailable">"서비스를 사용할 수 없습니다. 나중에 다시 시도하십시오. "</string>

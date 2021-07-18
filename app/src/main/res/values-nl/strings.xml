@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Looptijd :%s</string>
     <string name="released">Vrijgelaten: %s</string>
-    <string name="folder">Muziekmap</string>
     <string name="my_music">Mijn muziek</string>
     <string name="could_not_play_track">Kan de track niet afspelen, sorry</string>
     <string name="service_unavailable">Service niet beschikbaar, probeer het later opnieuw</string>
@@ -14,4 +13,5 @@
     <string name="close_search_view">Zoekweergave sluiten</string>
     <string name="back">Terug</string>
     <string name="music_icon">Muziek icoon</string>
+    <string name="ad_attribution">Advertentie</string>
 </resources>

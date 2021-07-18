@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">រយៈពេល៖ %s</string>
     <string name="released">ចេញផ្សាយ៖%s</string>
-    <string name="folder">ថតតន្ត្រី</string>
     <string name="my_music">តន្ត្រីរបស់ខ្ញុំ</string>
     <string name="could_not_play_track">មិនអាចលេងបទបានទេសុំទោស</string>
     <string name="service_unavailable">សេវាកម្មមិនមានទេសូមព្យាយាមម្តងទៀតនៅពេលក្រោយ</string>

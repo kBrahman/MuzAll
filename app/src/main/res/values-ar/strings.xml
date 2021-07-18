@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">المدة الزمنية: %s</string>
     <string name="released">صدر: %s</string>
-    <string name="folder">مجلد الموسيقى</string>
     <string name="my_music">موسيقاي</string>
     <string name="could_not_play_track">لا يمكن تشغيل المسار ، آسف</string>
     <string name="service_unavailable">الخدمة غير متوفرة ، حاول مرة أخرى في وقت لاحق من فضلك</string>

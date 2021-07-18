@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Varighed:% s</string>
+    <string name="released">Udgivet:% s</string>
+    <string name="my_music">Mit musik</string>
+    <string name="could_not_play_track">Kunne ikke afspille sporet, undskyld</string>
+    <string name="service_unavailable">Tjenesten er ikke tilgængelig, prøv igen senere</string>
+    <string name="err_dir_create">Kunne ikke oprette bibliotek til musik</string>
+    <string name="no_net">Ingen internetforbindelse</string>
+    <string name="action_delete">Slet</string>
+    <string name="conn_err">Forbindelsesfejl</string>
+    <string name="refresh">Opdater</string>
+    <string name="close_search_view">Luk søgevisning</string>
+    <string name="back">Tilbage</string>
+    <string name="music_icon">Musik ikon</string>
+    <string name="ad_attribution">Annonce</string>
+</resources>

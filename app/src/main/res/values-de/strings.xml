@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Dauer: %s</string>
     <string name="released">Veröffentlichungsdatum: %s</string>
-    <string name="folder">Musikordner</string>
     <string name="my_music">"Meine Musik "</string>
     <string name="could_not_play_track">Der Titel konnte leider nicht abgespielt werden</string>
     <string name="service_unavailable">Service nicht verfügbar, versuchen Sie es später erneut</string>

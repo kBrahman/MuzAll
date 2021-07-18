@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Müddəti: %s</string>
     <string name="released">Buraxılış tarixi: %s</string>
-    <string name="folder">"Musiqi qovluğu "</string>
     <string name="my_music">Musiqiim</string>
     <string name="could_not_play_track">Təəssüf ki, treki oxutmaq olmur</string>
     <string name="service_unavailable">Xidmət əlçatan deyil, daha sonra yenidən cəhd edin</string>

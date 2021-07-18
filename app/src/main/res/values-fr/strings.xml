@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Durée: %s</string>
     <string name="released">Date de sortie: %s</string>
-    <string name="folder">Dossier de musique</string>
     <string name="my_music">Ma musique</string>
     <string name="could_not_play_track">Impossible de lire la piste, désolé</string>
     <string name="service_unavailable">Service indisponible, réessayez plus tard s\'il vous plaît</string>

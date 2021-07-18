@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">সময়কাল: %s</string>
     <string name="released">প্রকাশিত: %s</string>
-    <string name="folder">সঙ্গীত ফোল্ডার</string>
     <string name="my_music">আমার গান</string>
     <string name="could_not_play_track">দুঃখিত, ট্র্যাক খেলতে পারেনি</string>
     <string name="service_unavailable">পরিষেবা অনুপলব্ধ, পরে আবার চেষ্টা করুন</string>

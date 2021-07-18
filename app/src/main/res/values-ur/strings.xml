@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">دورانیہ: %s</string>
     <string name="released">جاری: %s</string>
-    <string name="folder">میوزک فولڈر</string>
     <string name="my_music">میری موسیقی</string>
     <string name="could_not_play_track">معذرت ، ٹریک نہیں کھیل سکا</string>
     <string name="service_unavailable">خدمت دستیاب نہیں ، براہ کرم بعد میں دوبارہ کوشش کریں</string>

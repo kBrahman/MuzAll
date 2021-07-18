@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Trvanie: %s</string>
     <string name="released">Vydané: %s</string>
-    <string name="folder">Hudobný priečinok</string>
     <string name="my_music">Moja hudba</string>
     <string name="could_not_play_track">Skladbu sa nepodarilo prehrať, prepáčte</string>
     <string name="service_unavailable">Služba nie je k dispozícii, skúste to znova neskôr</string>

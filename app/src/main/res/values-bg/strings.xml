@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Продължителност: %s</string>
     <string name="released">Издаден: %s</string>
-    <string name="folder">Музикална папка</string>
     <string name="my_music">Моята музика</string>
     <string name="could_not_play_track">Не може да се възпроизведе парчето, извинете</string>
     <string name="service_unavailable">Услугата не е налична, опитайте отново по-късно, моля</string>

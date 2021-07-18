@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Үргэлжлэх хугацаа: %s</string>
     <string name="released">Гарсан: %s</string>
-    <string name="folder">Хөгжмийн хавтас</string>
     <string name="my_music">Миний хөгжим</string>
     <string name="could_not_play_track">Уучлаарай, дууг тоглуулж чадсангүй</string>
     <string name="service_unavailable">Үйлчилгээ боломжгүй байна, дараа дахин оролдоно уу</string>

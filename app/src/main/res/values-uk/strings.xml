@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Тривалість: %s</string>
     <string name="released">Випущено: %s</string>
-    <string name="folder">Музична папка</string>
     <string name="my_music">Моя музика</string>
     <string name="could_not_play_track">Не вдалося відтворити композицію, вибачте</string>
     <string name="service_unavailable">Послуга недоступна, спробуйте пізніше, будь ласка</string>

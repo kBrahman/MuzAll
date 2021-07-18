@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Kohëzgjatja: %s</string>
     <string name="released">Lëshuar: %s</string>
-    <string name="folder">Dosje muzikore</string>
     <string name="my_music">Muzika ime</string>
     <string name="could_not_play_track">Pjesa nuk mund të luhej, më vjen keq</string>
     <string name="service_unavailable">Shërbimi nuk është i disponueshëm, provoni përsëri më vonë, ju lutem</string>

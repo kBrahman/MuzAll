@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Duración: %s</string>
     <string name="released">Fecha de lanzamiento: %s</string>
-    <string name="folder">Carpeta de música</string>
     <string name="my_music">Mi música</string>
     <string name="service_unavailable">"Servicio no disponible, inténtalo más tarde por favor "</string>
     <string name="could_not_play_track">"No se pudo reproducir la pista, lo siento. "</string>

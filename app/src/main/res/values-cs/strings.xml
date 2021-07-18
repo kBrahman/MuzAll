@@ -2,11 +2,16 @@
 <resources>
     <string name="duration">Doba trvání: %s</string>
     <string name="released">Datum vydání: %s</string>
-    <string name="folder">Hudební složka</string>
     <string name="my_music">Moje hudba</string>
     <string name="action_delete">Vymazat</string>
     <string name="could_not_play_track">Přehrát skladbu se nezdařilo, je mi líto</string>
     <string name="service_unavailable">Služba není k dispozici, zkuste to prosím později</string>
     <string name="err_dir_create">Nelze vytvořit adresář pro hudbu</string>
     <string name="no_net">Žádné internetové připojení</string>
+    <string name="conn_err">Chyba připojení</string>
+    <string name="refresh">Obnovit</string>
+    <string name="close_search_view">Zavřít zobrazení vyhledávání</string>
+    <string name="back">Zadní</string>
+    <string name="music_icon">Hudební ikona</string>
+    <string name="ad_attribution">Inzerát</string>
 </resources>

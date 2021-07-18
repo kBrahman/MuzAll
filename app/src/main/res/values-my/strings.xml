@@ -2,6 +2,5 @@
 <resources>
     <string name="duration">ကြာချိန်: %s</string>
     <string name="released">ဖြန့်ချိသည့်ရက်: %s</string>
-    <string name="folder">ဂီတဖိုင်တွဲ</string>
     <string name="my_music">အကြှနျုပျ၏ဂီတ</string>
 </resources>

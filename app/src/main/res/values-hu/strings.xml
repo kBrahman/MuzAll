@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Időtartam: %s</string>
     <string name="released">Kiadási dátum: %s</string>
-    <string name="folder">Zene mappa</string>
     <string name="my_music">Én zeném</string>
     <string name="could_not_play_track">Nem sikerült lejátszani a számot, sajnálom</string>
     <string name="service_unavailable">A szolgáltatás nem érhető el, próbálkozzon újra később</string>

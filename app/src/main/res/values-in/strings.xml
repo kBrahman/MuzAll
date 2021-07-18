@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Lamanya: %s</string>
     <string name="released">Dirilis: %s</string>
-    <string name="folder">Folder musik</string>
     <string name="my_music">"Lagu saya "</string>
     <string name="could_not_play_track">Tidak dapat memutar trek, maaf</string>
     <string name="service_unavailable">Layanan tidak tersedia, coba lagi nanti</string>

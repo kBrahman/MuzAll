@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">مدت زمان: %s</string>
     <string name="released">منتشر شد: %s</string>
-    <string name="folder">پوشه موسیقی</string>
     <string name="my_music">موسیقی من</string>
     <string name="could_not_play_track">آهنگ پخش نشد ، متأسفم</string>
     <string name="service_unavailable">سرویس در دسترس نیست ، لطفاً بعداً دوباره امتحان کنید</string>

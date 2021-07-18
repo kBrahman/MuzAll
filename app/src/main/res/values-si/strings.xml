@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">කාල සීමාව: %s</string>
     <string name="released">නිකුත් කරන ලදි: %s</string>
-    <string name="folder">සංගීත ෆෝල්ඩරය</string>
     <string name="my_music">මගේ සංගීතය</string>
     <string name="could_not_play_track">ධාවන පථය වාදනය කිරීමට නොහැකි විය, සමාවෙන්න</string>
     <string name="service_unavailable">සේවාව ලබා ගත නොහැක, කරුණාකර පසුව නැවත උත්සාහ කරන්න</string>

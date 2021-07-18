@@ -2,7 +2,6 @@
 <resources>
     <string name="duration">Varaktighet: %s</string>
     <string name="released">Släppte: %s</string>
-    <string name="folder">Musikmapp</string>
     <string name="my_music">Min musik</string>
     <string name="could_not_play_track">Det gick inte att spela spåret, tyvärr</string>
     <string name="service_unavailable">Tjänsten är inte tillgänglig, försök igen senare tack</string>
