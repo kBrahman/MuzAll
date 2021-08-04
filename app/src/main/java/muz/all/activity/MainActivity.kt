@@ -230,7 +230,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 Player(
                     playerState,
                     colorPrimary,
-                    uiState.value == UIState.MAIN, adLoaded, ad
+                    uiState.value == UIState.MAIN, ad
                 )
             }
             if (loadingState?.value == true) Box(Modifier.fillMaxSize()) {
@@ -652,7 +652,6 @@ class MainActivity : DaggerAppCompatActivity() {
         playerState: MutableState<Any?>,
         colorPrimary: Color,
         downloadable: Boolean,
-        adLoaded: MutableState<Boolean>,
         ad: AdView
     ) {
         Log.i(TAG, "player recomposed")
@@ -738,11 +737,11 @@ class MainActivity : DaggerAppCompatActivity() {
                         }
                         Spacer(Modifier.width(4.dp))
                     }
+                    if (showPlayErr.value) Text(
+                        getString(R.string.could_not_play_track),
+                        color = Color.Red
+                    )
                 }
-                if (showPlayErr.value) Text(
-                    getString(R.string.could_not_play_track),
-                    color = Color.Red
-                )
             }
         }
     }
@@ -779,23 +778,21 @@ class MainActivity : DaggerAppCompatActivity() {
         t: T, showPlayButton: MutableState<Boolean>, isProgressDeterminate: MutableState<Boolean>,
         progress: MutableState<Float>, showPlayErr: MutableState<Boolean>
     ) {
-        if (t is Track) {
-            FirebaseCrashlytics.getInstance().setCustomKey("track", t.toString())
-            val url = t.audio
-            try {
-                Log.i(TAG, "play")
+        try {
+            if (t is Track) {
+                val url = t.audio
                 mp.setDataSource(url)
                 showPlayErr.value = false
-            } catch (ex: IllegalStateException) {
-                isProgressDeterminate.value = true
-                showPlayButton.value = true
-                showPlayErr.value = true
-                Log.i(TAG, "caught exception")
-                return
+            } else if (t is File) {
+                FirebaseCrashlytics.getInstance().setCustomKey("file", t.path)
+                mp.setDataSource(t.path)
             }
-        } else if (t is File) {
-            FirebaseCrashlytics.getInstance().setCustomKey("file", t.path)
-            mp.setDataSource(t.path)
+        } catch (ex: IllegalStateException) {
+            isProgressDeterminate.value = true
+            showPlayButton.value = true
+            showPlayErr.value = true
+            Log.i(TAG, "caught exception")
+            return
         }
         configureMp(showPlayButton, isProgressDeterminate, progress)
     }

@@ -23,8 +23,8 @@ android {
         applicationId localProperties["app_id"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 119
-        versionName "2.19"
+        versionCode 120
+        versionName "2.20"
         buildConfigField "String[]", "IDS", "{$ids}"
         multiDexEnabled true
         buildConfigField "String", "SERVER", localProperties["server"]
@@ -51,7 +51,7 @@ android {
         viewBinding true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion "1.0.0-rc02"
+        kotlinCompilerExtensionVersion "1.0.0"
     }
     lintOptions {
         abortOnError false
@@ -74,12 +74,11 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.google.dagger:dagger-android-support:2.37'
-    kapt 'com.google.dagger:dagger-compiler:2.37'
-    kapt 'com.google.dagger:dagger-android-processor:2.37'
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.google.dagger:dagger-android-support:2.38.1'
+    kapt 'com.google.dagger:dagger-compiler:2.38.1'
+    kapt 'com.google.dagger:dagger-android-processor:2.38.1'
     implementation 'com.google.firebase:firebase-analytics:19.0.0'
-    implementation 'com.google.firebase:firebase-crashlytics:18.1.0'
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     androidTestImplementation('com.android.support.test.espresso:espresso-contrib:3.0.2') {
@@ -88,12 +87,11 @@ dependencies {
         exclude module: 'appcompat-v7'
     }
     //compose
-    implementation 'androidx.activity:activity-compose:1.3.0-rc02' //02 is bad
-    implementation 'androidx.compose.foundation:foundation:1.0.0-rc02' //09 is bad
-    implementation 'androidx.compose.material:material:1.0.0-rc02' //09 is bad
-    implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha08' // 08 is bad
-    implementation group: 'androidx.compose.ui', name: 'ui-viewbinding', version: '1.0.0-rc02'
-    //09 is bad
+    implementation 'androidx.activity:activity-compose:1.3.0'
+    implementation 'androidx.compose.foundation:foundation:1.0.0'
+    implementation 'androidx.compose.material:material:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02'
+    implementation group: 'androidx.compose.ui', name: 'ui-viewbinding', version: '1.0.0'
 
     //ads
     implementation 'com.google.android.gms:play-services-ads:20.2.0'

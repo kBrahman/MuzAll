@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MuzAll</string>
+    <string name="duration">Trukmė: %s</string>
+    <string name="released">Išleidimo data: %s</string>
+    <string name="my_music">Mano muzika</string>
+    <string name="could_not_play_track">Nepavyko paleisti kūrinio, atsiprašau</string>
+    <string name="service_unavailable">Paslauga nepasiekiama, vėliau bandykite dar kartą</string>
+    <string name="err_dir_create">Nepavyko sukurti muzikos katalogo</string>
+    <string name="no_net">Nėra interneto ryšio</string>
+    <string name="action_delete">Ištrinti</string>
+    <string name="conn_err">Ryšio klaida</string>
+    <string name="refresh">Atnaujinti</string>
+    <string name="close_search_view">Uždaryti paieškos rodinį</string>
+    <string name="back">Atgal</string>
+    <string name="music_icon">Muzikos piktograma</string>
+    <string name="ad_attribution">Reklama</string>
+</resources>
