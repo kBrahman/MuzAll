@@ -23,8 +23,8 @@ android {
         applicationId localProperties["app_id"]
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 120
-        versionName "2.20"
+        versionCode 121
+        versionName "2.21"
         buildConfigField "String[]", "IDS", "{$ids}"
         multiDexEnabled true
         buildConfigField "String", "SERVER", localProperties["server"]

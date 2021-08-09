@@ -71,6 +71,7 @@ import muz.all.util.ID_NATIVE
 import muz.all.util.isNetworkConnected
 import java.io.File
 import java.io.IOException
+import java.lang.Exception
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.URL
@@ -787,7 +788,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 FirebaseCrashlytics.getInstance().setCustomKey("file", t.path)
                 mp.setDataSource(t.path)
             }
-        } catch (ex: IllegalStateException) {
+        } catch (ex: Exception) {
             isProgressDeterminate.value = true
             showPlayButton.value = true
             showPlayErr.value = true

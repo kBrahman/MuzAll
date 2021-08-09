@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MuzAll</string>
+    <string name="duration">የቆይታ ጊዜ ፦  %s</string>
+    <string name="released">የተለቀቀበት ቀን ፦ %s</string>
+    <string name="my_music">የእኔ ሙዚቃ</string>
+    <string name="could_not_play_track">ትራኩን ማጫወት አልተቻለም ፣ ይቅርታ</string>
+    <string name="service_unavailable">አገልግሎት አይገኝም ፣ ቆይተው እንደገና ይሞክሩ እባክዎን</string>
+    <string name="err_dir_create">ለሙዚቃ ማውጫ መፍጠር አልተቻለም</string>
+    <string name="no_net">ምንም የበይነመረብ ግንኙነት የለም</string>
+    <string name="action_delete">ሰርዝ</string>
+    <string name="conn_err">Connection error</string>
+    <string name="refresh">አድስ</string>
+    <string name="close_search_view">የፍለጋ እይታን ዝጋ</string>
+    <string name="back">ተመለስ</string>
+    <string name="music_icon">የሙዚቃ አዶ</string>
+    <string name="ad_attribution">ማስታወቂያ</string>
+</resources>
