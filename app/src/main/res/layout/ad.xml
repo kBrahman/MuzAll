@@ -17,6 +17,7 @@
             android:adjustViewBounds="true"
             android:maxWidth="75dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -33,7 +34,6 @@
                 android:id="@+id/ad_headline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TEST"
                 android:textColor="#0000FF"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -66,9 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="5dp"
-                android:paddingLeft="5dp"
                 android:paddingEnd="5dp"
-                android:paddingRight="5dp"
                 android:textSize="12sp" />
 
             <TextView
@@ -76,9 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="5dp"
-                android:paddingLeft="5dp"
                 android:paddingEnd="5dp"
-                android:paddingRight="5dp"
                 android:textSize="12sp" />
 
             <TextView
@@ -86,7 +82,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
                 android:textSize="12sp" />
         </LinearLayout>
 

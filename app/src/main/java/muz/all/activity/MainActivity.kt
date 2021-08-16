@@ -270,52 +270,77 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @ExperimentalFoundationApi
     @Composable
-    private fun MyMuzAppBar(colorPrimary: Color, showSearchView: MutableState<Boolean>) {
+    private fun MyMuzAppBar(colorPrimary: Color, showSearchView: MutableState<Boolean>) =
         TopAppBar(contentColor = Color.White, backgroundColor = colorPrimary) {
-            ConstraintLayout(Modifier.fillMaxSize()) {
-                val (btnMyMusic, title) = createRefs()
-                Text(
-                    getString(R.string.app_name),
-                    fontSize = 21.sp,
-                    modifier = Modifier.constrainAs(title) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    })
-                SearchView(showSearchView, Modifier
-                    .fillMaxHeight()
-                    .constrainAs(createRef()) {
-                        end.linkTo(btnMyMusic.start)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        if (showSearchView.value) start.linkTo(title.end, 16.dp)
-                    })
-                IconButton(modifier = Modifier.constrainAs(btnMyMusic) {
-                    end.linkTo(parent.end)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                }, onClick = {
-                    if (ContextCompat.checkSelfPermission(
-                            this@MainActivity,
-                            WRITE_EXTERNAL_STORAGE
-                        ) == PERMISSION_GRANTED
-                    ) myMusic()
-                    else {
-                        ActivityCompat.requestPermissions(
-                            this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE),
-                            REQUEST_CODE_STORAGE
-                        )
-                        onPermissionGranted = ::myMusic
-                        onPermissionDenied = {}
-                    }
-                }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_folder_24dp),
-                        contentDescription = getString(R.string.my_music)
+            Spacer(Modifier.width(4.dp))
+            Text(getString(R.string.app_name), fontSize = 21.sp)
+            Spacer(Modifier.weight(1F))
+            SearchView(showSearchView, Modifier.fillMaxHeight())
+            Spacer(Modifier.width(4.dp))
+            IconButton(modifier = Modifier, onClick = {
+                if (ContextCompat.checkSelfPermission(
+                        this@MainActivity,
+                        WRITE_EXTERNAL_STORAGE
+                    ) == PERMISSION_GRANTED
+                ) myMusic()
+                else {
+                    ActivityCompat.requestPermissions(
+                        this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE),
+                        REQUEST_CODE_STORAGE
                     )
+                    onPermissionGranted = ::myMusic
+                    onPermissionDenied = {}
                 }
+            }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_folder_24dp),
+                    contentDescription = getString(R.string.my_music)
+                )
             }
+            //            ConstraintLayout(Modifier.fillMaxSize()) {
+//                val (btnMyMusic, title) = createRefs()
+//                Text(
+//                    getString(R.string.app_name),
+//                    fontSize = 21.sp,
+//                    modifier = Modifier.constrainAs(title) {
+//                        top.linkTo(parent.top)
+//                        bottom.linkTo(parent.bottom)
+//                    })
+//                SearchView(showSearchView, Modifier
+//                    .fillMaxHeight()
+//                    .constrainAs(createRef()) {
+//                        end.linkTo(btnMyMusic.start)
+//                        top.linkTo(parent.top)
+//                        bottom.linkTo(parent.bottom)
+//                        if (showSearchView.value) start.linkTo(title.end, 16.dp)
+//                    })
+//                IconButton(modifier = Modifier.constrainAs(btnMyMusic) {
+//                    end.linkTo(parent.end)
+//                    top.linkTo(parent.top)
+//                    bottom.linkTo(parent.bottom)
+//                }, onClick = {
+//                    if (ContextCompat.checkSelfPermission(
+//                            this@MainActivity,
+//                            WRITE_EXTERNAL_STORAGE
+//                        ) == PERMISSION_GRANTED
+//                    ) myMusic()
+//                    else {
+//                        ActivityCompat.requestPermissions(
+//                            this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE),
+//                            REQUEST_CODE_STORAGE
+//                        )
+//                        onPermissionGranted = ::myMusic
+//                        onPermissionDenied = {}
+//                    }
+//                }) {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.ic_folder_24dp),
+//                        contentDescription = getString(R.string.my_music)
+//                    )
+//                }
+//            }
         }
-    }
+
 
     private fun myMusic() {
         uiState.value = UIState.MY_MUSIC
@@ -626,26 +651,26 @@ class MainActivity : DaggerAppCompatActivity() {
 
 
     @Composable
-    private fun TrackView(playerState: MutableState<Any?>, item: Track) = Row(
-        Modifier
-            .fillMaxWidth()
-            .clickable { playerState.value = item }
-    ) {
-        val btp = remember { mutableStateOf<Bitmap?>(null) }
-        val url = item.image
-        setBitmap(btp, url)
-        val bitmap = btp.value?.asImageBitmap()
-        if (bitmap != null) {
-            Image(bitmap, null, modifier = Modifier.height(100.dp))
+    private fun TrackView(playerState: MutableState<Any?>, item: Track) =
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clickable { playerState.value = item }) {
+            val btp = remember { mutableStateOf<Bitmap?>(null) }
+            val url = item.image
+            setBitmap(btp, url)
+            val bitmap = btp.value?.asImageBitmap()
+            if (bitmap != null) {
+                Image(bitmap, null, modifier = Modifier.height(100.dp))
+            }
+            Spacer(Modifier.width(4.dp))
+            Column {
+                Text(item.name, fontSize = 21.sp)
+                Text(item.artist_name)
+                Text(getString(R.string.released, item.releasedate))
+                Text(getString(R.string.duration, item.duration))
+            }
         }
-        Spacer(Modifier.width(4.dp))
-        Column {
-            Text(item.name, fontSize = 21.sp)
-            Text(item.artist_name)
-            Text(getString(R.string.released, item.releasedate))
-            Text(getString(R.string.duration, item.duration))
-        }
-    }
 
 
     @Composable

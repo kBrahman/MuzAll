@@ -3,4 +3,15 @@
     <string name="duration">持续时间: %s</string>
     <string name="released">行时间: %s</string>
     <string name="my_music">"我的音乐 "</string>
+    <string name="could_not_play_track">无法播放曲目，抱歉</string>
+    <string name="service_unavailable">服务不可用，请稍后再试</string>
+    <string name="err_dir_create">无法为音乐创建目录</string>
+    <string name="no_net">没有网络连接</string>
+    <string name="action_delete">删除</string>
+    <string name="conn_err">连接错误</string>
+    <string name="refresh">刷新</string>
+    <string name="close_search_view">关闭搜索视图</string>
+    <string name="back">后退</string>
+    <string name="music_icon">音乐图标</string>
+    <string name="ad_attribution">广告</string>
 </resources>

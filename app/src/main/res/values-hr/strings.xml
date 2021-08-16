@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Trajanje: %s</string>
+    <string name="released">Datum izlaska: %s</string>
+    <string name="my_music">Moja muzika</string>
+    <string name="could_not_play_track">Nije moguće reproducirati pjesmu, nažalost</string>
+    <string name="service_unavailable">Usluga nije dostupna. Pokušajte ponovo kasnije</string>
+    <string name="err_dir_create">Nije moguće stvoriti direktorij za glazbu</string>
+    <string name="no_net">Nema internetske veze</string>
+    <string name="action_delete">Izbrisati</string>
+    <string name="conn_err">Greška u povezivanju</string>
+    <string name="refresh">Osvježiti</string>
+    <string name="close_search_view">Zatvorite prikaz pretraživanja</string>
+    <string name="back">leđa</string>
+    <string name="music_icon">Ikona glazbe</string>
+    <string name="ad_attribution">Oglas</string>
+</resources>
