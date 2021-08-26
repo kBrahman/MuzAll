@@ -17,14 +17,14 @@ android {
             keyPassword keystoreProperties['keyPassword']
         }
     }
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion = '30.0.3'
     defaultConfig {
         applicationId localProperties["app_id"]
         minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 122
-        versionName "2.22"
+        targetSdkVersion 31
+        versionCode 123
+        versionName "2.23"
         buildConfigField "String[]", "IDS", "{$ids}"
         multiDexEnabled true
         buildConfigField "String", "SERVER", localProperties["server"]

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Տեւողությունը: %s</string>
+    <string name="released">Թողարկված: %s</string>
+    <string name="my_music">Իմ երաժշտությունը</string>
+    <string name="could_not_play_track">Չհաջողվեց նվագարկել, ներողություն</string>
+    <string name="service_unavailable">Serviceառայությունն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ</string>
+    <string name="err_dir_create">Չհաջողվեց ստեղծել երաժշտության գրացուցակ</string>
+    <string name="no_net">Ինտերնետ կապ չկա</string>
+    <string name="action_delete">Նջել</string>
+    <string name="conn_err">Միացման սխալ</string>
+    <string name="refresh">Թարմացնել</string>
+    <string name="close_search_view">Փակել որոնման տեսքը</string>
+    <string name="back">Ետ</string>
+    <string name="music_icon">Երաժշտության պատկերակ</string>
+    <string name="ad_attribution">Հայտարարություն</string>
+</resources>

@@ -48,7 +48,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.compose.ui.window.Dialog
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.*
@@ -71,7 +70,6 @@ import muz.all.util.ID_NATIVE
 import muz.all.util.isNetworkConnected
 import java.io.File
 import java.io.IOException
-import java.lang.Exception
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.URL
@@ -104,6 +102,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private val value = emptyIterator<File>()
     private lateinit var onPermissionGranted: () -> Unit
     private lateinit var onPermissionDenied: () -> Unit
+    private val cScope = CoroutineScope(Dispatchers.Default)
 
     @Inject
     lateinit var idIterator: Iterator<String>
@@ -349,11 +348,10 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun updateFileList() {
-        GlobalScope.launch {
+        cScope.launch {
             filteredFiles.clear()
             val directory =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-
+                Environment.getExternalStoragePublicDirectory(DIRECTORY_MUSIC)
             Log.i(TAG, "dir=>$directory")
             if (!directory.exists()
                 && ContextCompat.checkSelfPermission(
@@ -557,7 +555,7 @@ class MainActivity : DaggerAppCompatActivity() {
             val downloadId = downloadManager
                 .enqueue(
                     request.setDestinationInExternalPublicDir(
-                        Environment.DIRECTORY_MUSIC,
+                        DIRECTORY_MUSIC,
                         track.name + ".mp3"
                     )
                 )
@@ -904,7 +902,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun setBitmap(btp: MutableState<Bitmap?>, url: String) {
         val bitmap = imageCache[url]
         if (bitmap != null) btp.value = bitmap
-        else GlobalScope.launch {
+        else cScope.launch {
             val v = try {
                 BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
             } catch (ce: IOException) {
@@ -917,7 +915,7 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
-    private fun setTimer() = GlobalScope.launch {
+    private fun setTimer() = cScope.launch {
         delay(7000)
         if (tracks.isNotEmpty()) loadingState?.value = false
         timeOut = true
