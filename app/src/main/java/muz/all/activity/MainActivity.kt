@@ -296,50 +296,7 @@ class MainActivity : DaggerAppCompatActivity() {
                     contentDescription = getString(R.string.my_music)
                 )
             }
-            //            ConstraintLayout(Modifier.fillMaxSize()) {
-//                val (btnMyMusic, title) = createRefs()
-//                Text(
-//                    getString(R.string.app_name),
-//                    fontSize = 21.sp,
-//                    modifier = Modifier.constrainAs(title) {
-//                        top.linkTo(parent.top)
-//                        bottom.linkTo(parent.bottom)
-//                    })
-//                SearchView(showSearchView, Modifier
-//                    .fillMaxHeight()
-//                    .constrainAs(createRef()) {
-//                        end.linkTo(btnMyMusic.start)
-//                        top.linkTo(parent.top)
-//                        bottom.linkTo(parent.bottom)
-//                        if (showSearchView.value) start.linkTo(title.end, 16.dp)
-//                    })
-//                IconButton(modifier = Modifier.constrainAs(btnMyMusic) {
-//                    end.linkTo(parent.end)
-//                    top.linkTo(parent.top)
-//                    bottom.linkTo(parent.bottom)
-//                }, onClick = {
-//                    if (ContextCompat.checkSelfPermission(
-//                            this@MainActivity,
-//                            WRITE_EXTERNAL_STORAGE
-//                        ) == PERMISSION_GRANTED
-//                    ) myMusic()
-//                    else {
-//                        ActivityCompat.requestPermissions(
-//                            this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE),
-//                            REQUEST_CODE_STORAGE
-//                        )
-//                        onPermissionGranted = ::myMusic
-//                        onPermissionDenied = {}
-//                    }
-//                }) {
-//                    Icon(
-//                        painter = painterResource(id = R.drawable.ic_folder_24dp),
-//                        contentDescription = getString(R.string.my_music)
-//                    )
-//                }
-//            }
         }
-
 
     private fun myMusic() {
         uiState.value = UIState.MY_MUSIC
@@ -971,8 +928,10 @@ class MainActivity : DaggerAppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) onPermissionGranted()
-        else onPermissionDenied()
+        if (requestCode == REQUEST_CODE_STORAGE &&
+            grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED
+        ) onPermissionGranted()
+        else if (requestCode == REQUEST_CODE_STORAGE) onPermissionDenied()
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 

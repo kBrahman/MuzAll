@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MuzAll</string>
+    <string name="duration">Kestus: %s</string>
+    <string name="released">Välja antud: %s</string>
+    <string name="my_music">Minu muusika</string>
+    <string name="could_not_play_track">Rada ei saanud esitada, vabandust</string>
+    <string name="service_unavailable">Teenus pole saadaval, proovige hiljem uuesti</string>
+    <string name="err_dir_create">Muusika kataloogi ei saanud luua</string>
+    <string name="no_net">Interneti -ühendus puudub</string>
+    <string name="action_delete">Kustuta</string>
+    <string name="conn_err">Ühenduse viga</string>
+    <string name="refresh">Värskenda</string>
+    <string name="close_search_view">Otsinguvaate sulgemine</string>
+    <string name="back">tagasi</string>
+    <string name="music_icon">Muusikaikoon</string>
+    <string name="ad_attribution">Reklaam</string>
+</resources>
