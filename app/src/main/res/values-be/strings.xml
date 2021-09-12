@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MuzAll</string>
+    <string name="duration">Працягласць: %s</string>
+    <string name="released">Выпушчана: %s</string>
+    <string name="my_music">Мая музыка</string>
+    <string name="could_not_play_track">Не магу прайграць трэк, прабачце</string>
+    <string name="service_unavailable">Паслуга недаступная, паўтарыце спробу пазней</string>
+    <string name="err_dir_create">Не ўдалося стварыць каталог для музыкі</string>
+    <string name="no_net">Няма падлучэння да Інтэрнэту</string>
+    <string name="action_delete">Выдаліць</string>
+    <string name="conn_err">Памылка падлучэння</string>
+    <string name="refresh">Абнавіць</string>
+    <string name="close_search_view">Закрыць выгляд пошуку</string>
+    <string name="back">Назад</string>
+    <string name="music_icon">Значок музыкі</string>
+    <string name="ad_attribution">Рэклама</string>
+</resources>

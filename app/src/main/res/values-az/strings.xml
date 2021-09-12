@@ -10,4 +10,8 @@
     <string name="action_delete">Sil</string>
     <string name="conn_err">Əlaqə xətası</string>
     <string name="refresh">təzələmək</string>
+    <string name="close_search_view">Axtarış görünüşünü bağlayın</string>
+    <string name="back">Geri</string>
+    <string name="music_icon">Musiqi simvolu</string>
+    <string name="ad_attribution">Reklam</string>
 </resources>

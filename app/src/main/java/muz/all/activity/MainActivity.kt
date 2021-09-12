@@ -582,8 +582,6 @@ class MainActivity : DaggerAppCompatActivity() {
                         nativeAdView.starRatingView = adStars
                         adBody.text = ad?.body
                         nativeAdView.bodyView = adBody
-//                        adMedia.setMediaContent(ad?.mediaContent)
-//                        nativeAdView.mediaView = adMedia
                         adPrice.text = ad?.price
                         nativeAdView.priceView = adPrice
                         adStore.text = ad?.store
