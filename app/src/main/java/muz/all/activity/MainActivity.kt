@@ -195,7 +195,6 @@ class MainActivity : DaggerAppCompatActivity() {
 
 
             Log.i(TAG, "finished composing ConstraintLayout")
-//            }
 
             if (playerState.value != null) {
                 val adLoaded = remember { mutableStateOf(false) }
