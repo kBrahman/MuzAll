@@ -182,20 +182,6 @@ class MainActivity : DaggerAppCompatActivity() {
             val showSearchView = remember { mutableStateOf(false) }
             val playerState = remember { mutableStateOf<Any?>(null) }
             Log.i(TAG, "rec setContent")
-//            ConstraintLayout(constraintSet = ConstraintSet {
-//                val bannerRef = createRefFor("banner")
-//                constrain(bannerRef) {
-//                    bottom.linkTo(parent.bottom)
-//                    start.linkTo(parent.start)
-//                    end.linkTo(parent.end)
-//                }
-//                constrain(createRefFor("column")) {
-//                    top.linkTo(parent.top)
-//                    bottom.linkTo(bannerRef.top)
-//                    height = fillToConstraints
-//                }
-//
-//            }, Modifier.fillMaxHeight()) {
             Log.i(TAG, "rec ConstraintLayout")
             Column(Modifier.fillMaxHeight()) {
                 loadingState = remember { mutableStateOf(true) }
