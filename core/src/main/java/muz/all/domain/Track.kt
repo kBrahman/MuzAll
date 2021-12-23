@@ -1,4 +1,4 @@
-package muz.all.model
+package muz.all.domain
 
 import androidx.annotation.Keep
 import java.io.Serializable

@@ -1,5 +1,6 @@
 package muz.all.module
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import muz.all.activity.MainActivity

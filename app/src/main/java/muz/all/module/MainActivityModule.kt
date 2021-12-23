@@ -1,19 +1,20 @@
 package muz.all.module
 
+import android.app.Activity
 import android.media.AudioAttributes
 import android.media.MediaPlayer
-import androidx.lifecycle.ViewModelProvider
+import android.os.Environment
 import dagger.Module
 import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable
 import muz.all.BuildConfig
-import muz.all.activity.MainActivity
 import muz.all.manager.ApiManager
 import muz.all.manager.MuzApiManager
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 
@@ -54,5 +55,11 @@ class MainActivityModule {
                 .build()
         )
         return mp
+    }
+
+    @Provides
+    fun provideMyMusicDir(activity: Activity): File {
+        val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+        return directory
     }
 }

@@ -62,10 +62,10 @@ import kotlinx.coroutines.*
 import muz.all.BuildConfig
 import muz.all.R
 import muz.all.databinding.AdBinding
+import muz.all.domain.MuzNativeAd
+import muz.all.domain.MuzResponse
+import muz.all.domain.Track
 import muz.all.manager.ApiManager
-import muz.all.model.MuzNativeAd
-import muz.all.model.MuzResponse
-import muz.all.model.Track
 import muz.all.util.ID_NATIVE
 import muz.all.util.isNetworkConnected
 import java.io.File
@@ -114,7 +114,6 @@ class MainActivity : DaggerAppCompatActivity() {
     lateinit var apiManager: ApiManager
     private var isPaused = false
 
-    @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MobileAds.initialize(this) {}
@@ -145,7 +144,6 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
 
-    @ExperimentalFoundationApi
     private fun init() {
         val colorPrimary = Color(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -252,7 +250,6 @@ class MainActivity : DaggerAppCompatActivity() {
     @Composable
     private fun Banner(modifier: Modifier, ad: AdView) = AndroidView({ ad }, modifier)
 
-    @ExperimentalFoundationApi
     @Composable
     private fun MyMuzAppBar(colorPrimary: Color, showSearchView: MutableState<Boolean>) =
         TopAppBar(contentColor = Color.White, backgroundColor = colorPrimary) {
@@ -325,7 +322,6 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
-    @ExperimentalFoundationApi
     @Composable
     private fun SearchView(showSearchView: MutableState<Boolean>, modifier: Modifier) {
         if (showSearchView.value) TextField(
@@ -364,7 +360,7 @@ class MainActivity : DaggerAppCompatActivity() {
         )
     }
 
-    @ExperimentalFoundationApi
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun MyMusicScreen(playerState: MutableState<Any?>, colorPrimary: Color) {
         val width = screenWidth().dp - 20.dp
@@ -531,7 +527,6 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
 
-    @ExperimentalFoundationApi
     @Composable
     private fun MainScreen(
         modifier: Modifier,
@@ -792,13 +787,11 @@ class MainActivity : DaggerAppCompatActivity() {
         super.onStop()
     }
 
-    @ExperimentalFoundationApi
     private fun onError(t: Throwable) =
         if (t is SocketTimeoutException || t is UnknownHostException || t is ConnectException) connectionErr(
             t
         ) else t.printStackTrace()
 
-    @ExperimentalFoundationApi
     private fun onContentFetched(response: MuzResponse?) {
         val data = response?.results ?: emptyList()
         Log.i(TAG, "on content fetched=>$data")
@@ -871,7 +864,6 @@ class MainActivity : DaggerAppCompatActivity() {
         isPaused = false
     }
 
-    @ExperimentalFoundationApi
     private fun connectionErr(t: Throwable) = setContent {
         t.printStackTrace()
         val colorPrimary = Color(
