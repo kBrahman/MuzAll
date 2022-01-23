@@ -23,8 +23,8 @@ android {
         applicationId localProperties["app_id"]
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 125
-        versionName "2.25"
+        versionCode 126
+        versionName "2.26"
         buildConfigField "String[]", "IDS", "{$ids}"
         multiDexEnabled true
         buildConfigField "String", "SERVER", localProperties["server"]
@@ -94,7 +94,7 @@ dependencies {
     implementation group: 'androidx.compose.ui', name: 'ui-viewbinding', version: '1.0.3'
 
     //ads
-    implementation 'com.google.android.gms:play-services-ads:20.4.0'
+    implementation 'com.google.android.gms:play-services-ads:20.5.0'
 }
 task copyFile(type: Copy) {
     from(rootProject.file('crashlytics/google-services_muz_all.json')) {
