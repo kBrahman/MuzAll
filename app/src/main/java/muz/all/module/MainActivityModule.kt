@@ -4,12 +4,19 @@ import android.app.Activity
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Environment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import dagger.Module
 import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable
 import muz.all.BuildConfig
+import muz.all.activity.MainActivity
+import muz.all.data.TrackDataSource
+import muz.all.framework.TrackDataSourceImpl
+import muz.all.ineractor.Interactor
 import muz.all.manager.ApiManager
 import muz.all.manager.MuzApiManager
+import muz.all.viewmodel.TrackViewModel
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -43,16 +50,12 @@ class MainActivityModule {
     fun provideIdIterator() = BuildConfig.IDS.iterator()
 
     @Provides
-    fun provideClientId(idIterator: Iterator<String>) = idIterator.next()
-
-    @Provides
     fun provideMediaPlayer(): MediaPlayer {
         val mp = MediaPlayer()
         mp.setAudioAttributes(
             AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).setUsage(
                 AudioAttributes.USAGE_MEDIA
-            )
-                .build()
+            ).build()
         )
         return mp
     }
@@ -62,4 +65,16 @@ class MainActivityModule {
         val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
         return directory
     }
+
+    @Provides
+    fun dataSource(apiService: MuzApiManager.APIService): TrackDataSource =
+        TrackDataSourceImpl(apiService)
+
+    @Provides
+    fun viewModel(owner: MainActivity, interactor: Interactor, itr: Iterator<String>) =
+        ViewModelProvider(owner, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return TrackViewModel(interactor, itr) as T
+            }
+        }).get(TrackViewModel::class.java)
 }

@@ -5,7 +5,6 @@ plugins {
 
 android {
     compileSdk 31
-
     defaultConfig {
         minSdk 21
         targetSdk 31
@@ -13,12 +12,6 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -37,4 +30,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     //ads
     implementation 'com.google.android.gms:play-services-ads-lite:20.5.0'
+    //di
+    implementation 'com.google.dagger:dagger-android-support:2.40.5'
+//    kapt 'com.google.dagger:dagger-compiler:2.40.5'
+//    kapt 'com.google.dagger:dagger-android-processor:2.40.5'
+
 }

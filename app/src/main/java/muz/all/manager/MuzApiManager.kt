@@ -8,7 +8,6 @@ import javax.inject.Inject
 
 class MuzApiManager @Inject constructor(
     private val apiService: APIService,
-    override var clientId: String
 ) : ApiManager {
 
     companion object {
@@ -16,9 +15,9 @@ class MuzApiManager @Inject constructor(
         private const val PATH = "tracks/?limit=25"
     }
 
-    override suspend fun search(q: String, offset: Int) = apiService.search(q, offset, clientId)
+    override suspend fun search(q: String, offset: Int) = apiService.search(q, offset, "")
 
-    override suspend fun getPopular(offset: Int) = apiService.getPopular(offset, clientId)
+    override suspend fun getPopular(offset: Int) = apiService.getPopular(offset, "clientId")
 
     interface APIService {
 

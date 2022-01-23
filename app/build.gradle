@@ -63,7 +63,9 @@ android {
         jvmTarget = '11'
     }
 }
-
+kapt {
+    correctErrorTypes = true
+}
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
@@ -75,9 +77,11 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    //di
     implementation 'com.google.dagger:dagger-android-support:2.40.5'
     kapt 'com.google.dagger:dagger-compiler:2.40.5'
     kapt 'com.google.dagger:dagger-android-processor:2.40.5'
+
     implementation 'com.google.firebase:firebase-analytics:20.0.2'
     implementation 'com.google.firebase:firebase-crashlytics:18.2.6'
     implementation 'androidx.multidex:multidex:2.0.1'
@@ -98,15 +102,4 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:20.5.0'
 
     implementation project(':core')
-}
-
-task copyFile(type: Copy) {
-    from(rootProject.file('crashlytics/google-services_muz_all.json')) {
-        rename 'google-services_muz_all.json', 'google-services.json'
-    }
-    into(rootProject.file('app'))
-}
-
-gradle.projectsEvaluated {
-    preBuild.dependsOn(copyFile)
 }

@@ -56,29 +56,23 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.android.support.DaggerAppCompatActivity
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
 import kotlinx.coroutines.*
 import muz.all.BuildConfig
 import muz.all.R
 import muz.all.databinding.AdBinding
 import muz.all.domain.MuzNativeAd
-import muz.all.domain.MuzResponse
 import muz.all.domain.Track
 import muz.all.manager.ApiManager
 import muz.all.util.ID_NATIVE
 import muz.all.util.isNetworkConnected
+import muz.all.viewmodel.TrackViewModel
 import java.io.File
 import java.io.IOException
-import java.net.ConnectException
-import java.net.SocketTimeoutException
 import java.net.URL
-import java.net.UnknownHostException
 import java.util.*
 import java.util.Collections.emptyIterator
 import javax.inject.Inject
 import kotlin.concurrent.schedule
-
 
 class MainActivity : DaggerAppCompatActivity() {
 
@@ -94,9 +88,8 @@ class MainActivity : DaggerAppCompatActivity() {
     private var timeOut = false
     private lateinit var uiState: MutableState<UIState>
     private var loadingState: MutableState<Boolean>? = null
-    private var tracks = mutableListOf<Track>()
+    private var tracks = mutableStateListOf<Track>()
     private val imageCache = HashMap<String, Bitmap?>()
-    private val disposable = CompositeDisposable()
     private val retriever = MediaMetadataRetriever()
     private var fileToDel: File? = null
     private val value = emptyIterator<File>()
@@ -112,6 +105,9 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var apiManager: ApiManager
+
+    @Inject
+    lateinit var viewModel: TrackViewModel
     private var isPaused = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -156,10 +152,9 @@ class MainActivity : DaggerAppCompatActivity() {
             updateFileList()
             UIState.MY_MUSIC
         } else {
-            disposable += apiManager.getPopular(0).subscribe(::onContentFetched, ::onError)
+            viewModel.getPopular(0)
             UIState.MAIN
         }
-
         if (stateVal == UIState.MY_MUSIC && ContextCompat.checkSelfPermission(
                 this,
                 READ_EXTERNAL_STORAGE
@@ -240,6 +235,18 @@ class MainActivity : DaggerAppCompatActivity() {
                 }
             })
         setTimer()
+        viewModel.trackObservable.observe(this) {
+            Log.i(TAG, "on popular")
+            if (nativeAds.isNotEmpty()) insertNatives(it)
+            tracks.addAll(it)
+            if (timeOut) loadingState?.value = false
+        }
+        viewModel.toastObservable.observe(this) {
+            Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        }
+        viewModel.progressBarObservable.observe(this) {
+            loadingState?.value = it
+        }
     }
 
     @Composable
@@ -331,8 +338,9 @@ class MainActivity : DaggerAppCompatActivity() {
             keyboardActions = KeyboardActions(onSearch = {
                 loadingState?.value = true
                 tracks.clear()
-                apiManager.search(q.value, (tracks.size / 25 + 1) * 25)
-                    .subscribe(::onContentFetched, ::onError)
+                viewModel.searchTracks.clear()
+//                search(q.value, (tracks.size / 25 + 1) * 25)
+                viewModel.search(q.value, (tracks.size / 25 + 1) * 25)
             }),
             singleLine = true,
             shape = MaterialTheme.shapes.large,
@@ -348,6 +356,10 @@ class MainActivity : DaggerAppCompatActivity() {
                     painterResource(id = android.R.drawable.ic_menu_close_clear_cancel),
                     contentDescription = getString(R.string.close_search_view),
                     Modifier.clickable {
+                        Log.i(TAG, "close search view")
+                        viewModel.q = ""
+                        tracks.clear()
+                        viewModel.getPopular(0)
                         showSearchView.value = false
                         q.value = ""
                     },
@@ -358,6 +370,10 @@ class MainActivity : DaggerAppCompatActivity() {
             contentDescription = getString(R.string.close_search_view),
             modifier.clickable { showSearchView.value = true },
         )
+    }
+
+    private fun search(query: String, offset: Int) = cScope.launch {
+        onData(apiManager.search(query, offset).results)
     }
 
     @OptIn(ExperimentalFoundationApi::class)
@@ -574,8 +590,8 @@ class MainActivity : DaggerAppCompatActivity() {
                 if (it == tracks.size - 1 && loadingState?.value == false) {
                     loadingState?.value = true
                     val offset = (tracks.size / 25 + 1) * 25
-                    (if (searching) apiManager.search(q.value, offset)
-                    else apiManager.getPopular(offset)).subscribe(::onContentFetched, ::onError)
+                    if (searching) search(q.value, offset)
+                    else viewModel.getPopular(offset)
                 }
             }
         }
@@ -782,39 +798,24 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
-    override fun onStop() {
-        disposable.clear()
-        super.onStop()
-    }
-
-    private fun onError(t: Throwable) =
-        if (t is SocketTimeoutException || t is UnknownHostException || t is ConnectException) connectionErr(
-            t
-        ) else t.printStackTrace()
-
-    private fun onContentFetched(response: MuzResponse?) {
-        val data = response?.results ?: emptyList()
-        Log.i(TAG, "on content fetched=>$data")
+    private fun onData(data: MutableList<Track>) {
+        Log.i(TAG, "on data")
         if (data.isEmpty() && tracks.isEmpty() && !searching && idIterator.hasNext()) {
-            apiManager.clientId = idIterator.next()
-            disposable.clear()
-            disposable += apiManager.getPopular((tracks.size / 25 + 1) * 25)
-                .subscribe(::onContentFetched, ::onError)
         } else if (data.isEmpty() && !searching) {
             loadingState?.value = false
             showServiceUnavailable()
         } else {
             val count = data.size
-            if (nativeAds.isNotEmpty()) insertNatives(count, data)
+            if (nativeAds.isNotEmpty()) insertNatives(data)
             tracks.addAll(data)
             if (timeOut) loadingState?.value = false
         }
     }
 
-    private fun insertNatives(count: Int, data: List<Track>) {
+    private fun insertNatives(data: List<Track>) {
         nativeAds.reverse()
         var iterator = nativeAds.iterator()
-        for (i in 6..count) {
+        for (i in 6..data.size) {
             if (i % 6 == 0) {
                 if (!iterator.hasNext()) iterator = nativeAds.iterator()
                 (data as MutableList).add(i, MuzNativeAd(iterator.next()))
