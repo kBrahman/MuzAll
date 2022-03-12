@@ -53,13 +53,13 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion "1.0.2"
     }
-    lintOptions {
-        abortOnError false
-        checkReleaseBuilds false
-    }
     kotlinOptions {
         useIR = true
         jvmTarget = '11'
+    }
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
     }
 }
 
