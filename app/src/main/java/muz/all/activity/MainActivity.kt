@@ -80,6 +80,7 @@ import javax.inject.Inject
 import kotlin.concurrent.schedule
 
 
+@ExperimentalFoundationApi
 class MainActivity : DaggerAppCompatActivity() {
 
     companion object {
@@ -114,7 +115,6 @@ class MainActivity : DaggerAppCompatActivity() {
     lateinit var apiManager: ApiManager
     private var isPaused = false
 
-    @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MobileAds.initialize(this) {}
@@ -145,7 +145,6 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
 
-    @ExperimentalFoundationApi
     private fun init() {
         val colorPrimary = Color(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -364,7 +363,6 @@ class MainActivity : DaggerAppCompatActivity() {
         )
     }
 
-    @ExperimentalFoundationApi
     @Composable
     private fun MyMusicScreen(playerState: MutableState<Any?>, colorPrimary: Color) {
         val width = screenWidth().dp - 20.dp
@@ -531,7 +529,6 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
 
-    @ExperimentalFoundationApi
     @Composable
     private fun MainScreen(
         modifier: Modifier,
@@ -792,13 +789,11 @@ class MainActivity : DaggerAppCompatActivity() {
         super.onStop()
     }
 
-    @ExperimentalFoundationApi
     private fun onError(t: Throwable) =
         if (t is SocketTimeoutException || t is UnknownHostException || t is ConnectException) connectionErr(
             t
         ) else t.printStackTrace()
 
-    @ExperimentalFoundationApi
     private fun onContentFetched(response: MuzResponse?) {
         val data = response?.results ?: emptyList()
         Log.i(TAG, "on content fetched=>$data")
@@ -871,7 +866,6 @@ class MainActivity : DaggerAppCompatActivity() {
         isPaused = false
     }
 
-    @ExperimentalFoundationApi
     private fun connectionErr(t: Throwable) = setContent {
         t.printStackTrace()
         val colorPrimary = Color(
