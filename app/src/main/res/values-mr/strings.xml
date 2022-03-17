@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MuzAll</string>
+    <string name="duration">कालावधी: %s</string>
+    <string name="released">प्रकाशन तारीख: %s</string>
+    <string name="my_music">माझे संगीत</string>
+    <string name="could_not_play_track">ट्रॅक प्ले करू शकलो नाही, क्षमस्व</string>
+    <string name="service_unavailable">सेवा अनुपलब्ध, कृपया नंतर पुन्हा प्रयत्न करा</string>
+    <string name="err_dir_create">संगीतासाठी निर्देशिका तयार करू शकलो नाही</string>
+    <string name="no_net">इंटरनेट कनेक्शन नाही</string>
+    <string name="action_delete">हटवा</string>
+    <string name="conn_err">कनेक्शन त्रुटी</string>
+    <string name="refresh">रिफ्रेश करा</string>
+    <string name="close_search_view">शोध दृश्य बंद करा</string>
+    <string name="back">मागे</string>
+    <string name="music_icon">संगीत चिन्ह</string>
+    <string name="ad_attribution">अॅड</string>
+</resources>

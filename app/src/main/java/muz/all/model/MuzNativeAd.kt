@@ -1,5 +1,5 @@
 package muz.all.model
 
-import com.google.android.gms.ads.nativead.NativeAd
+import com.facebook.ads.NativeBannerAd
 
-class MuzNativeAd(internal val ad: NativeAd?) : Track()
+data class MuzNativeAd(internal val ad: NativeBannerAd?) : Track()

@@ -17,14 +17,14 @@ import android.os.*
 import android.os.Environment.DIRECTORY_MUSIC
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.View.GONE
-import android.view.ViewGroup
+import android.view.View
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement.End
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -33,6 +33,7 @@ import androidx.compose.material.*
 import androidx.compose.material.TextFieldDefaults.textFieldColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
@@ -42,31 +43,28 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.gms.ads.*
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.gms.ads.nativead.NativeAd
+import com.facebook.ads.*
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.coroutines.*
-import muz.all.BuildConfig
 import muz.all.R
-import muz.all.databinding.AdBinding
 import muz.all.manager.ApiManager
 import muz.all.model.MuzNativeAd
 import muz.all.model.MuzResponse
 import muz.all.model.Track
-import muz.all.util.ID_NATIVE
+import muz.all.util.AudienceNetworkInitializeHelper
 import muz.all.util.isNetworkConnected
 import java.io.File
 import java.io.IOException
@@ -88,13 +86,14 @@ class MainActivity : DaggerAppCompatActivity() {
         private const val REQUEST_CODE_STORAGE = 1
     }
 
-    private var nativeAds = mutableListOf<NativeAd>()
+    private var nativeBannerAdLoaded = false
+    private lateinit var nativeBannerAd: NativeBannerAd
     private var filteredFiles = mutableStateListOf<File>()
     private var searching = false
     private lateinit var q: MutableState<String>
     private var timeOut = false
     private lateinit var uiState: MutableState<UIState>
-    private var loadingState: MutableState<Boolean>? = null
+    private var loading: MutableState<Boolean>? = null
     private var tracks = mutableListOf<Track>()
     private val imageCache = HashMap<String, Bitmap?>()
     private val disposable = CompositeDisposable()
@@ -117,30 +116,36 @@ class MainActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MobileAds.initialize(this) {}
-        AdLoader.Builder(
-            this,
-            if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/2247696110" else ID_NATIVE
-        )
-            .forNativeAd {
-                nativeAds.add(it)
-                if (tracks.isNotEmpty()) {
-                    insertNative(tracks.size, tracks, it)
-                }
-                Log.i(
-                    TAG,
-                    "native ad loaded tracks is empty=>${tracks.isEmpty()}, native=>${it.headline}"
-                )
-            }
-            .withAdListener(object : AdListener() {
-                override fun onAdFailedToLoad(err: LoadAdError) {
-                    Log.i(TAG, "onAdFailedToLoad=>${err.responseInfo}")
+        AudienceNetworkInitializeHelper.initialize(this)
+        nativeBannerAd = NativeBannerAd(this, "2277322472588056_3164186070568354")
+        nativeBannerAd.loadAd(
+            nativeBannerAd.buildLoadAdConfig().withAdListener(object : NativeAdListener {
+                override fun onError(p0: Ad?, adError: AdError?) {
+                    if (tracks.isNotEmpty()) loading?.value = false
+                    Log.e(TAG, "Native ad failed to load: " + adError?.errorMessage)
                 }
 
-                override fun onAdLoaded() {
-                    Log.i(TAG, "onAdLoaded")
+                override fun onAdLoaded(p0: Ad?) {
+                    Log.d(
+                        TAG,
+                        "Native ad is loaded and ready to be displayed, loading state=>${loading?.value}"
+                    )
+                    nativeBannerAdLoaded = true
+                    if (tracks.isNotEmpty()) {
+                        insertNative(tracks.size, tracks, nativeBannerAd)
+                        if (timeOut) loading?.value = false
+                        Log.d(TAG, "inserted, is loading=>${loading?.value}")
+                    }
                 }
-            }).build().loadAds(AdRequest.Builder().build(), 5)
+
+                override fun onAdClicked(p0: Ad?) {}
+                override fun onLoggingImpression(p0: Ad?) {}
+
+                override fun onMediaDownloaded(p0: Ad?) {
+                    Log.e(TAG, "onMediaDownloaded")
+                }
+            }).build()
+        )
         init()
     }
 
@@ -177,69 +182,87 @@ class MainActivity : DaggerAppCompatActivity() {
             return
         }
         setContent {
-            q = remember { mutableStateOf("") }
-            val showSearchView = remember { mutableStateOf(false) }
-            val playerState = remember { mutableStateOf<Any?>(null) }
-            Log.i(TAG, "rec setContent")
-            Log.i(TAG, "rec ConstraintLayout")
-            Column(Modifier.fillMaxHeight()) {
-                loadingState = remember { mutableStateOf(true) }
-                uiState = remember { mutableStateOf(stateVal) }
-                when (uiState.value) {
-                    UIState.MAIN -> MainScreen(Modifier, playerState, colorPrimary, showSearchView)
-                    UIState.MY_MUSIC -> MyMusicScreen(playerState, colorPrimary)
-                    UIState.DIR_ISSUE -> DirIssueScreen()
-                }
-            }
-
-
-            Log.i(TAG, "finished composing ConstraintLayout")
-
-            if (playerState.value != null) {
-                val adLoaded = remember { mutableStateOf(false) }
-                val ad = AdView(this@MainActivity).apply {
-                    adUnitId =
-                        if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/6300978111" else getString(
-                            R.string.banner_id
+            MaterialTheme(colors = lightColors(colorPrimary)) {
+                q = remember { mutableStateOf("") }
+                val showSearchView = remember { mutableStateOf(false) }
+                val playerState = remember { mutableStateOf<Any?>(null) }
+                Log.i(TAG, "rec setContent")
+                Log.i(TAG, "rec ConstraintLayout")
+                Column(Modifier.fillMaxHeight()) {
+                    loading = remember { mutableStateOf(true) }
+                    uiState = remember { mutableStateOf(stateVal) }
+                    when (uiState.value) {
+                        UIState.MAIN -> MainScreen(
+                            Modifier,
+                            playerState,
+                            colorPrimary,
+                            showSearchView
                         )
-                    adSize = AdSize.MEDIUM_RECTANGLE
-                    loadAd(AdRequest.Builder().build())
-                    adListener = object : AdListener() {
-                        override fun onAdLoaded() {
-                            adLoaded.value = true
-                            Log.i(TAG, "onAdLoaded")
-                        }
+                        UIState.MY_MUSIC -> MyMusicScreen(playerState, colorPrimary)
+                        UIState.DIR_ISSUE -> DirIssueScreen()
                     }
                 }
-                Player(
-                    playerState,
-                    colorPrimary,
-                    uiState.value == UIState.MAIN, ad
-                )
-            }
-            if (loadingState?.value == true) Box(Modifier.fillMaxSize()) {
-                CircularProgressIndicator(
-                    color = colorPrimary,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
 
+
+                Log.i(TAG, "finished composing ConstraintLayout")
+
+                if (playerState.value != null) {
+                    val adLoaded = remember { mutableStateOf(false) }
+                    val ad = AdView(
+                        this@MainActivity,
+                        "2277322472588056_3164105983909696",
+                        AdSize.RECTANGLE_HEIGHT_250
+                    ).apply {
+                        loadAd((buildLoadAdConfig().withAdListener(object : AdListener {
+                            override fun onError(p0: Ad?, p1: AdError?) {
+                                Log.i(TAG, "ad failed to load=>${p1?.errorMessage}")
+                            }
+
+                            override fun onAdLoaded(p0: Ad?) {
+                                adLoaded.value = true
+                                Log.i(TAG, "onAdLoaded")
+                            }
+
+                            override fun onAdClicked(p0: Ad?) {}
+
+                            override fun onLoggingImpression(p0: Ad?) {}
+                        }).build()))
+                    }
+                    Player(
+                        playerState,
+                        colorPrimary,
+                        uiState.value == UIState.MAIN, ad
+                    )
+                }
+                if (loading?.value == true) Box(Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        color = colorPrimary,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
         }
-        InterstitialAd.load(
-            this,
-            getString(if (BuildConfig.DEBUG) R.string.int_test_id else R.string.int_id),
-            AdRequest.Builder().build(),
-            object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d(TAG, adError.message)
-                    timeOut = true
-                }
+        val interstitialAd = InterstitialAd(this, "2277322472588056_3164068060580155")
+        interstitialAd.loadAd(
+            interstitialAd.buildLoadAdConfig()
+                .withAdListener(object : InterstitialAdListener {
+                    override fun onError(p0: Ad?, err: AdError?) {
+                        Log.e(TAG, "Interstitial ad failed to load: " + err?.errorMessage);
+                    }
 
-                override fun onAdLoaded(ad: InterstitialAd) {
-                    if (!timeOut) ad.show(this@MainActivity)
-                    timeOut = true
-                }
-            })
+                    override fun onAdLoaded(ad: Ad?) {
+                        if (!timeOut) interstitialAd.show()
+                        timeOut = true
+                    }
+
+                    override fun onAdClicked(p0: Ad?) {}
+                    override fun onLoggingImpression(p0: Ad?) {}
+                    override fun onInterstitialDisplayed(p0: Ad?) {}
+                    override fun onInterstitialDismissed(p0: Ad?) {
+                        interstitialAd.destroy()
+                    }
+                }).build()
+        )
         setTimer()
     }
 
@@ -249,7 +272,8 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     @Composable
-    private fun Banner(modifier: Modifier, ad: AdView) = AndroidView({ ad }, modifier)
+    private fun Banner(modifier: Modifier, ad: AdView) =
+        AndroidView({ ad }, modifier)
 
     @ExperimentalFoundationApi
     @Composable
@@ -284,7 +308,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun myMusic() {
         uiState.value = UIState.MY_MUSIC
-        loadingState?.value = true
+        loading?.value = true
         updateFileList()
     }
 
@@ -332,7 +356,7 @@ class MainActivity : DaggerAppCompatActivity() {
             value = q.value,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = {
-                loadingState?.value = true
+                loading?.value = true
                 tracks.clear()
                 apiManager.search(q.value, (tracks.size / 25 + 1) * 25)
                     .subscribe(::onContentFetched, ::onError)
@@ -443,7 +467,7 @@ class MainActivity : DaggerAppCompatActivity() {
                                         vibrateAndShowDelItem(delItemVisible)
                                     }
                                     ),
-                                horizontalAlignment = Alignment.CenterHorizontally
+                                horizontalAlignment = CenterHorizontally
                             ) {
                                 val byteArray =
                                     data?.let { d -> BitmapFactory.decodeByteArray(d, 0, d.size) }
@@ -457,7 +481,7 @@ class MainActivity : DaggerAppCompatActivity() {
                                     painterResource(id = R.drawable.ic_music_note_black_24dp),
                                     contentDescription = getString(R.string.my_music),
                                 )
-                                Text(f.name)
+                                Text(f.name, Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                             }
                         }
                     }
@@ -465,7 +489,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 }
             }
         }
-        loadingState?.value = false
+        loading?.value = false
     }
 
     private fun deleteAndUpdate() {
@@ -537,9 +561,6 @@ class MainActivity : DaggerAppCompatActivity() {
         showSearchView: MutableState<Boolean>
     ) {
         MyMuzAppBar(colorPrimary, showSearchView)
-        val viewGroup = window.decorView.rootView as ViewGroup?
-        val list = (0..3).map { AdBinding.inflate(layoutInflater, viewGroup, false) }
-        var bindingsIterator = list.iterator()
         LazyColumn(
             modifier,
             contentPadding = PaddingValues(4.dp)
@@ -547,34 +568,11 @@ class MainActivity : DaggerAppCompatActivity() {
             items(count = tracks.size) {
                 Spacer(Modifier.height(4.dp))
                 val item = tracks[it]
-                if (item is MuzNativeAd) {
-                    val ad = item.ad
-                    if (!bindingsIterator.hasNext()) bindingsIterator = list.iterator()
-                    AndroidViewBinding({ _, _, _ -> bindingsIterator.next() }) {
-                        adAppIcon.setImageDrawable(ad?.icon?.drawable)
-                        nativeAdView.iconView = adAppIcon
-                        adHeadline.text = ad?.headline
-                        nativeAdView.headlineView = adHeadline
-                        adAdvertiser.text = ad?.advertiser
-                        nativeAdView.advertiserView = adAdvertiser
-                        val rating = ad?.starRating?.toFloat()
-                        Log.i(TAG, "rating=>$rating")
-                        if (rating == null) adStars.visibility = GONE
-                        else adStars.rating = rating
-                        nativeAdView.starRatingView = adStars
-                        adBody.text = ad?.body
-                        nativeAdView.bodyView = adBody
-                        adPrice.text = ad?.price
-                        nativeAdView.priceView = adPrice
-                        adStore.text = ad?.store
-                        nativeAdView.storeView = adStore
-                        adCallToAction.text = ad?.callToAction
-                        nativeAdView.callToActionView = adCallToAction
-                        nativeAdView.setNativeAd(ad)
-                    }
-                } else TrackView(playerState, item)
-                if (it == tracks.size - 1 && loadingState?.value == false) {
-                    loadingState?.value = true
+
+                if (item is MuzNativeAd) AndroidAdView()
+                else TrackView(playerState, item)
+                if (it == tracks.size - 1 && loading?.value == false) {
+                    loading?.value = true
                     val offset = (tracks.size / 25 + 1) * 25
                     (if (searching) apiManager.search(q.value, offset)
                     else apiManager.getPopular(offset)).subscribe(::onContentFetched, ::onError)
@@ -584,6 +582,53 @@ class MainActivity : DaggerAppCompatActivity() {
         Log.i(TAG, "finish comp MainScreen")
     }
 
+    @Composable
+    private fun AndroidAdView() {
+        val view = View(this@MainActivity)
+        val mediaView = MediaView(this)
+        Column {
+            Row {
+                AndroidView(factory = { AdOptionsView(it, nativeBannerAd, null) })
+                Text(
+                    text = nativeBannerAd.sponsoredTranslation ?: "sponsored",
+                    Modifier.padding(2.dp),
+                    color = Color.DarkGray,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 12.sp
+                )
+            }
+            Row(Modifier.fillMaxWidth()) {
+                AndroidView(factory = { mediaView }, Modifier.size(80.dp))
+                Spacer(Modifier.width(4.dp))
+                Column {
+                    Text(
+                        nativeBannerAd.advertiserName ?: "",
+                        overflow = TextOverflow.Ellipsis,
+                        color = Color.Black,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = nativeBannerAd.adSocialContext ?: "",
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 12.sp
+                    )
+                }
+                Row(Modifier.fillMaxWidth(), End) {
+                    Button(
+                        { view.performClick() },
+                        Modifier
+                            .width(80.dp)
+                            .height(50.dp)
+                    ) {
+                        Text(text = nativeBannerAd.adCallToAction ?: "Open", fontSize = 12.sp)
+                    }
+                    Spacer(Modifier.width(4.dp))
+                }
+            }
+        }
+        nativeBannerAd.registerViewForInteraction(view, mediaView)
+    }
 
     @Composable
     private fun TrackView(playerState: MutableState<Any?>, item: Track) =
@@ -627,6 +672,7 @@ class MainActivity : DaggerAppCompatActivity() {
             mp.stop()
             mp.reset()
             playerState.value = null
+            ad.destroy()
         }) {
             Column(
                 Modifier
@@ -795,41 +841,32 @@ class MainActivity : DaggerAppCompatActivity() {
         ) else t.printStackTrace()
 
     private fun onContentFetched(response: MuzResponse?) {
-        val data = response?.results ?: emptyList()
-        Log.i(TAG, "on content fetched=>$data")
+        val data = response?.results?.toMutableList() ?: mutableListOf()
+        Log.i(TAG, "on content fetched size=>${data.size}")
         if (data.isEmpty() && tracks.isEmpty() && !searching && idIterator.hasNext()) {
             apiManager.clientId = idIterator.next()
             disposable.clear()
             disposable += apiManager.getPopular((tracks.size / 25 + 1) * 25)
                 .subscribe(::onContentFetched, ::onError)
         } else if (data.isEmpty() && !searching) {
-            loadingState?.value = false
+            loading?.value = false
             showServiceUnavailable()
         } else {
             val count = data.size
-            if (nativeAds.isNotEmpty()) insertNatives(count, data)
+            if (nativeBannerAdLoaded) insertNative(count, data, nativeBannerAd)
             tracks.addAll(data)
-            if (timeOut) loadingState?.value = false
+            if (timeOut && nativeBannerAdLoaded) loading?.value = false
         }
     }
 
-    private fun insertNatives(count: Int, data: List<Track>) {
-        nativeAds.reverse()
-        var iterator = nativeAds.iterator()
-        for (i in 6..count) {
-            if (i % 6 == 0) {
-                if (!iterator.hasNext()) iterator = nativeAds.iterator()
-                (data as MutableList).add(i, MuzNativeAd(iterator.next()))
-            }
-        }
-    }
-
-    private fun insertNative(count: Int, tracks: MutableList<Track>, ad: NativeAd) {
-        for (i in 6 until count) {
+    private fun insertNative(count: Int, tracks: MutableList<Track>, ad: NativeBannerAd?) {
+        Log.i(TAG, "insertNative")
+        val muzAd = MuzNativeAd(ad)
+        val step = 7
+        for (i in step until count) {
             val t = tracks[i]
-            if (i % 6 == 0 && t !is MuzNativeAd) {
-                tracks.add(i, MuzNativeAd(ad))
-                return
+            if (i % step == 0 && t !is MuzNativeAd) {
+                tracks.add(i, muzAd)
             }
         }
     }
@@ -852,7 +889,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun setTimer() = cScope.launch {
         delay(7000)
-        if (tracks.isNotEmpty()) loadingState?.value = false
+        if (tracks.isNotEmpty()) loading?.value = false
         timeOut = true
     }
 
@@ -868,14 +905,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun connectionErr(t: Throwable) = setContent {
         t.printStackTrace()
-        val colorPrimary = Color(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                getColor(R.color.colorPrimary)
-            } else {
-                resources.getColor(R.color.colorPrimary)
-            }
-        )
-        TopAppBar(backgroundColor = colorPrimary) {
+        TopAppBar {
             Column(
                 Modifier
                     .fillMaxHeight()
@@ -887,7 +917,7 @@ class MainActivity : DaggerAppCompatActivity() {
         Column(
             Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = CenterHorizontally
         ) {
             Text(getString(R.string.conn_err))
             Button(onClick = ::init) {
