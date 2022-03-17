@@ -54,13 +54,13 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion '1.1.0-rc01'
     }
-    lintOptions {
-        abortOnError false
-        checkReleaseBuilds false
-    }
     kotlinOptions {
         useIR = true
         jvmTarget = '11'
+    }
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
     }
 }
 kapt {
