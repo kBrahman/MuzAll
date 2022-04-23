@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Ilgums: %s</string>
+    <string name="released">Izdošanas datums: %s</string>
+    <string name="my_music">Mana mūzika</string>
+    <string name="could_not_play_track">Nevarēja atskaņot ierakstu, atvainojiet</string>
+    <string name="service_unavailable">Pakalpojums nav pieejams, lūdzu, vēlāk mēģiniet vēlreiz</string>
+    <string name="err_dir_create">Nevarēja izveidot mūzikas direktoriju</string>
+    <string name="no_net">Nav interneta savienojuma</string>
+    <string name="action_delete">Dzēst</string>
+    <string name="conn_err">Savienojuma kļūda</string>
+    <string name="refresh">Atjaunot</string>
+    <string name="close_search_view">Aizvērt meklēšanas skatu</string>
+    <string name="back">Atpakaļ</string>
+    <string name="music_icon">Mūzikas ikona</string>
+    <string name="ad_attribution">Reklāma</string>
+</resources>

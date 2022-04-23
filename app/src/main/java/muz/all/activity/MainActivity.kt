@@ -356,10 +356,10 @@ class MainActivity : DaggerAppCompatActivity() {
             value = q.value,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = {
-                loading?.value = true
                 tracks.clear()
-                apiManager.search(q.value, (tracks.size / 25 + 1) * 25)
+                disposable += apiManager.search(q.value, (tracks.size / 25 + 1) * 25)
                     .subscribe(::onContentFetched, ::onError)
+                loading?.value = true
             }),
             singleLine = true,
             shape = MaterialTheme.shapes.large,

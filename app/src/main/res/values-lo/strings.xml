@@ -10,4 +10,8 @@
     <string name="action_delete">ລົບ</string>
     <string name="conn_err">ຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່</string>
     <string name="refresh">ໂຫຼດຫນ້າຈໍຄືນ</string>
+    <string name="ad_attribution">ໂຄສະນາ</string>
+    <string name="close_search_view">ປິດມຸມມອງຄົ້ນຫາ</string>
+    <string name="back">ກັບຄືນໄປບ່ອນ</string>
+    <string name="music_icon">ໄອຄອນເພງ</string>
 </resources>
