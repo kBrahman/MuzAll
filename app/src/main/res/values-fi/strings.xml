@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Kesto: %s</string>
+    <string name="my_music">Musiikkini</string>
+    <string name="released">Julkaistu: %s</string>
+    <string name="could_not_play_track">Raitaa ei voitu toistaa, anteeksi</string>
+    <string name="service_unavailable">Palvelu ei ole käytettävissä, yritä myöhemmin uudelleen</string>
+    <string name="err_dir_create">Musiikkihakemistoa ei voitu luoda</string>
+    <string name="no_net">Ei Internet-yhteyttä</string>
+    <string name="action_delete">Poistaa</string>
+    <string name="conn_err">Yhteysvirhe</string>
+    <string name="refresh">Virkistää</string>
+    <string name="close_search_view">Sulje hakunäkymä</string>
+    <string name="back">Takaisin</string>
+    <string name="music_icon">Musiikki-kuvake</string>
+    <string name="ad_attribution">Ilmoitus</string>
+</resources>

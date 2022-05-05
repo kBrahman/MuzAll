@@ -515,6 +515,7 @@ class MainActivity : DaggerAppCompatActivity() {
         ) {
             val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
             val uri = Uri.parse(track.audio)
+            FirebaseCrashlytics.getInstance().setCustomKey("uri", uri.toString())
             val request = DownloadManager.Request(uri)
             val downloadId = downloadManager
                 .enqueue(
