@@ -568,6 +568,7 @@ class MainActivity : DaggerAppCompatActivity() {
         ) {
             items(count = tracks.size) {
                 Spacer(Modifier.height(4.dp))
+                FirebaseCrashlytics.getInstance().setCustomKey("q", q.value)
                 val item = tracks[it]
 
                 if (item is MuzNativeAd) AndroidAdView()
