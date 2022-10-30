@@ -63,6 +63,7 @@ import muz.all.databinding.AdBinding
 import core.domain.MuzNativeAd
 import core.domain.Track
 import app.manager.ApiManager
+import app.util.AudienceNetworkInitializeHelper
 import app.util.ID_NATIVE
 import app.util.isNetworkConnected
 import app.viewmodel.TrackViewModel
@@ -112,6 +113,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AudienceNetworkInitializeHelper.initialize(this)
         MobileAds.initialize(this) {}
         AdLoader.Builder(
             this,
