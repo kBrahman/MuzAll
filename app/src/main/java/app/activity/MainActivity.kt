@@ -100,6 +100,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private lateinit var onPermissionGranted: () -> Unit
     private lateinit var onPermissionDenied: () -> Unit
     private val cScope = CoroutineScope(Dispatchers.Default)
+    private var nativeBannerAdLoaded = false
 
     @Inject
     lateinit var idIterator: Iterator<String>
