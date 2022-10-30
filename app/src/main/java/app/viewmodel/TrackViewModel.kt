@@ -20,6 +20,7 @@ class TrackViewModel(private val interactor: Interactor, private val idIterator:
     internal val progressBarObservable = MutableLiveData<Boolean>()
     private val popularTracks = mutableListOf<Track>()
     val searchTracks = mutableListOf<Track>()
+
     fun getPopular(offset: Int): Job = viewModelScope.launch(Dispatchers.IO) {
         if (offset == 0 && popularTracks.isNotEmpty()) {
             progressBarObservable.postValue(false)

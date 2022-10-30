@@ -70,6 +70,7 @@ import app.viewmodel.TrackViewModel
 import com.facebook.ads.Ad
 import com.facebook.ads.AdError
 import com.facebook.ads.InterstitialAdListener
+import io.reactivex.rxkotlin.plusAssign
 import java.io.File
 import java.io.IOException
 import java.net.URL
@@ -351,7 +352,6 @@ class MainActivity : DaggerAppCompatActivity() {
                 loadingState?.value = true
                 tracks.clear()
                 viewModel.searchTracks.clear()
-//                search(q.value, (tracks.size / 25 + 1) * 25)
                 viewModel.search(q.value, (tracks.size / 25 + 1) * 25)
             }),
             singleLine = true,
@@ -813,6 +813,8 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun onData(data: MutableList<Track>) {
         Log.i(TAG, "on data")
         if (data.isEmpty() && tracks.isEmpty() && !searching && idIterator.hasNext()) {
+//            apiManager.clientId = idIterator.next()
+                viewModel.getPopular(0)
         } else if (data.isEmpty() && !searching) {
             loadingState?.value = false
             showServiceUnavailable()
