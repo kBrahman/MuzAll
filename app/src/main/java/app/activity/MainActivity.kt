@@ -50,27 +50,25 @@ import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.gms.ads.*
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.gms.ads.nativead.NativeAd
-import com.google.firebase.crashlytics.FirebaseCrashlytics
-import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.coroutines.*
-import muz.all.BuildConfig
-import muz.all.R
-import muz.all.databinding.AdBinding
-import core.domain.MuzNativeAd
-import core.domain.Track
 import app.manager.ApiManager
 import app.util.AudienceNetworkInitializeHelper
 import app.util.ID_NATIVE
 import app.util.isNetworkConnected
 import app.viewmodel.TrackViewModel
-import com.facebook.ads.Ad
+import com.facebook.ads.*
 import com.facebook.ads.AdError
-import com.facebook.ads.InterstitialAdListener
-import io.reactivex.rxkotlin.plusAssign
+import com.facebook.ads.AdSize
+import com.facebook.ads.AdView
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.nativead.NativeAd
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import core.domain.MuzNativeAd
+import core.domain.Track
+import dagger.android.support.DaggerAppCompatActivity
+import kotlinx.coroutines.*
+import muz.all.BuildConfig
+import muz.all.R
+import muz.all.databinding.AdBinding
 import java.io.File
 import java.io.IOException
 import java.net.URL
@@ -79,6 +77,7 @@ import java.util.Collections.emptyIterator
 import javax.inject.Inject
 import kotlin.concurrent.schedule
 
+@Suppress("FunctionName")
 class MainActivity : DaggerAppCompatActivity() {
 
     companion object {
@@ -197,19 +196,26 @@ class MainActivity : DaggerAppCompatActivity() {
 
             if (playerState.value != null) {
                 val adLoaded = remember { mutableStateOf(false) }
-                val ad = AdView(this@MainActivity).apply {
-                    adUnitId =
-                        if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/6300978111" else getString(
-                            R.string.banner_id
-                        )
-//                    adSize = AdSize.MEDIUM_RECTANGLE
-                    loadAd(AdRequest.Builder().build())
-                    adListener = object : AdListener() {
-                        override fun onAdLoaded() {
+                val ad = com.facebook.ads.AdView(
+                    this@MainActivity,
+                    "2277322472588056_3164105983909696",
+                    AdSize.RECTANGLE_HEIGHT_250
+                ).apply {
+                    loadAd((buildLoadAdConfig().withAdListener(object :
+                        com.facebook.ads.AdListener {
+                        override fun onError(p0: Ad?, p1: AdError?) {
+                            Log.i(TAG, "ad failed to load=>${p1?.errorMessage}")
+                        }
+
+                        override fun onAdLoaded(p0: Ad?) {
                             adLoaded.value = true
                             Log.i(TAG, "onAdLoaded")
                         }
-                    }
+
+                        override fun onAdClicked(p0: Ad?) {}
+
+                        override fun onLoggingImpression(p0: Ad?) {}
+                    }).build()))
                 }
                 Player(
                     playerState,
@@ -422,7 +428,8 @@ class MainActivity : DaggerAppCompatActivity() {
                         else {
                             ActivityCompat.requestPermissions(
                                 this@MainActivity,
-                                arrayOf(WRITE_EXTERNAL_STORAGE), REQUEST_CODE_STORAGE
+                                arrayOf(WRITE_EXTERNAL_STORAGE),
+                                REQUEST_CODE_STORAGE
                             )
                             onPermissionGranted = ::deleteAndUpdate
                             onPermissionDenied = {}
@@ -639,7 +646,7 @@ class MainActivity : DaggerAppCompatActivity() {
         playerState: MutableState<Any?>,
         colorPrimary: Color,
         downloadable: Boolean,
-        ad: AdView
+        ad: com.facebook.ads.AdView
     ) {
         Log.i(TAG, "player recomposed")
         val value = playerState.value!!
@@ -814,7 +821,7 @@ class MainActivity : DaggerAppCompatActivity() {
         Log.i(TAG, "on data")
         if (data.isEmpty() && tracks.isEmpty() && !searching && idIterator.hasNext()) {
 //            apiManager.clientId = idIterator.next()
-                viewModel.getPopular(0)
+            viewModel.getPopular(0)
         } else if (data.isEmpty() && !searching) {
             loadingState?.value = false
             showServiceUnavailable()
