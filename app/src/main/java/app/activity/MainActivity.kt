@@ -52,21 +52,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import app.manager.ApiManager
 import app.util.AudienceNetworkInitializeHelper
-import app.util.ID_NATIVE
 import app.util.isNetworkConnected
 import app.viewmodel.TrackViewModel
 import com.facebook.ads.*
-import com.facebook.ads.AdError
-import com.facebook.ads.AdSize
-import com.facebook.ads.AdView
-import com.google.android.gms.ads.*
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import core.domain.MuzNativeAd
 import core.domain.Track
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.coroutines.*
-import muz.all.BuildConfig
 import muz.all.R
 import muz.all.databinding.AdBinding
 import java.io.File
@@ -101,6 +95,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private lateinit var onPermissionDenied: () -> Unit
     private val cScope = CoroutineScope(Dispatchers.Default)
     private var nativeBannerAdLoaded = false
+    private lateinit var nativeBannerAd: NativeBannerAd
 
     @Inject
     lateinit var idIterator: Iterator<String>
@@ -122,20 +117,20 @@ class MainActivity : DaggerAppCompatActivity() {
         nativeBannerAd.loadAd(
             nativeBannerAd.buildLoadAdConfig().withAdListener(object : NativeAdListener {
                 override fun onError(p0: Ad?, adError: AdError?) {
-                    if (tracks.isNotEmpty()) loading?.value = false
+                    if (tracks.isNotEmpty()) loadingState?.value = false
                     Log.e(TAG, "Native ad failed to load: " + adError?.errorMessage)
                 }
 
                 override fun onAdLoaded(p0: Ad?) {
                     Log.d(
                         TAG,
-                        "Native ad is loaded and ready to be displayed, loading state=>${loading?.value}"
+                        "Native ad is loaded and ready to be displayed, loading state=>${loadingState?.value}"
                     )
                     nativeBannerAdLoaded = true
                     if (tracks.isNotEmpty()) {
                         insertNative(tracks.size, tracks, nativeBannerAd)
-                        if (timeOut) loading?.value = false
-                        Log.d(TAG, "inserted, is loading=>${loading?.value}")
+                        if (timeOut) loadingState?.value = false
+                        Log.d(TAG, "inserted, is loading=>${loadingState?.value}")
                     }
                 }
 
@@ -202,7 +197,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
             if (playerState.value != null) {
                 val adLoaded = remember { mutableStateOf(false) }
-                val ad = com.facebook.ads.AdView(
+                val ad = AdView(
                     this@MainActivity,
                     "2277322472588056_3164105983909696",
                     AdSize.RECTANGLE_HEIGHT_250
@@ -609,7 +604,7 @@ class MainActivity : DaggerAppCompatActivity() {
                         nativeAdView.storeView = adStore
                         adCallToAction.text = ad?.callToAction
                         nativeAdView.callToActionView = adCallToAction
-                        ad?.let { it1 -> nativeAdView.setNativeAd(it1) }
+                        nativeAdView.setNativeAd(ad)
                     }
                 } else TrackView(playerState, item)
                 if (it == tracks.size - 1 && loadingState?.value == false) {
@@ -850,7 +845,7 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
-    private fun insertNative(count: Int, tracks: MutableList<Track>, ad: NativeAd) {
+    private fun insertNative(count: Int, tracks: MutableList<Track>, ad: NativeBannerAd) {
         for (i in 6 until count) {
             val t = tracks[i]
             if (i % 6 == 0 && t !is MuzNativeAd) {

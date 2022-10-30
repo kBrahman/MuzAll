@@ -1,5 +1,5 @@
 package core.domain
 
-import com.google.android.gms.ads.nativead.NativeAd
+import com.facebook.ads.NativeBannerAd
 
-class MuzNativeAd(val ad: NativeAd?) : Track()
+class MuzNativeAd(val ad: NativeBannerAd) : Track()

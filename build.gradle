@@ -21,6 +21,7 @@ allprojects {
     def localProperties = new Properties()
     localProperties.load(rootProject.file('local.properties').newDataInputStream())
     ext.globalProps=localProperties
+
 }
 
 task clean(type: Delete) {

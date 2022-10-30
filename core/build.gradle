@@ -29,6 +29,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     //ads
     implementation 'com.google.android.gms:play-services-ads-lite:21.3.0'
+    implementation 'com.facebook.android:audience-network-sdk:6.12.0'
     //di
     implementation 'com.google.dagger:dagger-android-support:2.44'
 //    kapt 'com.google.dagger:dagger-compiler:2.40.5'
