@@ -117,30 +117,35 @@ class MainActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AudienceNetworkInitializeHelper.initialize(this)
-        MobileAds.initialize(this) {}
-        AdLoader.Builder(
-            this,
-            if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/2247696110" else ID_NATIVE
-        )
-            .forNativeAd {
-                nativeAds.add(it)
-                if (tracks.isNotEmpty()) {
-                    insertNative(tracks.size, tracks, it)
-                }
-                Log.i(
-                    TAG,
-                    "native ad loaded tracks is empty=>${tracks.isEmpty()}, native=>${it.headline}"
-                )
-            }
-            .withAdListener(object : AdListener() {
-                override fun onAdFailedToLoad(err: LoadAdError) {
-                    Log.i(TAG, "onAdFailedToLoad=>${err.responseInfo}")
+        nativeBannerAd = NativeBannerAd(this, "2277322472588056_3164186070568354")
+        nativeBannerAd.loadAd(
+            nativeBannerAd.buildLoadAdConfig().withAdListener(object : NativeAdListener {
+                override fun onError(p0: Ad?, adError: AdError?) {
+                    if (tracks.isNotEmpty()) loading?.value = false
+                    Log.e(TAG, "Native ad failed to load: " + adError?.errorMessage)
                 }
 
-                override fun onAdLoaded() {
-                    Log.i(TAG, "onAdLoaded")
+                override fun onAdLoaded(p0: Ad?) {
+                    Log.d(
+                        TAG,
+                        "Native ad is loaded and ready to be displayed, loading state=>${loading?.value}"
+                    )
+                    nativeBannerAdLoaded = true
+                    if (tracks.isNotEmpty()) {
+                        insertNative(tracks.size, tracks, nativeBannerAd)
+                        if (timeOut) loading?.value = false
+                        Log.d(TAG, "inserted, is loading=>${loading?.value}")
+                    }
                 }
-            }).build().loadAds(AdRequest.Builder().build(), 5)
+
+                override fun onAdClicked(p0: Ad?) {}
+                override fun onLoggingImpression(p0: Ad?) {}
+
+                override fun onMediaDownloaded(p0: Ad?) {
+                    Log.e(TAG, "onMediaDownloaded")
+                }
+            }).build()
+        )
         init()
     }
 
