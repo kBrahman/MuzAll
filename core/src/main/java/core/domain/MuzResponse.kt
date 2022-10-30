@@ -1,4 +1,4 @@
-package muz.all.domain
+package core.domain
 
 import androidx.annotation.Keep
 

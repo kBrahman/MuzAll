@@ -1,7 +1,7 @@
-package muz.all.data
+package core.data
 
-import muz.all.domain.MuzResponse
-import muz.all.domain.Track
+import core.domain.MuzResponse
+import core.domain.Track
 
 interface TrackDataSource {
     suspend fun getPopular(offset: Int, clientId: String): MuzResponse

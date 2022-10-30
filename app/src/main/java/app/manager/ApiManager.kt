@@ -1,6 +1,6 @@
-package muz.all.manager
+package app.manager
 
-import muz.all.domain.MuzResponse
+import core.domain.MuzResponse
 
 interface ApiManager {
     suspend fun search(q: String, offset: Int): MuzResponse

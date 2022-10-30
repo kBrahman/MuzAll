@@ -1,4 +1,4 @@
-package muz.all.module
+package app.module
 
 import android.app.Activity
 import android.media.AudioAttributes
@@ -10,13 +10,13 @@ import dagger.Module
 import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable
 import muz.all.BuildConfig
-import muz.all.activity.MainActivity
-import muz.all.data.TrackDataSource
-import muz.all.framework.TrackDataSourceImpl
-import muz.all.ineractor.Interactor
-import muz.all.manager.ApiManager
-import muz.all.manager.MuzApiManager
-import muz.all.viewmodel.TrackViewModel
+import app.activity.MainActivity
+import core.data.TrackDataSource
+import app.framework.TrackDataSourceImpl
+import core.ineractor.Interactor
+import app.manager.ApiManager
+import app.manager.MuzApiManager
+import app.viewmodel.TrackViewModel
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -73,8 +73,8 @@ class MainActivityModule {
     @Provides
     fun viewModel(owner: MainActivity, interactor: Interactor, itr: Iterator<String>) =
         ViewModelProvider(owner, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return TrackViewModel(interactor, itr) as T
             }
-        }).get(TrackViewModel::class.java)
+        })[TrackViewModel::class.java]
 }

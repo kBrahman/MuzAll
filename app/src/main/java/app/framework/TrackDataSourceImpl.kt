@@ -1,8 +1,8 @@
-package muz.all.framework
+package app.framework
 
-import muz.all.data.TrackDataSource
-import muz.all.domain.Track
-import muz.all.manager.MuzApiManager
+import core.data.TrackDataSource
+import core.domain.Track
+import app.manager.MuzApiManager
 import javax.inject.Inject
 
 class TrackDataSourceImpl @Inject constructor(

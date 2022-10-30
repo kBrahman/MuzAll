@@ -1,6 +1,6 @@
-package muz.all.data
+package core.data
 
-import muz.all.domain.Track
+import core.domain.Track
 import javax.inject.Inject
 
 class TrackRepo @Inject constructor(private val ds: TrackDataSource) {

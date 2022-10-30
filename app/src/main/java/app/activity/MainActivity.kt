@@ -1,4 +1,4 @@
-package muz.all.activity
+package app.activity
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -60,12 +60,12 @@ import kotlinx.coroutines.*
 import muz.all.BuildConfig
 import muz.all.R
 import muz.all.databinding.AdBinding
-import muz.all.domain.MuzNativeAd
-import muz.all.domain.Track
-import muz.all.manager.ApiManager
-import muz.all.util.ID_NATIVE
-import muz.all.util.isNetworkConnected
-import muz.all.viewmodel.TrackViewModel
+import core.domain.MuzNativeAd
+import core.domain.Track
+import app.manager.ApiManager
+import app.util.ID_NATIVE
+import app.util.isNetworkConnected
+import app.viewmodel.TrackViewModel
 import java.io.File
 import java.io.IOException
 import java.net.URL
@@ -196,7 +196,7 @@ class MainActivity : DaggerAppCompatActivity() {
                         if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/6300978111" else getString(
                             R.string.banner_id
                         )
-                    adSize = AdSize.MEDIUM_RECTANGLE
+//                    adSize = AdSize.MEDIUM_RECTANGLE
                     loadAd(AdRequest.Builder().build())
                     adListener = object : AdListener() {
                         override fun onAdLoaded() {
@@ -584,7 +584,7 @@ class MainActivity : DaggerAppCompatActivity() {
                         nativeAdView.storeView = adStore
                         adCallToAction.text = ad?.callToAction
                         nativeAdView.callToActionView = adCallToAction
-                        nativeAdView.setNativeAd(ad)
+                        ad?.let { it1 -> nativeAdView.setNativeAd(it1) }
                     }
                 } else TrackView(playerState, item)
                 if (it == tracks.size - 1 && loadingState?.value == false) {

@@ -1,4 +1,4 @@
-package muz.all.viewmodel
+package app.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,8 +7,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import muz.all.R
-import muz.all.domain.Track
-import muz.all.ineractor.Interactor
+import core.domain.Track
+import core.ineractor.Interactor
 
 class TrackViewModel(private val interactor: Interactor, private val idIterator: Iterator<String>) :
     ViewModel() {

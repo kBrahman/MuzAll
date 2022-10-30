@@ -1,7 +1,7 @@
-package muz.all.ineractor
+package core.ineractor
 
-import muz.all.data.TrackRepo
-import muz.all.domain.Track
+import core.data.TrackRepo
+import core.domain.Track
 import javax.inject.Inject
 
 class GetPopular @Inject constructor(private val trackRepo: TrackRepo) {

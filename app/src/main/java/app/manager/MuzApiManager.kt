@@ -1,6 +1,6 @@
-package muz.all.manager
+package app.manager
 
-import muz.all.domain.MuzResponse
+import core.domain.MuzResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 import javax.inject.Inject

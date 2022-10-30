@@ -1,10 +1,10 @@
-package muz.all
+package app
 
 import android.content.Context
 import androidx.multidex.MultiDex
+import app.component.DaggerAppComponent
 import dagger.android.DaggerApplication
 import dagger.android.HasAndroidInjector
-import muz.all.component.DaggerAppComponent
 
 class App : DaggerApplication(), HasAndroidInjector {
 
