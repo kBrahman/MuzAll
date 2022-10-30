@@ -67,6 +67,9 @@ import app.util.AudienceNetworkInitializeHelper
 import app.util.ID_NATIVE
 import app.util.isNetworkConnected
 import app.viewmodel.TrackViewModel
+import com.facebook.ads.Ad
+import com.facebook.ads.AdError
+import com.facebook.ads.InterstitialAdListener
 import java.io.File
 import java.io.IOException
 import java.net.URL
@@ -221,21 +224,28 @@ class MainActivity : DaggerAppCompatActivity() {
             }
 
         }
-        InterstitialAd.load(
-            this,
-            getString(if (BuildConfig.DEBUG) R.string.int_test_id else R.string.int_id),
-            AdRequest.Builder().build(),
-            object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d(TAG, adError.message)
-                    timeOut = true
-                }
+        val interstitialAd =
+            com.facebook.ads.InterstitialAd(this, "2277322472588056_3164068060580155")
+        interstitialAd.loadAd(
+            interstitialAd.buildLoadAdConfig()
+                .withAdListener(object : InterstitialAdListener {
+                    override fun onError(p0: Ad?, err: AdError?) {
+                        Log.e(TAG, "Interstitial ad failed to load: " + err?.errorMessage);
+                    }
 
-                override fun onAdLoaded(ad: InterstitialAd) {
-                    if (!timeOut) ad.show(this@MainActivity)
-                    timeOut = true
-                }
-            })
+                    override fun onAdLoaded(ad: Ad?) {
+                        if (!timeOut) interstitialAd.show()
+                        timeOut = true
+                    }
+
+                    override fun onAdClicked(p0: Ad?) {}
+                    override fun onLoggingImpression(p0: Ad?) {}
+                    override fun onInterstitialDisplayed(p0: Ad?) {}
+                    override fun onInterstitialDismissed(p0: Ad?) {
+                        interstitialAd.destroy()
+                    }
+                }).build()
+        )
         setTimer()
         viewModel.trackObservable.observe(this) {
             Log.i(TAG, "on popular")
