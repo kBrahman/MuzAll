@@ -6,17 +6,17 @@ import android.media.MediaPlayer
 import android.os.Environment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import app.activity.MainActivity
+import app.framework.TrackDataSourceImpl
+import app.manager.ApiManager
+import app.manager.MuzApiManager
+import app.viewmodel.TrackViewModel
+import core.data.TrackDataSource
+import core.ineractor.Interactor
 import dagger.Module
 import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable
 import muz.all.BuildConfig
-import app.activity.MainActivity
-import core.data.TrackDataSource
-import app.framework.TrackDataSourceImpl
-import core.ineractor.Interactor
-import app.manager.ApiManager
-import app.manager.MuzApiManager
-import app.viewmodel.TrackViewModel
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -74,7 +74,11 @@ class MainActivityModule {
     fun viewModel(owner: MainActivity, interactor: Interactor, itr: Iterator<String>) =
         ViewModelProvider(owner, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return TrackViewModel(interactor, itr) as T
+                return TrackViewModel(
+                    interactor, itr,
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+                        ?: owner.getExternalFilesDir(android.os.Environment.DIRECTORY_MUSIC)
+                ) as T
             }
         })[TrackViewModel::class.java]
 }

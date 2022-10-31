@@ -17,8 +17,7 @@ import android.os.*
 import android.os.Environment.DIRECTORY_MUSIC
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.View.GONE
-import android.view.ViewGroup
+import android.view.View
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.compose.setContent
@@ -42,27 +41,25 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import app.manager.ApiManager
 import app.util.AudienceNetworkInitializeHelper
 import app.util.isNetworkConnected
 import app.viewmodel.TrackViewModel
 import com.facebook.ads.*
-import com.google.android.gms.ads.nativead.NativeAd
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import core.domain.MuzNativeAd
 import core.domain.Track
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.coroutines.*
 import muz.all.R
-import muz.all.databinding.AdBinding
 import java.io.File
 import java.io.IOException
 import java.net.URL
@@ -79,7 +76,7 @@ class MainActivity : DaggerAppCompatActivity() {
         private const val REQUEST_CODE_STORAGE = 1
     }
 
-    private var nativeAds = mutableListOf<NativeAd>()
+    private var nativeAds = mutableListOf<NativeBannerAd>()
     private var filteredFiles = mutableStateListOf<File>()
     private var searching = false
     private lateinit var q: MutableState<String>
@@ -98,13 +95,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private lateinit var nativeBannerAd: NativeBannerAd
 
     @Inject
-    lateinit var idIterator: Iterator<String>
-
-    @Inject
     lateinit var mp: MediaPlayer
-
-    @Inject
-    lateinit var apiManager: ApiManager
 
     @Inject
     lateinit var viewModel: TrackViewModel
@@ -121,7 +112,7 @@ class MainActivity : DaggerAppCompatActivity() {
                     Log.e(TAG, "Native ad failed to load: " + adError?.errorMessage)
                 }
 
-                override fun onAdLoaded(p0: Ad?) {
+                override fun onAdLoaded(ad: Ad?) {
                     Log.d(
                         TAG,
                         "Native ad is loaded and ready to be displayed, loading state=>${loadingState?.value}"
@@ -143,6 +134,10 @@ class MainActivity : DaggerAppCompatActivity() {
             }).build()
         )
         init()
+        viewModel.myMusicObservable.observe(this@MainActivity) {
+            filteredFiles.clear()
+            filteredFiles.addAll(it)
+        }
     }
 
 
@@ -203,7 +198,7 @@ class MainActivity : DaggerAppCompatActivity() {
                     AdSize.RECTANGLE_HEIGHT_250
                 ).apply {
                     loadAd((buildLoadAdConfig().withAdListener(object :
-                        com.facebook.ads.AdListener {
+                        AdListener {
                         override fun onError(p0: Ad?, p1: AdError?) {
                             Log.i(TAG, "ad failed to load=>${p1?.errorMessage}")
                         }
@@ -255,7 +250,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 }).build()
         )
         setTimer()
-        viewModel.trackObservable.observe(this) {
+        viewModel.tracksObservable.observe(this) {
             Log.i(TAG, "on popular")
             if (nativeAds.isNotEmpty()) insertNatives(it)
             tracks.addAll(it)
@@ -286,19 +281,20 @@ class MainActivity : DaggerAppCompatActivity() {
             SearchView(showSearchView, Modifier.fillMaxHeight())
             Spacer(Modifier.width(4.dp))
             IconButton(modifier = Modifier, onClick = {
-                if (ContextCompat.checkSelfPermission(
-                        this@MainActivity,
-                        WRITE_EXTERNAL_STORAGE
-                    ) == PERMISSION_GRANTED
-                ) myMusic()
-                else {
-                    ActivityCompat.requestPermissions(
-                        this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE),
-                        REQUEST_CODE_STORAGE
-                    )
-                    onPermissionGranted = ::myMusic
-                    onPermissionDenied = {}
-                }
+//                if (ContextCompat.checkSelfPermission(
+//                        this@MainActivity,
+//                        WRITE_EXTERNAL_STORAGE
+//                    ) == PERMISSION_GRANTED
+//                )
+                myMusic()
+//                else {
+//                    ActivityCompat.requestPermissions(
+//                        this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE),
+//                        REQUEST_CODE_STORAGE
+//                    )
+//                    onPermissionGranted = ::myMusic
+//                    onPermissionDenied = {}
+//                }
             }) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_folder_24dp),
@@ -311,42 +307,36 @@ class MainActivity : DaggerAppCompatActivity() {
         uiState.value = UIState.MY_MUSIC
         loadingState?.value = true
         updateFileList()
+        Log.i(TAG, "myMusic")
     }
 
     private fun updateFileList() {
-        cScope.launch {
-            filteredFiles.clear()
-            val directory =
-                Environment.getExternalStoragePublicDirectory(DIRECTORY_MUSIC)
-            Log.i(TAG, "dir=>$directory")
-            if (!directory.exists()
-                && ContextCompat.checkSelfPermission(
-                    this@MainActivity,
-                    WRITE_EXTERNAL_STORAGE
-                ) != PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this@MainActivity,
-                    arrayOf(WRITE_EXTERNAL_STORAGE),
-                    REQUEST_CODE_STORAGE
-                )
-                onPermissionGranted = ::updateFileList
-                onPermissionDenied = { uiState.value = UIState.MAIN }
-            } else {
-                if (!directory.exists()) {
-                    val create = directory.mkdirs()
-                    Log.i(TAG, "dir does not exist. created=$create")
-                }
-                Log.i(TAG, "dir  exists. is dir=>${directory.isDirectory}")
-                val files = directory.listFiles()
-                    ?: getExternalFilesDir(DIRECTORY_MUSIC)?.listFiles()
-
-                files?.filter { it.extension == "mp3" || it.extension == "flac" }?.let {
-                    filteredFiles.addAll(it)
-                }
-            }
-            Log.i(TAG, "updateFileList")
+        val directory =
+            Environment.getExternalStoragePublicDirectory(DIRECTORY_MUSIC)
+        Log.i(TAG, "dir=>$directory")
+//        if (!directory.exists()
+//            && ContextCompat.checkSelfPermission(
+//                this@MainActivity,
+//                WRITE_EXTERNAL_STORAGE
+//            ) != PERMISSION_GRANTED
+//        ) {
+//            ActivityCompat.requestPermissions(
+//                this@MainActivity,
+//                arrayOf(WRITE_EXTERNAL_STORAGE),
+//                REQUEST_CODE_STORAGE
+//            )
+//            onPermissionGranted = ::updateFileList
+//            onPermissionDenied = { uiState.value = UIState.MAIN }
+//        }
+//        else {
+        if (!directory.exists()) {
+            val create = directory.mkdirs()
+            Log.i(TAG, "dir does not exist. created=$create")
         }
+
+        viewModel.myMusic()
+//        }
+        Log.i(TAG, "updateFileList")
     }
 
     @Composable
@@ -391,15 +381,12 @@ class MainActivity : DaggerAppCompatActivity() {
         )
     }
 
-    private fun search(query: String, offset: Int) = cScope.launch {
-        onData(apiManager.search(query, offset).results)
-    }
-
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun MyMusicScreen(playerState: MutableState<Any?>, colorPrimary: Color) {
         val width = screenWidth().dp - 20.dp
         val delItemVisible = remember { mutableStateOf(false) }
+//        filteredFiles = remember { mutableStateOf(mutableListOf()) }
         TopAppBar(contentColor = Color.White, backgroundColor = colorPrimary) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = {
@@ -571,9 +558,6 @@ class MainActivity : DaggerAppCompatActivity() {
         showSearchView: MutableState<Boolean>
     ) {
         MyMuzAppBar(colorPrimary, showSearchView)
-        val viewGroup = window.decorView.rootView as ViewGroup?
-        val list = (0..3).map { AdBinding.inflate(layoutInflater, viewGroup, false) }
-        var bindingsIterator = list.iterator()
         LazyColumn(
             modifier,
             contentPadding = PaddingValues(4.dp)
@@ -582,42 +566,65 @@ class MainActivity : DaggerAppCompatActivity() {
                 Spacer(Modifier.height(4.dp))
                 val item = tracks[it]
                 if (item is MuzNativeAd) {
-                    val ad = item.ad
-                    if (!bindingsIterator.hasNext()) bindingsIterator = list.iterator()
-                    AndroidViewBinding({ _, _, _ -> bindingsIterator.next() }) {
-                        adAppIcon.setImageDrawable(ad?.icon?.drawable)
-                        nativeAdView.iconView = adAppIcon
-                        adHeadline.text = ad?.headline
-                        nativeAdView.headlineView = adHeadline
-                        adAdvertiser.text = ad?.advertiser
-                        nativeAdView.advertiserView = adAdvertiser
-                        val rating = ad?.starRating?.toFloat()
-                        Log.i(TAG, "rating=>$rating")
-                        if (rating == null) adStars.visibility = GONE
-                        else adStars.rating = rating
-                        nativeAdView.starRatingView = adStars
-                        adBody.text = ad?.body
-                        nativeAdView.bodyView = adBody
-                        adPrice.text = ad?.price
-                        nativeAdView.priceView = adPrice
-                        adStore.text = ad?.store
-                        nativeAdView.storeView = adStore
-                        adCallToAction.text = ad?.callToAction
-                        nativeAdView.callToActionView = adCallToAction
-                        nativeAdView.setNativeAd(ad)
-                    }
+                    AndroidAdView()
                 } else TrackView(playerState, item)
                 if (it == tracks.size - 1 && loadingState?.value == false) {
                     loadingState?.value = true
                     val offset = (tracks.size / 25 + 1) * 25
-                    if (searching) search(q.value, offset)
+                    if (searching) viewModel.search(q.value, offset)
                     else viewModel.getPopular(offset)
                 }
             }
         }
-        Log.i(TAG, "finish comp MainScreen")
     }
 
+    @Composable
+    private fun AndroidAdView() {
+        val view = View(this@MainActivity)
+        val mediaView = MediaView(this)
+        Column {
+            Row {
+                AndroidView(factory = { AdOptionsView(it, nativeBannerAd, null) })
+                Text(
+                    text = nativeBannerAd.sponsoredTranslation ?: "sponsored",
+                    Modifier.padding(2.dp),
+                    color = Color.DarkGray,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 12.sp
+                )
+            }
+            Row(Modifier.fillMaxWidth(), Arrangement.SpaceEvenly) {
+                AndroidView(factory = { mediaView }, Modifier.size(80.dp))
+                Spacer(Modifier.width(4.dp))
+                Column {
+                    Text(
+                        nativeBannerAd.advertiserName ?: "",
+                        overflow = TextOverflow.Ellipsis,
+                        color = Color.Black,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = nativeBannerAd.adSocialContext ?: "",
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 12.sp
+                    )
+                }
+                Row(Modifier.fillMaxWidth(), Arrangement.End) {
+                    Button(
+                        { view.performClick() },
+                        Modifier
+                            .width(80.dp)
+                            .height(50.dp)
+                    ) {
+                        Text(text = nativeBannerAd.adCallToAction ?: "Open", fontSize = 12.sp)
+                    }
+                    Spacer(Modifier.width(4.dp))
+                }
+            }
+        }
+        nativeBannerAd.registerViewForInteraction(view, mediaView)
+    }
 
     @Composable
     private fun TrackView(playerState: MutableState<Any?>, item: Track) =
@@ -818,22 +825,6 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
-    private fun onData(data: MutableList<Track>) {
-        Log.i(TAG, "on data")
-        if (data.isEmpty() && tracks.isEmpty() && !searching && idIterator.hasNext()) {
-//            apiManager.clientId = idIterator.next()
-            viewModel.getPopular(0)
-        } else if (data.isEmpty() && !searching) {
-            loadingState?.value = false
-            showServiceUnavailable()
-        } else {
-            val count = data.size
-            if (nativeAds.isNotEmpty()) insertNatives(data)
-            tracks.addAll(data)
-            if (timeOut) loadingState?.value = false
-        }
-    }
-
     private fun insertNatives(data: List<Track>) {
         nativeAds.reverse()
         var iterator = nativeAds.iterator()
@@ -848,10 +839,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun insertNative(count: Int, tracks: MutableList<Track>, ad: NativeBannerAd) {
         for (i in 6 until count) {
             val t = tracks[i]
-            if (i % 6 == 0 && t !is MuzNativeAd) {
-                tracks.add(i, MuzNativeAd(ad))
-                return
-            }
+            if (i % 6 == 0 && t !is MuzNativeAd) tracks.add(i, MuzNativeAd(ad))
         }
     }
 

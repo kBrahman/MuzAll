@@ -3,28 +3,33 @@ package app.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import core.domain.Track
+import core.ineractor.Interactor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import muz.all.R
-import core.domain.Track
-import core.ineractor.Interactor
+import java.io.File
 
-class TrackViewModel(private val interactor: Interactor, private val idIterator: Iterator<String>) :
-    ViewModel() {
+class TrackViewModel(
+    private val interactor: Interactor,
+    private val idIterator: Iterator<String>,
+    private val dir: File?
+) : ViewModel() {
 
     internal var q = ""
     private var clientId = idIterator.next()
-    internal val trackObservable = MutableLiveData<List<Track>>()
+    internal val tracksObservable = MutableLiveData<List<Track>>()
     internal val toastObservable = MutableLiveData<Int>()
     internal val progressBarObservable = MutableLiveData<Boolean>()
     private val popularTracks = mutableListOf<Track>()
     val searchTracks = mutableListOf<Track>()
+    internal val myMusicObservable = MutableLiveData<MutableList<File>>()
 
     fun getPopular(offset: Int): Job = viewModelScope.launch(Dispatchers.IO) {
         if (offset == 0 && popularTracks.isNotEmpty()) {
             progressBarObservable.postValue(false)
-            trackObservable.postValue(popularTracks)
+            tracksObservable.postValue(popularTracks)
         } else {
             val results = interactor.getPopular(offset, clientId).results
             if (results.isEmpty() && popularTracks.isEmpty() && idIterator.hasNext()) {
@@ -33,7 +38,7 @@ class TrackViewModel(private val interactor: Interactor, private val idIterator:
             } else if (results.isEmpty()) toastObservable.postValue(R.string.service_unavailable)
             else {
                 popularTracks.addAll(results)
-                trackObservable.postValue(results)
+                tracksObservable.postValue(results)
             }
         }
     }
@@ -41,11 +46,16 @@ class TrackViewModel(private val interactor: Interactor, private val idIterator:
     fun search(q: String, offset: Int) = viewModelScope.launch(Dispatchers.IO) {
         if (offset == 0 && searchTracks.isNotEmpty()) {
             progressBarObservable.postValue(false)
-            trackObservable.postValue(searchTracks)
+            tracksObservable.postValue(searchTracks)
         } else {
             val results = interactor.search(q, offset, clientId).results
             searchTracks.addAll(results)
-            trackObservable.postValue(results)
+            tracksObservable.postValue(results)
         }
     }.also { this.q = q }
+
+    fun myMusic() {
+        val filtered = dir?.listFiles()?.filter { it.extension == "mp3" || it.extension == "flac" }
+        myMusicObservable.postValue(filtered?.toMutableList())
+    }
 }
