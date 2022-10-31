@@ -1,4 +1,4 @@
-package muz.all.util
+package app.util
 
 import android.content.Context
 import android.net.ConnectivityManager

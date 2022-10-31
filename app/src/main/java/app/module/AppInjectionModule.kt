@@ -1,9 +1,9 @@
-package muz.all.module
+package app.module
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import muz.all.activity.MainActivity
+import app.activity.MainActivity
 
 @Module
 interface AppInjectionModule {
