@@ -1,7 +1,6 @@
-package core.ineractor
+package core.actor
 
 import core.data.TrackRepo
-import core.domain.Track
 import javax.inject.Inject
 
 class GetPopular @Inject constructor(private val trackRepo: TrackRepo) {
@@ -16,13 +15,8 @@ class MyTracks @Inject constructor(private val trackRepo: TrackRepo) {
     suspend operator fun invoke() = trackRepo.myTracks()
 }
 
-class DeleteMyTrack @Inject constructor(private val trackRepo: TrackRepo) {
-    suspend operator fun invoke(track: Track) = trackRepo.delete(track)
-}
-
-data class Interactor @Inject constructor(
+data class Actor @Inject constructor(
     val getPopular: GetPopular,
     val search: Search,
-    val myTracks: MyTracks,
-    val deleteMyTrack: DeleteMyTrack
+    val myTracks: MyTracks
 )

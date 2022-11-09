@@ -1,9 +1,9 @@
 package app.module
 
-import android.app.Activity
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Environment
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import app.activity.MainActivity
@@ -12,10 +12,9 @@ import app.manager.ApiManager
 import app.manager.MuzApiManager
 import app.viewmodel.TrackViewModel
 import core.data.TrackDataSource
-import core.ineractor.Interactor
+import core.actor.Actor
 import dagger.Module
 import dagger.Provides
-import io.reactivex.disposables.CompositeDisposable
 import muz.all.BuildConfig
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -44,9 +43,6 @@ class MainActivityModule {
         .build().create(MuzApiManager.APIService::class.java)
 
     @Provides
-    fun provideDisposable() = CompositeDisposable()
-
-    @Provides
     fun provideIdIterator() = BuildConfig.IDS.iterator()
 
     @Provides
@@ -61,23 +57,26 @@ class MainActivityModule {
     }
 
     @Provides
-    fun provideMyMusicDir(activity: Activity): File {
-        val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-        return directory
+    fun provideMyMusicDir(activity: MainActivity): File? {
+        val dir = (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+            ?: activity.getExternalFilesDir(Environment.DIRECTORY_MUSIC))
+        if (dir?.exists() == false) {
+            val create = dir.mkdirs()
+            Log.i(TAG, "dir does not exist. created=$create")
+        }
+        return dir
     }
 
     @Provides
-    fun dataSource(apiService: MuzApiManager.APIService): TrackDataSource =
-        TrackDataSourceImpl(apiService)
+    fun dataSource(apiService: MuzApiManager.APIService, dir: File?): TrackDataSource =
+        TrackDataSourceImpl(apiService, dir)
 
     @Provides
-    fun viewModel(owner: MainActivity, interactor: Interactor, itr: Iterator<String>) =
+    fun viewModel(owner: MainActivity, interactor: Actor, itr: Iterator<String>) =
         ViewModelProvider(owner, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return TrackViewModel(
-                    interactor, itr,
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-                        ?: owner.getExternalFilesDir(android.os.Environment.DIRECTORY_MUSIC)
+                    interactor, itr
                 ) as T
             }
         })[TrackViewModel::class.java]

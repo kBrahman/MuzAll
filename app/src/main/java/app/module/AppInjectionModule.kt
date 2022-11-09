@@ -1,9 +1,9 @@
 package app.module
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import app.activity.MainActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import app.activity.MainActivity
 
 @Module
 interface AppInjectionModule {

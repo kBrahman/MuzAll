@@ -1,10 +1,11 @@
 package app.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import core.domain.Track
-import core.ineractor.Interactor
+import core.actor.Actor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -12,14 +13,17 @@ import muz.all.R
 import java.io.File
 
 class TrackViewModel(
-    private val interactor: Interactor,
+    private val actor: Actor,
     private val idIterator: Iterator<String>,
-    private val dir: File?
 ) : ViewModel() {
+    internal var myTracks: MutableList<File>? = null
 
+    @Suppress("PrivatePropertyName")
+    private val TAG = "ViewModel"
     internal var q = ""
     private var clientId = idIterator.next()
     internal val tracksObservable = MutableLiveData<List<Track>>()
+    internal val myTracksObservable = MutableLiveData<List<File>>()
     internal val toastObservable = MutableLiveData<Int>()
     internal val progressBarObservable = MutableLiveData<Boolean>()
     private val popularTracks = mutableListOf<Track>()
@@ -31,7 +35,7 @@ class TrackViewModel(
             progressBarObservable.postValue(false)
             tracksObservable.postValue(popularTracks)
         } else {
-            val results = interactor.getPopular(offset, clientId).results
+            val results = actor.getPopular(offset, clientId).results
             if (results.isEmpty() && popularTracks.isEmpty() && idIterator.hasNext()) {
                 clientId = idIterator.next()
                 getPopular(0)
@@ -48,14 +52,21 @@ class TrackViewModel(
             progressBarObservable.postValue(false)
             tracksObservable.postValue(searchTracks)
         } else {
-            val results = interactor.search(q, offset, clientId).results
+            val results = actor.search(q, offset, clientId).results
             searchTracks.addAll(results)
             tracksObservable.postValue(results)
         }
     }.also { this.q = q }
 
-    fun myMusic() {
-        val filtered = dir?.listFiles()?.filter { it.extension == "mp3" || it.extension == "flac" }
-        myMusicObservable.postValue(filtered?.toMutableList())
+    fun myMusic() = viewModelScope.launch(Dispatchers.IO) {
+        if (myTracks == null) myTracks = actor.myTracks()
+        myTracksObservable.postValue(myTracks)
+    }
+
+    fun del(file: File?) {
+        val deleted = file?.delete()
+        Log.i(TAG, "file to del=>${file?.name},  deleted=>$deleted")
+        if (deleted == true) myTracks?.remove(file)
+        myMusic()
     }
 }

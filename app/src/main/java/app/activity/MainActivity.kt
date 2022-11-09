@@ -77,7 +77,7 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private var nativeAds = mutableListOf<NativeBannerAd>()
-    private var filteredFiles = mutableStateListOf<File>()
+    private var myTracksStateList = mutableStateListOf<File>()
     private var searching = false
     private lateinit var q: MutableState<String>
     private var timeOut = false
@@ -134,10 +134,6 @@ class MainActivity : DaggerAppCompatActivity() {
             }).build()
         )
         init()
-        viewModel.myMusicObservable.observe(this@MainActivity) {
-            filteredFiles.clear()
-            filteredFiles.addAll(it)
-        }
     }
 
 
@@ -150,7 +146,7 @@ class MainActivity : DaggerAppCompatActivity() {
             }
         )
         val stateVal = if (!isNetworkConnected(this)) {
-            updateFileList()
+            viewModel.myMusic()
             UIState.MY_MUSIC
         } else {
             viewModel.getPopular(0)
@@ -180,10 +176,12 @@ class MainActivity : DaggerAppCompatActivity() {
             Column(Modifier.fillMaxHeight()) {
                 loadingState = remember { mutableStateOf(true) }
                 uiState = remember { mutableStateOf(stateVal) }
-                when (uiState.value) {
-                    UIState.MAIN -> MainScreen(Modifier, playerState, colorPrimary, showSearchView)
-                    UIState.MY_MUSIC -> MyMusicScreen(playerState, colorPrimary)
-                    UIState.DIR_ISSUE -> DirIssueScreen()
+                MaterialTheme(lightColors(colorPrimary)) {
+                    when (uiState.value) {
+                        UIState.MAIN -> MainScreen(Modifier, playerState, showSearchView)
+                        UIState.MY_MUSIC -> MyMusicScreen(playerState, colorPrimary)
+                        UIState.DIR_ISSUE -> DirIssueScreen()
+                    }
                 }
             }
 
@@ -228,7 +226,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
         }
         val interstitialAd =
-            com.facebook.ads.InterstitialAd(this, "2277322472588056_3164068060580155")
+            InterstitialAd(this, "2277322472588056_3164068060580155")
         interstitialAd.loadAd(
             interstitialAd.buildLoadAdConfig()
                 .withAdListener(object : InterstitialAdListener {
@@ -250,18 +248,30 @@ class MainActivity : DaggerAppCompatActivity() {
                 }).build()
         )
         setTimer()
-        viewModel.tracksObservable.observe(this) {
+        observe()
+    }
+
+    private fun observe() = viewModel.apply {
+        tracksObservable.observe(this@MainActivity) {
             Log.i(TAG, "on popular")
             if (nativeAds.isNotEmpty()) insertNatives(it)
             tracks.addAll(it)
             if (timeOut) loadingState?.value = false
         }
-        viewModel.toastObservable.observe(this) {
-            Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        myTracksObservable.observe(this@MainActivity) {
+            Log.i(TAG, "my tracks observe =>$it")
+            myTracksStateList.clear()
+            myTracksStateList.addAll(it)
         }
-        viewModel.progressBarObservable.observe(this) {
+        toastObservable.observe(this@MainActivity)
+        {
+            Toast.makeText(this@MainActivity, it, Toast.LENGTH_LONG).show()
+        }
+        progressBarObservable.observe(this@MainActivity)
+        {
             loadingState?.value = it
         }
+
     }
 
     @Composable
@@ -273,28 +283,15 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun Banner(modifier: Modifier, ad: AdView) = AndroidView({ ad }, modifier)
 
     @Composable
-    private fun MyMuzAppBar(colorPrimary: Color, showSearchView: MutableState<Boolean>) =
-        TopAppBar(contentColor = Color.White, backgroundColor = colorPrimary) {
+    private fun MyMuzAppBar(showSearchView: MutableState<Boolean>) =
+        TopAppBar(contentColor = Color.White) {
             Spacer(Modifier.width(4.dp))
             Text(getString(R.string.app_name), fontSize = 21.sp)
             Spacer(Modifier.weight(1F))
             SearchView(showSearchView, Modifier.fillMaxHeight())
             Spacer(Modifier.width(4.dp))
             IconButton(modifier = Modifier, onClick = {
-//                if (ContextCompat.checkSelfPermission(
-//                        this@MainActivity,
-//                        WRITE_EXTERNAL_STORAGE
-//                    ) == PERMISSION_GRANTED
-//                )
                 myMusic()
-//                else {
-//                    ActivityCompat.requestPermissions(
-//                        this@MainActivity, arrayOf(WRITE_EXTERNAL_STORAGE),
-//                        REQUEST_CODE_STORAGE
-//                    )
-//                    onPermissionGranted = ::myMusic
-//                    onPermissionDenied = {}
-//                }
             }) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_folder_24dp),
@@ -306,37 +303,8 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun myMusic() {
         uiState.value = UIState.MY_MUSIC
         loadingState?.value = true
-        updateFileList()
-        Log.i(TAG, "myMusic")
-    }
-
-    private fun updateFileList() {
-        val directory =
-            Environment.getExternalStoragePublicDirectory(DIRECTORY_MUSIC)
-        Log.i(TAG, "dir=>$directory")
-//        if (!directory.exists()
-//            && ContextCompat.checkSelfPermission(
-//                this@MainActivity,
-//                WRITE_EXTERNAL_STORAGE
-//            ) != PERMISSION_GRANTED
-//        ) {
-//            ActivityCompat.requestPermissions(
-//                this@MainActivity,
-//                arrayOf(WRITE_EXTERNAL_STORAGE),
-//                REQUEST_CODE_STORAGE
-//            )
-//            onPermissionGranted = ::updateFileList
-//            onPermissionDenied = { uiState.value = UIState.MAIN }
-//        }
-//        else {
-        if (!directory.exists()) {
-            val create = directory.mkdirs()
-            Log.i(TAG, "dir does not exist. created=$create")
-        }
-
         viewModel.myMusic()
-//        }
-        Log.i(TAG, "updateFileList")
+        Log.i(TAG, "myMusic")
     }
 
     @Composable
@@ -412,14 +380,14 @@ class MainActivity : DaggerAppCompatActivity() {
                                 WRITE_EXTERNAL_STORAGE
                             ) == PERMISSION_GRANTED || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
                         )
-                            deleteAndUpdate()
+                            viewModel.del(fileToDel)
                         else {
                             ActivityCompat.requestPermissions(
                                 this@MainActivity,
                                 arrayOf(WRITE_EXTERNAL_STORAGE),
                                 REQUEST_CODE_STORAGE
                             )
-                            onPermissionGranted = ::deleteAndUpdate
+                            onPermissionGranted = { viewModel.del(fileToDel) }
                             onPermissionDenied = {}
                         }
                         delItemVisible.value = false
@@ -436,17 +404,16 @@ class MainActivity : DaggerAppCompatActivity() {
         }
         Column(Modifier.fillMaxHeight()) {
             var i = 0
-            val size = filteredFiles.size
+            val size = myTracksStateList.size
             while (i < size) {
                 Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    Modifier.fillMaxWidth().padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     run loop@{
                         repeat(if (size - i >= 3) 3 else size - i) {
                             val index = i + it
-                            val f = filteredFiles[index]
+                            val f = myTracksStateList[index]
                             Log.i(TAG, "file name=>${f.name}")
                             try {
                                 retriever.setDataSource(f.absolutePath)
@@ -476,7 +443,7 @@ class MainActivity : DaggerAppCompatActivity() {
                                     )
                                 } else Image(
                                     painterResource(id = R.drawable.ic_music_note_black_24dp),
-                                    contentDescription = getString(R.string.my_music),
+                                    contentDescription = getString(R.string.my_music)
                                 )
                                 Text(f.name)
                             }
@@ -489,19 +456,18 @@ class MainActivity : DaggerAppCompatActivity() {
         loadingState?.value = false
     }
 
-    private fun deleteAndUpdate() {
-        val deleted = fileToDel?.delete()
-        Log.i(TAG, "file to del=>${fileToDel?.name},  deleted=>$deleted")
-        filteredFiles.remove(fileToDel)
-        updateFileList()
-    }
-
     private fun vibrateAndShowDelItem(delItemVisible: MutableState<Boolean>) {
-        val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v?.vibrate(VibrationEffect.createOneShot(70, 250))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Log.i(TAG, "api >= 31")
+            val vm = getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vm.vibrate(CombinedVibration.createParallel(VibrationEffect.createOneShot(70, 250)))
         } else {
-            v?.vibrate(50)
+            val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                v?.vibrate(VibrationEffect.createOneShot(70, 250))
+            } else {
+                v?.vibrate(50)
+            }
         }
         delItemVisible.value = true
     }
@@ -513,6 +479,7 @@ class MainActivity : DaggerAppCompatActivity() {
             val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
             val uri = Uri.parse(track.audio)
             val request = DownloadManager.Request(uri)
+            viewModel.myTracks = null
             val downloadId = downloadManager
                 .enqueue(
                     request.setDestinationInExternalPublicDir(
@@ -523,7 +490,7 @@ class MainActivity : DaggerAppCompatActivity() {
             registerReceiver(object : BroadcastReceiver() {
                 override fun onReceive(context: Context?, intent: Intent) {
                     val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-                    if (downloadId == id) updateFileList()
+                    if (downloadId == id) viewModel.myMusic()
                 }
             }, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         } else {
@@ -549,15 +516,13 @@ class MainActivity : DaggerAppCompatActivity() {
         displayMetrics.widthPixels / displayMetrics.density
     }
 
-
     @Composable
     private fun MainScreen(
         modifier: Modifier,
         playerState: MutableState<Any?>,
-        colorPrimary: Color,
         showSearchView: MutableState<Boolean>
     ) {
-        MyMuzAppBar(colorPrimary, showSearchView)
+        MyMuzAppBar(showSearchView)
         LazyColumn(
             modifier,
             contentPadding = PaddingValues(4.dp)
@@ -628,23 +593,27 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @Composable
     private fun TrackView(playerState: MutableState<Any?>, item: Track) =
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .clickable { playerState.value = item }) {
-            val btp = remember { mutableStateOf<Bitmap?>(null) }
-            val url = item.image
-            setBitmap(btp, url)
-            val bitmap = btp.value?.asImageBitmap()
-            if (bitmap != null) {
-                Image(bitmap, null, modifier = Modifier.height(100.dp))
-            }
-            Spacer(Modifier.width(4.dp))
-            Column {
-                Text(item.name, fontSize = 21.sp)
-                Text(item.artist_name)
-                Text(getString(R.string.released, item.releasedate))
-                Text(getString(R.string.duration, item.duration))
+        Surface(elevation = 2.dp) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .clickable { playerState.value = item }) {
+                val btp = remember { mutableStateOf<Bitmap?>(null) }
+                val url = item.image
+                setBitmap(btp, url)
+                val bitmap = btp.value?.asImageBitmap()
+                if (bitmap != null) {
+                    Image(bitmap, null, modifier = Modifier.height(100.dp))
+                }
+                Spacer(Modifier.width(4.dp))
+                Column {
+                    Text(item.name, fontSize = 21.sp)
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        Text(item.artist_name)
+                        Text(getString(R.string.released, item.releasedate))
+                        Text(getString(R.string.duration, item.duration))
+                    }
+                }
             }
         }
 
